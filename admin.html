@@ -568,13 +568,12 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
 // 🔥 FIREBASE CONFIG — même que l'app principale
 // ════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyBR8IY95ZvVIcSdD9BXa6vNch4V7jGTfHw",
-  authDomain:        "matloub-6306f.firebaseapp.com",
-  projectId:         "matloub-6306f",
-  storageBucket:     "matloub-6306f.firebasestorage.app",
-  messagingSenderId: "228834270786",
-  appId:             "1:228834270786:web:aa1f4256785e4700a6d7db",
-  measurementId:     "G-64EET5QWXV"
+  apiKey:            "VOTRE_API_KEY",
+  authDomain:        "votre-projet.firebaseapp.com",
+  projectId:         "votre-projet-id",
+  storageBucket:     "votre-projet.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId:             "VOTRE_APP_ID"
 };
 
 // ════════════════════════════════════════════
@@ -597,7 +596,7 @@ function sanitize(s){return typeof s==='string'?s.replace(/&/g,'&amp;').replace(
 // 🔥 FIREBASE
 // ════════════════════════════════════════════
 let db=null, auth=null, fbReady=false, allPros=[];
-const ADMIN_EMAIL = atob('YWRtaW5AbXphdGxvdWIuY29t'); // admin@mzatloub.com (encodé base64)
+const ADMIN_EMAIL = 'a.leglobe@gmail.com';
 
 async function initFirebase(){
   document.getElementById('loading-msg').textContent='Connexion à Firebase...';
