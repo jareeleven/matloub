@@ -514,13 +514,6 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     </div>
     <button class="btn btn-primary" style="margin-bottom:12px;" onclick="showModal('login-modal')">Se connecter</button>
     <button class="btn btn-outline" onclick="showModal('register-type-modal')">Inscription Professionnel</button>
-    <div style="margin-top:24px;background:var(--bg);border-radius:14px;padding:14px;">
-      <div style="font-size:0.78rem;color:var(--text3);font-weight:700;margin-bottom:8px;">🔐 ACCÈS SUPER ADMIN</div>
-      <div style="display:flex;gap:8px;font-size:0.8rem;">
-        <span style="background:white;padding:4px 10px;border-radius:8px;font-weight:700;">user: <code>admin</code></span>
-        <span style="background:white;padding:4px 10px;border-radius:8px;font-weight:700;">pass: <code>Admin@2024</code></span>
-      </div>
-    </div>
   </div>
 
   <!-- Connecté – Client -->
@@ -1591,7 +1584,7 @@ function loadDB() {
       {id:12,name:"Safia Nettoyage",job:"Agent de Nettoyage",phone:"0776543210",email:"safia@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"Médioni",location:"Médioni",address:"",bio:"Nettoyage maison, bureaux, fin de chantier, désinfection",rating:4.7,reviews:[{author:"Samira",stars:5,text:"Très efficace et sérieuse",date:"2024-02-28"}],reports:0,status:"active",photos:[],views:56,joinDate:"2024-02-05",category:"nettoyage",available:true},
       {id:13,name:"Djamel Serrurier",job:"Serrurier",phone:"0551122334",email:"djamel@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"El Othmania",location:"El Othmania",address:"",bio:"Ouverture de portes, changement de serrures, coffres-forts",rating:4.3,reviews:[],reports:0,status:"active",photos:[],views:41,joinDate:"2024-02-15",category:"serrurier",available:true},
       {id:14,name:"Rania Couturier",job:"Couturier / Tailleur",phone:"0663344556",email:"rania@demo.dz",pass:"123456",role:"pro",daira:"boutlelis",commune:"Messerghin",location:"Messerghin",address:"",bio:"Couture sur mesure, retouches, robes de mariée, traditionnel",rating:4.8,reviews:[{author:"Houria",stars:5,text:"Robe parfaite, très talentueuse!",date:"2024-04-05"}],reports:0,status:"active",photos:[],views:88,joinDate:"2024-01-25",category:"coiffure",available:true},
-      {id:101,name:"Admin MATLOUB",job:"Administrateur",phone:"0000000000",email:"admin",pass:"Admin@2024",role:"admin",status:"active",photos:[]}
+      {id:101,name:"Admin MATLOUB",job:"Administrateur",phone:"0000000000",email:"admin",role:"admin",status:"active",photos:[]}
     ];
     saveDB();
   }
@@ -2456,19 +2449,22 @@ const app = {
     if (!userIn || !pass) return toast('Remplissez tous les champs');
     if (hasInjection(userIn)) return toast('⚠️ Caractères non autorisés');
 
-    // Admin — hash check
+    // Admin — vérification via Firebase Auth uniquement (pas de mot de passe en clair)
     const passHash = await sha256(pass);
-    const adminHashRef = await sha256('Admin@2024');
+    const adminUser = db.users.find(u => u.role === 'admin');
+    const isAdminLogin = (userIn === 'admin' || userIn === adminUser?.email);
 
-    if (userIn === 'admin' && (pass === 'Admin@2024' || passHash === adminHashRef)) {
-      resetRateLimit();
-      db.currentUser = db.users.find(u => u.role === 'admin') || {id:101,name:'Admin',role:'admin',status:'active'};
-      db.currentUser.sessionToken = generateToken();
-      saveSession();
-      closeModal('login-modal');
-      navTo('profile');
-      toast('👋 Bienvenue Admin !');
-      return;
+    if (isAdminLogin) {
+      // L'accès admin complet se fait via admin.html (Firebase Auth)
+      // Ici on permet juste un accès dashboard lecture seule si hash connu
+      if (adminUser?.passHash && passHash === adminUser.passHash) {
+        resetRateLimit();
+        db.currentUser = {...adminUser, sessionToken: generateToken()};
+        saveSession(); closeModal('login-modal'); navTo('profile');
+        toast('👋 Bienvenue Admin !'); return;
+      } else {
+        toast('❌ Accès admin via admin.html uniquement'); return;
+      }
     }
 
     // User — compare hash ou pass direct (rétrocompatible avec anciens comptes demo)
