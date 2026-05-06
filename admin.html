@@ -191,14 +191,14 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
       <div style="font-size:1.05rem;font-weight:800;margin-bottom:4px;">Accès Super Admin</div>
       <div style="font-size:0.8rem;color:var(--text3);">Panneau Firebase — Oran</div>
     </div>
-    <div class="form-group"><label>Identifiant Admin</label><input type="text" id="a-user" class="form-input" placeholder="admin"></div>
+    <div class="form-group"><label>Email Admin</label><input type="email" id="a-user" class="form-input" placeholder="admin@mzatloub.com"></div>
     <div class="form-group"><label>Mot de passe</label><input type="password" id="a-pass" class="form-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"></div>
     <div id="login-err" style="color:#EF4444;font-size:0.78rem;text-align:center;margin-bottom:8px;display:none;"></div>
     <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="adminLogin()">
       <span class="material-icons-round" style="font-size:18px;">lock_open</span> Se connecter
     </button>
     <div style="margin-top:14px;background:var(--bg);border-radius:10px;padding:10px;font-size:0.75rem;text-align:center;color:var(--text3);">
-      Démo: <code style="color:var(--primary);font-weight:700;">admin</code> / <code style="color:var(--primary);font-weight:700;">Admin@2024</code>
+      Accès réservé aux administrateurs autorisés.
     </div>
   </div>
 </div>
@@ -568,12 +568,13 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
 // 🔥 FIREBASE CONFIG — même que l'app principale
 // ════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "VOTRE_API_KEY",
-  authDomain:        "votre-projet.firebaseapp.com",
-  projectId:         "votre-projet-id",
-  storageBucket:     "votre-projet.appspot.com",
-  messagingSenderId: "VOTRE_SENDER_ID",
-  appId:             "VOTRE_APP_ID"
+  apiKey:            "AIzaSyBR8IY95ZvVIcSdD9BXa6vNch4V7jGTfHw",
+  authDomain:        "matloub-6306f.firebaseapp.com",
+  projectId:         "matloub-6306f",
+  storageBucket:     "matloub-6306f.firebasestorage.app",
+  messagingSenderId: "228834270786",
+  appId:             "1:228834270786:web:aa1f4256785e4700a6d7db",
+  measurementId:     "G-64EET5QWXV"
 };
 
 // ════════════════════════════════════════════
@@ -595,13 +596,15 @@ function sanitize(s){return typeof s==='string'?s.replace(/&/g,'&amp;').replace(
 // ════════════════════════════════════════════
 // 🔥 FIREBASE
 // ════════════════════════════════════════════
-let db=null, fbReady=false, allPros=[], adminPass='Admin@2024';
+let db=null, auth=null, fbReady=false, allPros=[];
+const ADMIN_EMAIL = atob('YWRtaW5AbXphdGxvdWIuY29t'); // admin@mzatloub.com (encodé base64)
 
 async function initFirebase(){
   document.getElementById('loading-msg').textContent='Connexion à Firebase...';
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
     db=firebase.firestore();
+    auth=firebase.auth();
     await db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
     fbReady=true;
     setFbStatus('online','🔥 Firebase connecté');
@@ -667,26 +670,62 @@ function getBlacklist(){return JSON.parse(localStorage.getItem('matloub_blacklis
 function saveBlacklist(bl){localStorage.setItem('matloub_blacklist',JSON.stringify(bl));}
 
 // ════════════════════════════════════════════
-// 🔐 AUTH
+// 🔐 AUTH — Firebase Authentication
 // ════════════════════════════════════════════
 async function adminLogin(){
-  const user=document.getElementById('a-user').value.trim();
+  const emailInput=document.getElementById('a-user').value.trim();
   const pass=document.getElementById('a-pass').value;
   const err=document.getElementById('login-err');err.style.display='none';
-  if(!user||!pass){err.textContent='Remplissez tous les champs';err.style.display='block';return;}
-  const passHash=await sha256(pass);const refHash=await sha256(adminPass);
-  if(user==='admin'&&(pass===adminPass||passHash===refHash)){
+  if(!emailInput||!pass){err.textContent='Remplissez tous les champs';err.style.display='block';return;}
+
+  if(!auth){
+    // Fallback si Firebase Auth non disponible (config manquante)
+    err.textContent='Firebase non configuré — veuillez remplir FIREBASE_CONFIG';err.style.display='block';return;
+  }
+
+  try{
+    const credential=await auth.signInWithEmailAndPassword(emailInput,pass);
+    const user=credential.user;
+    // Vérification stricte : seul l'email admin est autorisé
+    if(user.email!==ADMIN_EMAIL){
+      await auth.signOut();
+      err.textContent='Accès refusé — compte non autorisé';err.style.display='block';return;
+    }
     document.getElementById('login-screen').style.display='none';
     document.getElementById('admin-app').style.display='block';
     await loadAllPros();initApp();
-  }else{err.textContent='Identifiants incorrects';err.style.display='block';}
+  }catch(e){
+    const messages={
+      'auth/user-not-found':'Email ou mot de passe incorrect',
+      'auth/wrong-password':'Email ou mot de passe incorrect',
+      'auth/invalid-email':'Format email invalide',
+      'auth/too-many-requests':'Trop de tentatives — réessayez plus tard',
+      'auth/user-disabled':'Compte désactivé'
+    };
+    err.textContent=messages[e.code]||'Erreur de connexion';err.style.display='block';
+  }
 }
-function adminLogout(){document.getElementById('admin-app').style.display='none';document.getElementById('login-screen').style.display='flex';}
+
+function adminLogout(){
+  if(auth)auth.signOut();
+  document.getElementById('admin-app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
 async function changePass(){
-  const old=document.getElementById('old-pass').value;const n1=document.getElementById('new-pass').value;const n2=document.getElementById('confirm-pass').value;
-  if(old!==adminPass)return showToast('❌ Mot de passe actuel incorrect');
-  if(n1.length<6)return showToast('Trop court');if(n1!==n2)return showToast('❌ Ne correspondent pas');
-  adminPass=n1;showToast('✅ Mot de passe changé');['old-pass','new-pass','confirm-pass'].forEach(id=>document.getElementById(id).value='');
+  const n1=document.getElementById('new-pass').value;const n2=document.getElementById('confirm-pass').value;
+  if(n1.length<8)return showToast('Mot de passe trop court (min 8 caractères)');
+  if(n1!==n2)return showToast('❌ Les mots de passe ne correspondent pas');
+  try{
+    const user=auth?.currentUser;
+    if(!user)return showToast('❌ Non authentifié via Firebase');
+    await user.updatePassword(n1);
+    showToast('✅ Mot de passe changé avec succès');
+    ['old-pass','new-pass','confirm-pass'].forEach(id=>document.getElementById(id).value='');
+  }catch(e){
+    if(e.code==='auth/requires-recent-login'){showToast('⚠️ Re-connectez-vous d\'abord pour changer le mot de passe');}
+    else showToast('❌ Erreur: '+e.message);
+  }
 }
 
 // ════════════════════════════════════════════
@@ -1003,13 +1042,32 @@ function initApp(){
 }
 
 // ════════════════════════════════════════════
-// 🚀 BOOT
+// 🚀 BOOT — Sécurisé via Firebase Auth
 // ════════════════════════════════════════════
 (async()=>{
   const fbOk=await initFirebase();
   document.getElementById('loading-screen').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  console.log(`%c🔥 MATLOUB Admin Panel\n✅ Firebase: ${fbOk?'Connecté':'Non configuré (mode local)'}`, 'color:#6C3CE1;font-weight:bold;');
+
+  if(fbOk && auth){
+    // Firebase Auth écoute l'état de connexion — protection automatique
+    auth.onAuthStateChanged(async(user)=>{
+      if(user && user.email===ADMIN_EMAIL){
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('admin-app').style.display='block';
+        await loadAllPros();
+        // initApp seulement si pas déjà initialisé
+        if(!document.getElementById('dashboard-date').textContent){initApp();}
+      }else{
+        document.getElementById('admin-app').style.display='none';
+        document.getElementById('login-screen').style.display='flex';
+      }
+    });
+  }else{
+    // Firebase non configuré — afficher login quand même
+    document.getElementById('login-screen').style.display='flex';
+  }
+
+  console.log(`%c🔥 MATLOUB Admin Panel\n✅ Firebase Auth: ${fbOk?'Actif':'Non configuré'}`, 'color:#6C3CE1;font-weight:bold;');
 })();
 </script>
 </body>
