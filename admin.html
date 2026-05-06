@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<title>MATLOUB — Admin Panel Firebase</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+<style>
+:root{
+  --primary:#6C3CE1;--primary-light:#8B5CF6;
+  --accent:#00D4AA;--accent2:#FF6B6B;--accent3:#FFB547;
+  --bg:#F0F2FF;--surface:#FFFFFF;
+  --text:#1A1040;--text2:#5A5780;--text3:#9E9CBB;
+  --border:rgba(108,60,225,0.12);
+  --shadow:0 8px 32px rgba(108,60,225,0.12);
+  --shadow-sm:0 2px 12px rgba(108,60,225,0.08);
+  --r:18px;--r-sm:12px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;outline:none;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── LOADING ── */
+#loading-screen{position:fixed;inset:0;background:linear-gradient(135deg,#1A1040,#6C3CE1);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.loader-spinner{width:36px;height:36px;border:4px solid rgba(255,255,255,0.2);border-top-color:#00D4AA;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#1A1040,#6C3CE1 60%,#00D4AA 100%);display:flex;align-items:center;justify-content:center;z-index:9998;display:none;}
+.login-card{background:white;border-radius:28px;padding:36px 28px;width:92%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,0.3);}
+
+/* ── LAYOUT ── */
+#admin-app{display:none;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;background:linear-gradient(180deg,#1A1040,#2D1B69);padding:0;z-index:100;display:flex;flex-direction:column;transition:transform 0.3s;}
+.sidebar-logo{padding:18px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px;}
+.nav-links{padding:12px 0;flex:1;overflow-y:auto;}
+.nav-link{display:flex;align-items:center;gap:12px;padding:12px 18px;color:rgba(255,255,255,0.6);cursor:pointer;font-size:0.88rem;font-weight:700;border-left:3px solid transparent;transition:0.2s;}
+.nav-link:hover{color:white;background:rgba(255,255,255,0.06);}
+.nav-link.active{color:white;border-left-color:var(--primary-light);background:rgba(108,60,225,0.25);}
+.nav-link span.material-icons-round{font-size:20px;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--accent2);color:white;font-size:0.65rem;font-weight:900;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+.sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.08);}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:60px;background:white;border-bottom:1px solid var(--border);z-index:90;display:flex;align-items:center;padding:0 20px;justify-content:space-between;box-shadow:0 2px 12px rgba(108,60,225,0.06);}
+.topbar-title{font-weight:800;font-size:1rem;}
+.hamburger{display:none;width:36px;height:36px;background:var(--bg);border:none;border-radius:10px;cursor:pointer;color:var(--text2);align-items:center;justify-content:center;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-btn{width:36px;height:36px;border-radius:10px;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+
+/* ── FB STATUS ── */
+.fb-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:50px;font-size:0.75rem;font-weight:700;}
+.fb-chip.online{background:#DCFCE7;color:#166534;}
+.fb-chip.offline{background:#FEE2E2;color:#991B1B;}
+.fb-chip.syncing{background:#FEF3C7;color:#92400E;}
+.fb-dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);padding-top:60px;min-height:100vh;}
+.section{padding:20px;display:none;}
+.section.active{display:block;}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:white;border-radius:var(--r);padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.stat-val{font-size:1.9rem;font-weight:900;line-height:1;}
+.stat-lbl{font-size:0.75rem;color:var(--text3);font-weight:600;margin-top:4px;}
+.stat-trend{font-size:0.72rem;font-weight:700;margin-top:5px;display:flex;align-items:center;gap:4px;}
+
+/* ── TABLE ── */
+.table-card{background:white;border-radius:var(--r);box-shadow:var(--shadow-sm);border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
+.table-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.table-title{font-weight:800;font-size:0.95rem;}
+.table-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search-wrap-admin{position:relative;}
+.search-wrap-admin span.material-icons-round{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:17px;}
+.search-box{padding:8px 12px 8px 34px;border-radius:10px;border:2px solid var(--border);background:var(--bg);font-size:0.82rem;font-family:'Nunito',sans-serif;color:var(--text);width:190px;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--bg);}
+th{padding:10px 14px;text-align:left;font-size:0.72rem;font-weight:800;color:var(--text3);white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:11px 14px;border-top:1px solid var(--border);font-size:0.84rem;vertical-align:middle;}
+tr:hover td{background:rgba(108,60,225,0.02);}
+.pro-cell{display:flex;align-items:center;gap:10px;}
+.pro-mini-avatar{width:38px;height:38px;border-radius:10px;background:var(--bg);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--text3);}
+.pro-mini-name{font-weight:700;font-size:0.86rem;}
+.pro-mini-sub{font-size:0.72rem;color:var(--text3);}
+
+/* ── BADGES ── */
+.badge{padding:3px 9px;border-radius:6px;font-size:0.7rem;font-weight:800;white-space:nowrap;display:inline-block;}
+.badge-active{background:#DCFCE7;color:#166534;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-suspended{background:#FEE2E2;color:#991B1B;}
+.badge-banned{background:#1A1040;color:white;}
+
+/* ── ACTION BUTTONS ── */
+.act-btn{padding:5px 10px;border-radius:8px;border:none;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:0.15s;display:inline-flex;align-items:center;gap:3px;}
+.act-green{background:#DCFCE7;color:#166534;}
+.act-orange{background:#FEF3C7;color:#92400E;}
+.act-red{background:#FEE2E2;color:#991B1B;}
+.act-dark{background:#1A1040;color:white;}
+.act-gray{background:var(--bg);color:var(--text2);}
+.act-purple{background:#EEF2FF;color:#4F46E5;}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(20,10,60,0.5);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px;}
+.overlay.active{display:flex;}
+.modal{background:white;border-radius:var(--r);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1);}
+.modal-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;z-index:1;}
+.modal-head h3{font-size:1rem;font-weight:800;}
+.modal-body{padding:18px 20px 22px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── INPUTS ── */
+.form-group{margin-bottom:13px;}
+.form-group label{display:block;margin-bottom:5px;font-size:0.78rem;font-weight:700;color:var(--text2);}
+.form-input{width:100%;padding:10px 12px;border-radius:10px;border:2px solid #E8EAFF;background:#FAFBFF;font-size:0.88rem;font-family:'Nunito',sans-serif;color:var(--text);transition:0.2s;}
+.form-input:focus{border-color:var(--primary);background:white;}
+select.form-input{-webkit-appearance:none;cursor:pointer;}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 16px;border-radius:10px;border:none;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.87rem;transition:0.2s;display:inline-flex;align-items:center;gap:6px;}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 4px 14px rgba(108,60,225,0.3);}
+.btn-danger{background:linear-gradient(135deg,#EF4444,#DC2626);color:white;}
+.btn-success{background:linear-gradient(135deg,var(--accent),#00B894);color:white;}
+.btn-ghost{background:var(--bg);color:var(--text2);}
+.btn-sm{padding:7px 12px;font-size:0.78rem;border-radius:8px;}
+
+/* ── CHART ── */
+.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.chart-label{width:100px;font-size:0.75rem;font-weight:700;color:var(--text2);flex-shrink:0;text-align:right;}
+.chart-bar-wrap{flex:1;background:var(--bg);border-radius:6px;height:26px;overflow:hidden;}
+.chart-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;color:white;font-size:0.73rem;font-weight:700;min-width:30px;transition:width 1s cubic-bezier(0.16,1,0.3,1);}
+.chart-val{width:46px;font-size:0.75rem;font-weight:800;text-align:right;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(26,16,64,0.95);color:white;padding:11px 18px;border-radius:12px;z-index:9999;font-size:0.85rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.2);animation:fadeUp 0.3s;}
+
+/* ── BLACKLIST ── */
+.bl-item{background:var(--bg);border-radius:10px;padding:10px 13px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;}
+.bl-tag{font-size:0.68rem;font-weight:800;padding:2px 7px;border-radius:5px;}
+.bl-phone{background:#FEE2E2;color:#991B1B;}
+.bl-email{background:#FEF3C7;color:#92400E;}
+.bl-name{background:#EEF2FF;color:#4F46E5;}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  :root{--sidebar:0px;}
+  .sidebar{transform:translateX(-220px);width:220px;}
+  .sidebar.open{transform:translateX(0);}
+  .topbar{left:0;}
+  .main{margin-left:0;}
+  .hamburger{display:flex;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  table th:nth-child(n+4),table td:nth-child(n+4){display:none;}
+  .search-box{width:140px;}
+}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(108,60,225,0.15);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div style="width:60px;height:60px;background:rgba(255,255,255,0.15);border-radius:18px;display:flex;align-items:center;justify-content:center;">
+    <span class="material-icons-round" style="font-size:28px;color:white;">handshake</span>
+  </div>
+  <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;color:white;">MATLOUB Admin</div>
+  <div class="loader-spinner"></div>
+  <div style="color:rgba(255,255,255,0.6);font-size:0.8rem;" id="loading-msg">Connexion à Firebase...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:24px;">
+      <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:12px;display:flex;align-items:center;justify-content:center;"><span class="material-icons-round" style="color:white;font-size:22px;">handshake</span></div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--primary-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">MATLOUB</div>
+    </div>
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:1.05rem;font-weight:800;margin-bottom:4px;">Accès Super Admin</div>
+      <div style="font-size:0.8rem;color:var(--text3);">Panneau Firebase — Oran</div>
+    </div>
+    <div class="form-group"><label>Identifiant Admin</label><input type="text" id="a-user" class="form-input" placeholder="admin"></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="a-pass" class="form-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+    <div id="login-err" style="color:#EF4444;font-size:0.78rem;text-align:center;margin-bottom:8px;display:none;"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="adminLogin()">
+      <span class="material-icons-round" style="font-size:18px;">lock_open</span> Se connecter
+    </button>
+    <div style="margin-top:14px;background:var(--bg);border-radius:10px;padding:10px;font-size:0.75rem;text-align:center;color:var(--text3);">
+      Démo: <code style="color:var(--primary);font-weight:700;">admin</code> / <code style="color:var(--primary);font-weight:700;">Admin@2024</code>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="admin-app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--primary-light),var(--accent));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-icons-round" style="color:white;font-size:16px;">handshake</span>
+      </div>
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:white;font-size:1rem;">MATLOUB</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;">SUPER ADMIN</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <div class="nav-link active" onclick="gotoSection('dashboard',this)"><span class="material-icons-round">dashboard</span> Dashboard</div>
+      <div class="nav-link" onclick="gotoSection('pros',this)" id="nav-pros"><span class="material-icons-round">engineering</span> Professionnels<span class="nav-badge" id="nb-pending">0</span></div>
+      <div class="nav-link" onclick="gotoSection('add-pro',this)"><span class="material-icons-round">person_add</span> Ajouter un Pro</div>
+      <div class="nav-link" onclick="gotoSection('reports',this)"><span class="material-icons-round">flag</span> Signalements<span class="nav-badge" id="nb-reports" style="background:var(--accent2);">0</span></div>
+      <div class="nav-link" onclick="gotoSection('blacklist',this)"><span class="material-icons-round">block</span> Blacklist</div>
+      <div class="nav-link" onclick="gotoSection('traffic',this)"><span class="material-icons-round">bar_chart</span> Trafic & Stats</div>
+      <div class="nav-link" onclick="gotoSection('export',this)"><span class="material-icons-round">download</span> Export Données</div>
+      <div class="nav-link" onclick="gotoSection('settings',this)"><span class="material-icons-round">settings</span> Paramètres</div>
+    </div>
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--primary-light),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.85rem;">A</div>
+        <div style="flex:1;min-width:0;">
+          <div style="color:white;font-size:0.8rem;font-weight:700;">Super Admin</div>
+          <div id="sidebar-fb-status" style="font-size:0.65rem;color:rgba(255,255,255,0.5);">🔥 Firebase</div>
+        </div>
+        <button style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;" onclick="adminLogout()" title="Déconnexion">
+          <span class="material-icons-round" style="font-size:18px;">logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="hamburger" id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <span class="material-icons-round">menu</span>
+      </button>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div id="fb-status-chip" class="fb-chip online"><div class="fb-dot"></div><span id="fb-chip-text">Firebase OK</span></div>
+      <button class="topbar-btn" onclick="refreshAll()" title="Actualiser"><span class="material-icons-round" style="font-size:18px;">refresh</span></button>
+      <button class="topbar-btn" id="notif-topbar-btn" onclick="showNotifPanel()"><span class="material-icons-round" style="font-size:18px;">notifications_none</span></button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div id="sec-dashboard" class="section active">
+      <div style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-size:1.1rem;font-weight:900;">Bonjour, Admin 👋</div>
+          <div style="color:var(--text3);font-size:0.82rem;" id="dashboard-date"></div>
+        </div>
+        <div id="firebase-detail" style="font-size:0.78rem;color:var(--text3);background:white;padding:6px 12px;border-radius:10px;border:1px solid var(--border);">🔥 Chargement...</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));"><span class="material-icons-round" style="color:white;font-size:20px;">engineering</span></div>
+          <div class="stat-val" style="color:var(--primary);" id="s-total">—</div>
+          <div class="stat-lbl">Total Pros</div>
+          <div class="stat-trend" style="color:#22C55E;"><span class="material-icons-round" style="font-size:13px;">trending_up</span>+<span id="s-new-week">0</span> cette semaine</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,var(--accent),#00B894);"><span class="material-icons-round" style="color:white;font-size:20px;">check_circle</span></div>
+          <div class="stat-val" style="color:var(--accent);" id="s-active">—</div>
+          <div class="stat-lbl">Actifs</div>
+          <div class="stat-trend"><span id="s-active-pct" style="color:var(--accent);">—</span> du total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#F59E0B,#EF4444);"><span class="material-icons-round" style="color:white;font-size:20px;">pending</span></div>
+          <div class="stat-val" style="color:#F59E0B;" id="s-pending">—</div>
+          <div class="stat-lbl">En attente</div>
+          <div class="stat-trend" style="color:#F59E0B;">à valider</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#EF4444,#DC2626);"><span class="material-icons-round" style="color:white;font-size:20px;">flag</span></div>
+          <div class="stat-val" style="color:#EF4444;" id="s-reports">—</div>
+          <div class="stat-lbl">Signalements</div>
+          <div class="stat-trend" style="color:#EF4444;">à traiter</div>
+        </div>
+      </div>
+
+      <!-- Trafic -->
+      <div class="table-card" style="margin-bottom:18px;">
+        <div class="table-header"><div class="table-title">📊 Trafic visiteurs (Firebase)</div></div>
+        <div style="padding:18px;" id="traffic-chart">
+          <div style="text-align:center;color:var(--text3);padding:20px;">Chargement...</div>
+        </div>
+      </div>
+
+      <!-- Inscriptions récentes -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">🆕 Inscriptions récentes</div>
+          <button class="btn btn-ghost btn-sm" onclick="gotoSection('pros',null)">Voir tout</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Professionnel</th><th>Métier</th><th>Commune</th><th>Firebase</th><th>Statut</th></tr></thead>
+            <tbody id="recent-table"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;">Chargement...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROS ══ -->
+    <div id="sec-pros" class="section">
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">👷 Professionnels Firebase</div>
+          <div class="table-actions">
+            <div class="search-wrap-admin">
+              <span class="material-icons-round">search</span>
+              <input type="text" class="search-box" id="pros-search" placeholder="Nom, métier..." oninput="renderProsTable()">
+            </div>
+            <select class="form-input btn-sm" id="pros-status-filter" style="width:130px;" onchange="renderProsTable()">
+              <option value="">Tous statuts</option>
+              <option value="active">✅ Actifs</option>
+              <option value="pending">⏳ En attente</option>
+              <option value="suspended">⏸ Suspendus</option>
+              <option value="banned">🚫 Bannis</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="gotoSection('add-pro',null)">
+              <span class="material-icons-round" style="font-size:15px;">add</span> Ajouter
+            </button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Professionnel</th><th>Métier</th><th>Contact</th><th>Commune</th><th>Note</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="pros-table"></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 18px;border-top:1px solid var(--border);font-size:0.76rem;color:var(--text3);" id="pros-count"></div>
+      </div>
+    </div>
+
+    <!-- ══ AJOUTER PRO ══ -->
+    <div id="sec-add-pro" class="section">
+      <div style="max-width:580px;">
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">➕ Ajouter un Pro (sauvegardé sur Firebase)</div></div>
+          <div style="padding:18px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group"><label>Nom *</label><input type="text" id="ap-name" class="form-input"></div>
+              <div class="form-group"><label>Métier *</label><select id="ap-job" class="form-input"><option value="">--</option></select></div>
+              <div class="form-group"><label>Téléphone *</label><input type="tel" id="ap-phone" class="form-input"></div>
+              <div class="form-group"><label>Email *</label><input type="email" id="ap-email" class="form-input"></div>
+              <div class="form-group"><label>Mot de passe *</label><input type="password" id="ap-pass" class="form-input"></div>
+              <div class="form-group"><label>Statut</label>
+                <select id="ap-status" class="form-input">
+                  <option value="active">✅ Actif directement</option>
+                  <option value="pending">⏳ En attente</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Daïra</label>
+                <select id="ap-daira" class="form-input" onchange="fillAPCommunes()">
+                  <option value="">Choisir...</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Commune</label><select id="ap-commune" class="form-input"><option value="">Choisir...</option></select></div>
+            </div>
+            <div class="form-group"><label>Bio</label><textarea id="ap-bio" class="form-input" rows="2"></textarea></div>
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button class="btn btn-primary" id="ap-save-btn" onclick="adminAddPro()">
+                <span class="material-icons-round" style="font-size:16px;">person_add</span> Créer sur Firebase
+              </button>
+              <button class="btn btn-ghost" onclick="clearAddForm()">Vider</button>
+            </div>
+            <div id="ap-msg" style="margin-top:8px;font-size:0.8rem;font-weight:700;display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SIGNALEMENTS ══ -->
+    <div id="sec-reports" class="section">
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">🚩 Signalements Firebase</div>
+          <select class="form-input btn-sm" id="rep-filter" style="width:170px;" onchange="renderReports()">
+            <option value="">Toutes raisons</option>
+            <option value="Ne répond pas">📵 Ne répond pas</option>
+            <option value="Arnaque">🔴 Arnaque</option>
+            <option value="Comportement">😡 Comportement</option>
+            <option value="Prix abusif">💰 Prix abusif</option>
+            <option value="Faux profil">👤 Faux profil</option>
+          </select>
+        </div>
+        <div style="padding:16px;" id="reports-list">Chargement...</div>
+      </div>
+    </div>
+
+    <!-- ══ BLACKLIST ══ -->
+    <div id="sec-blacklist" class="section">
+      <div style="max-width:580px;">
+        <div class="table-card" style="margin-bottom:14px;">
+          <div class="table-header">
+            <div class="table-title">⛔ Blacklist (Firebase)</div>
+            <button class="btn btn-danger btn-sm" onclick="document.getElementById('bl-modal').classList.add('active')">
+              <span class="material-icons-round" style="font-size:15px;">add</span> Ajouter
+            </button>
+          </div>
+          <div style="padding:14px;" id="blacklist-list">Chargement...</div>
+        </div>
+        <div style="background:#FEF3C7;border-radius:var(--r);padding:14px;font-size:0.82rem;color:#92400E;border:1px solid #FDE68A;">
+          <strong>⚡ Synchronisation temps réel :</strong> Tout ajout à la blacklist est immédiatement visible sur l'application principale. Les inscriptions avec des informations blacklistées sont bloquées automatiquement.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TRAFIC ══ -->
+    <div id="sec-traffic" class="section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:720px;">
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">📅 Visites Firebase</div></div>
+          <div style="padding:18px;display:grid;gap:10px;" id="traffic-numbers">
+            <div style="text-align:center;background:var(--bg);border-radius:12px;padding:14px;">
+              <div style="font-size:1.8rem;font-weight:900;color:var(--primary);" id="t-today">—</div>
+              <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">Aujourd'hui</div>
+            </div>
+            <div style="text-align:center;background:var(--bg);border-radius:12px;padding:14px;">
+              <div style="font-size:1.8rem;font-weight:900;color:var(--accent);" id="t-month">—</div>
+              <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">Ce mois</div>
+            </div>
+            <div style="text-align:center;background:var(--bg);border-radius:12px;padding:14px;">
+              <div style="font-size:1.8rem;font-weight:900;color:#F59E0B;" id="t-year">—</div>
+              <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">Cette année</div>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">🏆 Top Pros (vues)</div></div>
+          <div style="padding:14px;" id="top-pros"></div>
+        </div>
+        <div class="table-card" style="grid-column:span 2;">
+          <div class="table-header"><div class="table-title">📊 Répartition par catégorie</div></div>
+          <div style="padding:18px;" id="cats-chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EXPORT ══ -->
+    <div id="sec-export" class="section">
+      <div style="max-width:520px;">
+        <div class="table-card" style="margin-bottom:14px;">
+          <div class="table-header"><div class="table-title">📤 Export des données Firebase</div></div>
+          <div style="padding:18px;display:grid;gap:10px;">
+            <button class="btn btn-primary" onclick="exportJSON()">
+              <span class="material-icons-round" style="font-size:16px;">download</span> Exporter tout en JSON
+            </button>
+            <button class="btn btn-success" onclick="exportCSV()">
+              <span class="material-icons-round" style="font-size:16px;">table_chart</span> Exporter Pros en CSV
+            </button>
+            <button class="btn btn-ghost" onclick="exportBlacklist()">
+              <span class="material-icons-round" style="font-size:16px;">block</span> Exporter Blacklist
+            </button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">⚠️ Zone dangereuse</div></div>
+          <div style="padding:18px;display:grid;gap:10px;">
+            <button class="btn" style="background:#FEE2E2;color:#991B1B;" onclick="resetDemoData()">
+              <span class="material-icons-round" style="font-size:16px;">restart_alt</span> Réinitialiser données démo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PARAMÈTRES ══ -->
+    <div id="sec-settings" class="section">
+      <div style="max-width:520px;">
+        <div class="table-card" style="margin-bottom:14px;">
+          <div class="table-header"><div class="table-title">🔥 Informations Firebase</div></div>
+          <div style="padding:18px;" id="firebase-info-detail">Chargement...</div>
+        </div>
+        <div class="table-card" style="margin-bottom:14px;">
+          <div class="table-header"><div class="table-title">🔐 Changer le mot de passe admin</div></div>
+          <div style="padding:18px;">
+            <div class="form-group"><label>Mot de passe actuel</label><input type="password" id="old-pass" class="form-input"></div>
+            <div class="form-group"><label>Nouveau</label><input type="password" id="new-pass" class="form-input"></div>
+            <div class="form-group"><label>Confirmer</label><input type="password" id="confirm-pass" class="form-input"></div>
+            <button class="btn btn-primary" onclick="changePass()">Enregistrer</button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">⚙️ Règles automatiques</div></div>
+          <div style="padding:18px;display:grid;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:12px;border-radius:12px;">
+              <div><div style="font-weight:700;font-size:0.85rem;">Suspension auto (5 signalements)</div><div style="font-size:0.73rem;color:var(--text3);">Suspend automatiquement un pro</div></div>
+              <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                <input type="checkbox" id="rule-auto-suspend" checked style="opacity:0;width:0;height:0;">
+                <span style="position:absolute;inset:0;background:var(--accent);border-radius:12px;transition:0.3s;"></span>
+                <span style="position:absolute;left:22px;top:3px;width:18px;height:18px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
+              </label>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:12px;border-radius:12px;">
+              <div><div style="font-weight:700;font-size:0.85rem;">Avertissement "Ne répond pas" (5x)</div><div style="font-size:0.73rem;color:var(--text3);">Email d'avertissement simulé</div></div>
+              <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                <input type="checkbox" id="rule-no-response" checked style="opacity:0;width:0;height:0;">
+                <span style="position:absolute;inset:0;background:var(--accent);border-radius:12px;transition:0.3s;"></span>
+                <span style="position:absolute;left:22px;top:3px;width:18px;height:18px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL DÉTAIL PRO -->
+<div id="pro-modal" class="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="pro-modal-title">Profil</h3>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('pro-modal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div class="modal-body" id="pro-modal-body"></div>
+  </div>
+</div>
+
+<!-- MODAL BLACKLIST ADD -->
+<div id="bl-modal" class="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Ajouter à la Blacklist</h3>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bl-modal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Type</label>
+        <select id="bl-type" class="form-input">
+          <option value="phone">📱 Téléphone</option>
+          <option value="email">📧 Email</option>
+          <option value="name">👤 Nom</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Valeur *</label><input type="text" id="bl-value" class="form-input" placeholder="0661234567 ou nom@email.com"></div>
+      <div class="form-group"><label>Raison</label><input type="text" id="bl-reason" class="form-input" placeholder="Arnaque, faux profil..."></div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn btn-danger" onclick="addToBlacklist()">⛔ Blacklister</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('bl-modal').classList.remove('active')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ JAVASCRIPT ══ -->
+<script>
+// ════════════════════════════════════════════
+// 🔥 FIREBASE CONFIG — même que l'app principale
+// ════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:            "VOTRE_API_KEY",
+  authDomain:        "votre-projet.firebaseapp.com",
+  projectId:         "votre-projet-id",
+  storageBucket:     "votre-projet.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId:             "VOTRE_APP_ID"
+};
+
+// ════════════════════════════════════════════
+// 📊 DONNÉES STATIQUES
+// ════════════════════════════════════════════
+const oranData = {
+  dairas:[{id:"oran",name:"Oran"},{id:"bir",name:"Bir El Djir"},{id:"essenia",name:"Es Sénia"},{id:"gdyel",name:"Gdyel"},{id:"arzew",name:"Arzew"},{id:"bethioua",name:"Béthioua"},{id:"ainek",name:"Aïn El Turk"},{id:"boutlelis",name:"Boutlélis"},{id:"oued",name:"Oued Tlelat"}],
+  communes:{"oran":["Oran"],"bir":["Bir El Djir","Hassi Ben Okba","Hassi Bounif","Hassi Mefsoukh"],"essenia":["Es Sénia","El Kerma","Sidi Chami"],"gdyel":["Gdyel","Ben Freha"],"arzew":["Arzew","Sidi Ben Yebka","Aïn Biya"],"bethioua":["Béthioua","Marsat El Hadjadj"],"ainek":["Aïn El Turk","Bousfer","El Ançor","Mers El Kébir"],"boutlelis":["Boutlélis","Messerghin","Aïn Kerma"],"oued":["Oued Tlelat","Boufatis","El Braya","Tafraoui"]}
+};
+const allJobs = ["Plombier","Électricien","Médecin Généraliste","Dentiste","Pharmacien","Infirmier","Menuisier","Développeur Web","Technicien Informatique","Coiffeur Homme","Coiffeuse Femme","Mécanicien Auto","Climatiseur Technicien","Maçon","Peintre en Bâtiment","Serrurier","Vitrier","Décorateur Intérieur","Jardinier","Photographe","Avocat","Notaire","Comptable","Chauffeur / Transport","Agent de Nettoyage","Cuisinier Traiteur","Électroménager Technicien","Soudeur","Carreleur","Couturier / Tailleur","Professeur Particulier","Coach Sportif","Kinésithérapeute","Architecte","Agent Immobilier"];
+const categories = [{id:"plombier",name:"Plombier",color:"#F59E0B"},{id:"elec",name:"Électricien",color:"#3B82F6"},{id:"med",name:"Médecin",color:"#EF4444"},{id:"menuisier",name:"Menuisier",color:"#D97706"},{id:"dev",name:"Informatique",color:"#8B5CF6"},{id:"coiffure",name:"Coiffure",color:"#EC4899"},{id:"mecano",name:"Mécanicien",color:"#6366F1"},{id:"clim",name:"Climatisation",color:"#0EA5E9"},{id:"mason",name:"Maçon",color:"#92400E"},{id:"peintre",name:"Peintre",color:"#10B981"},{id:"serrurier",name:"Serrurier",color:"#64748B"},{id:"vitrier",name:"Vitrier",color:"#06B6D4"},{id:"deco",name:"Décoration",color:"#F472B6"},{id:"jardin",name:"Jardinage",color:"#22C55E"},{id:"photo",name:"Photographe",color:"#A855F7"},{id:"avocat",name:"Avocat",color:"#DC2626"},{id:"transport",name:"Transport",color:"#EA580C"},{id:"nettoyage",name:"Nettoyage",color:"#14B8A6"},{id:"cuisine",name:"Cuisinier",color:"#F97316"},{id:"sante",name:"Santé",color:"#BE185D"}];
+
+// ════════════════════════════════════════════
+// 🔐 SÉCURITÉ
+// ════════════════════════════════════════════
+async function sha256(msg){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+function sanitize(s){return typeof s==='string'?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').trim():'';}
+
+// ════════════════════════════════════════════
+// 🔥 FIREBASE
+// ════════════════════════════════════════════
+let db=null, fbReady=false, allPros=[], adminPass='Admin@2024';
+
+async function initFirebase(){
+  document.getElementById('loading-msg').textContent='Connexion à Firebase...';
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.firestore();
+    await db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    fbReady=true;
+    setFbStatus('online','🔥 Firebase connecté');
+    document.getElementById('sidebar-fb-status').textContent='🔥 Firebase actif';
+    document.getElementById('firebase-info-detail').innerHTML=`
+      <div style="display:grid;gap:8px;font-size:0.82rem;">
+        <div style="background:var(--bg);border-radius:10px;padding:10px;"><strong>Projet:</strong> ${FIREBASE_CONFIG.projectId}</div>
+        <div style="background:var(--bg);border-radius:10px;padding:10px;"><strong>Base:</strong> Cloud Firestore</div>
+        <div style="background:var(--bg);border-radius:10px;padding:10px;"><strong>Stockage:</strong> Firebase Storage</div>
+        <div style="background:#DCFCE7;border-radius:10px;padding:10px;color:#166534;font-weight:700;">✅ Connexion établie — Données en temps réel</div>
+      </div>`;
+    return true;
+  }catch(e){
+    fbReady=false;
+    setFbStatus('offline','Mode local uniquement');
+    document.getElementById('sidebar-fb-status').textContent='⚠️ Mode local';
+    document.getElementById('firebase-info-detail').innerHTML=`
+      <div style="background:#FEE2E2;border-radius:10px;padding:14px;color:#991B1B;font-size:0.82rem;">
+        <strong>⚠️ Firebase non configuré</strong><br><br>
+        Pour activer Firebase, ouvrez ce fichier et remplacez les valeurs dans <code>FIREBASE_CONFIG</code> par celles de votre projet Firebase.<br><br>
+        <a href="https://firebase.google.com" target="_blank" style="color:#1D4ED8;font-weight:700;">→ firebase.google.com</a>
+      </div>`;
+    return false;
+  }
+}
+
+function setFbStatus(state,text){
+  const chip=document.getElementById('fb-status-chip');const t=document.getElementById('fb-chip-text');
+  if(chip){chip.className='fb-chip '+state;}if(t)t.textContent=text;
+}
+
+async function loadAllPros(){
+  if(!fbReady){allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');return;}
+  try{
+    const snap=await db.collection('professionals').orderBy('createdAt','desc').get();
+    allPros=snap.docs.map(d=>({...d.data(),id:d.id,fbId:d.id}));
+  }catch(e){allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');}
+}
+
+async function updatePro(fbId,updates){
+  if(!fbReady||!fbId)return;
+  await db.collection('professionals').doc(fbId).update({...updates,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+async function deletePro(fbId){
+  if(!fbReady||!fbId)return;
+  await db.collection('professionals').doc(fbId).delete();
+}
+
+async function loadTraffic(){
+  if(!fbReady)return{today:0,month:0,year:0,days:[]};
+  try{
+    const now=new Date();const year=now.getFullYear();const month=now.getMonth()+1;
+    const snap=await db.collection('traffic').where('year','==',year).orderBy('date','desc').limit(30).get();
+    const days=snap.docs.map(d=>d.data());
+    const today=days.find(d=>d.date===now.toISOString().split('T')[0])?.visits||0;
+    const monthTotal=days.filter(d=>d.month===month).reduce((s,d)=>s+(d.visits||0),0);
+    const yearTotal=days.reduce((s,d)=>s+(d.visits||0),0);
+    return{today,month:monthTotal,year:yearTotal,days};
+  }catch(e){return{today:0,month:0,year:0,days:[]};}
+}
+
+function getBlacklist(){return JSON.parse(localStorage.getItem('matloub_blacklist')||'{"phones":[],"emails":[],"names":[]}');}
+function saveBlacklist(bl){localStorage.setItem('matloub_blacklist',JSON.stringify(bl));}
+
+// ════════════════════════════════════════════
+// 🔐 AUTH
+// ════════════════════════════════════════════
+async function adminLogin(){
+  const user=document.getElementById('a-user').value.trim();
+  const pass=document.getElementById('a-pass').value;
+  const err=document.getElementById('login-err');err.style.display='none';
+  if(!user||!pass){err.textContent='Remplissez tous les champs';err.style.display='block';return;}
+  const passHash=await sha256(pass);const refHash=await sha256(adminPass);
+  if(user==='admin'&&(pass===adminPass||passHash===refHash)){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-app').style.display='block';
+    await loadAllPros();initApp();
+  }else{err.textContent='Identifiants incorrects';err.style.display='block';}
+}
+function adminLogout(){document.getElementById('admin-app').style.display='none';document.getElementById('login-screen').style.display='flex';}
+async function changePass(){
+  const old=document.getElementById('old-pass').value;const n1=document.getElementById('new-pass').value;const n2=document.getElementById('confirm-pass').value;
+  if(old!==adminPass)return showToast('❌ Mot de passe actuel incorrect');
+  if(n1.length<6)return showToast('Trop court');if(n1!==n2)return showToast('❌ Ne correspondent pas');
+  adminPass=n1;showToast('✅ Mot de passe changé');['old-pass','new-pass','confirm-pass'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ════════════════════════════════════════════
+// 📊 DASHBOARD
+// ════════════════════════════════════════════
+async function updateDashboard(){
+  const pros=allPros.filter(u=>!u.role||u.role==='pro');
+  const active=pros.filter(u=>u.status==='active').length;
+  const pending=pros.filter(u=>u.status==='pending').length;
+  const reports=pros.filter(u=>(u.reports||0)>0).length;
+  const now=Date.now();const weekAgo=now-7*24*3600*1000;
+  const newWeek=pros.filter(u=>u.joinDate&&new Date(u.joinDate).getTime()>weekAgo).length;
+  document.getElementById('s-total').textContent=pros.length;
+  document.getElementById('s-active').textContent=active;
+  document.getElementById('s-pending').textContent=pending;
+  document.getElementById('s-reports').textContent=reports;
+  document.getElementById('s-new-week').textContent=newWeek;
+  document.getElementById('s-active-pct').textContent=pros.length?Math.round(active/pros.length*100)+'%':'0%';
+  document.getElementById('nb-pending').textContent=pending;
+  document.getElementById('nb-reports').textContent=reports;
+  document.getElementById('firebase-detail').textContent=fbReady?`🔥 Firebase · ${pros.length} pros · Temps réel`:`⚠️ Mode local · ${pros.length} pros`;
+
+  // Traffic
+  const traffic=await loadTraffic();
+  document.getElementById('t-today').textContent=traffic.today;document.getElementById('t-month').textContent=traffic.month;document.getElementById('t-year').textContent=traffic.year;
+  const tc=document.getElementById('traffic-chart');
+  if(traffic.days.length){
+    const max=Math.max(...traffic.days.map(d=>d.visits||0),1);
+    tc.innerHTML=traffic.days.slice(0,10).map(d=>`<div class="chart-row">
+      <div class="chart-label">${(d.date||'').slice(5)}</div>
+      <div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.round((d.visits||0)/max*100)}%;background:linear-gradient(90deg,var(--primary),var(--primary-light));">${d.visits||0}</div></div>
+      <div class="chart-val">${d.visits||0}</div>
+    </div>`).join('');
+  }else{tc.innerHTML='<div style="text-align:center;color:var(--text3);padding:16px;">Aucune donnée de trafic (Firebase requis)</div>';}
+
+  // Recent
+  const recent=[...pros].sort((a,b)=>new Date(b.joinDate||0)-new Date(a.joinDate||0)).slice(0,8);
+  document.getElementById('recent-table').innerHTML=recent.map(u=>`
+    <tr onclick="openProModal('${u.fbId||u.id}')" style="cursor:pointer;">
+      <td><div class="pro-cell">
+        <div class="pro-mini-avatar">${u.selfie?`<img src="${u.selfie}" style="width:100%;height:100%;object-fit:cover;">`:(u.photos&&u.photos.length?`<img src="${u.photos[0]}" style="width:100%;height:100%;object-fit:cover;">`:u.name?u.name[0].toUpperCase():'?')}</div>
+        <div><div class="pro-mini-name">${sanitize(u.name)}</div><div class="pro-mini-sub">${u.joinDate||''}</div></div>
+      </div></td>
+      <td>${sanitize(u.job||'')}</td>
+      <td>${sanitize(u.commune||'—')}</td>
+      <td><span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:5px;background:${u.fbId?'#DCFCE7':'#FEF3C7'};color:${u.fbId?'#166534':'#92400E'};">${u.fbId?'🔥 FB':'💾 Local'}</span></td>
+      <td><span class="badge badge-${u.status||'active'}">${{active:'✅ Actif',pending:'⏳ Attente',suspended:'⏸ Suspendu',banned:'🚫 Banni'}[u.status]||u.status||'—'}</span></td>
+    </tr>`).join('');
+}
+
+// ════════════════════════════════════════════
+// 👷 TABLE PROS
+// ════════════════════════════════════════════
+function renderProsTable(){
+  const q=(document.getElementById('pros-search')?.value||'').toLowerCase();
+  const sf=document.getElementById('pros-status-filter')?.value||'';
+  let pros=allPros.filter(u=>!u.role||u.role==='pro');
+  if(q)pros=pros.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.job||'').toLowerCase().includes(q)||(u.email||u.emailMain||'').toLowerCase().includes(q));
+  if(sf)pros=pros.filter(u=>u.status===sf);
+  pros.sort((a,b)=>new Date(b.joinDate||0)-new Date(a.joinDate||0));
+  document.getElementById('pros-table').innerHTML=pros.map(u=>`
+    <tr>
+      <td><div class="pro-cell">
+        <div class="pro-mini-avatar" onclick="openProModal('${u.fbId||u.id}')" style="cursor:pointer;">
+          ${u.selfie?`<img src="${u.selfie}" style="width:100%;height:100%;object-fit:cover;border:2px solid var(--primary);" title="ID Selfie">`:(u.photos&&u.photos.length?`<img src="${u.photos[0]}" style="width:100%;height:100%;object-fit:cover;">`:u.name?u.name[0].toUpperCase():'?')}
+        </div>
+        <div>
+          <div class="pro-mini-name" onclick="openProModal('${u.fbId||u.id}')" style="cursor:pointer;">${sanitize(u.name)}${u.emailVerified?' ✅':''}</div>
+          <div class="pro-mini-sub">🚩${u.reports||0} · 📵${u.noResponseReports||0} · 💬${(u.reviews||[]).length}</div>
+        </div>
+      </div></td>
+      <td>${sanitize(u.job||'')}</td>
+      <td style="font-size:0.78rem;">${(u.mainContact||u.email||u.phone||'—').substring(0,16)}</td>
+      <td>${sanitize(u.commune||'—')}</td>
+      <td><span style="color:#F59E0B;font-weight:800;">★${getAvg(u)}</span></td>
+      <td><span class="badge badge-${u.status||'active'}">${{active:'✅',pending:'⏳',suspended:'⏸',banned:'🚫'}[u.status]||'?'}</span></td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${u.status!=='active'?`<button class="act-btn act-green" onclick="proAction('${u.fbId||u.id}','activate')">✅</button>`:''}
+        ${u.status==='active'?`<button class="act-btn act-orange" onclick="proAction('${u.fbId||u.id}','suspend')">⏸</button>`:''}
+        <button class="act-btn act-red" onclick="proAction('${u.fbId||u.id}','ban')">🚫</button>
+        <button class="act-btn act-dark" onclick="proAction('${u.fbId||u.id}','blacklist')">⛔</button>
+        <button class="act-btn act-gray" onclick="proAction('${u.fbId||u.id}','delete')" style="color:#EF4444;">🗑</button>
+      </div></td>
+    </tr>`).join('');
+  document.getElementById('pros-count').textContent=`${pros.length} professionnel(s) · Total Firebase: ${allPros.filter(u=>u.fbId).length}`;
+}
+
+function getAvg(u){if(!u.reviews||!u.reviews.length)return u.rating||'—';return+(u.reviews.reduce((a,b)=>a+(b.stars||0),0)/u.reviews.length).toFixed(1);}
+
+async function proAction(id,action){
+  const u=allPros.find(p=>(p.fbId||p.id+'')==id);if(!u)return;
+  if(action==='activate')u.status='active';
+  else if(action==='suspend')u.status='suspended';
+  else if(action==='ban')u.status='banned';
+  else if(action==='blacklist'){
+    u.status='banned';
+    const bl=getBlacklist();
+    if(u.phone&&!bl.phones.includes(u.phone))bl.phones.push(u.phone);
+    if(u.phoneBackup&&!bl.phones.includes(u.phoneBackup))bl.phones.push(u.phoneBackup);
+    if(u.email&&!bl.emails.includes(u.email.toLowerCase()))bl.emails.push(u.email.toLowerCase());
+    if(u.emailMain&&!bl.emails.includes(u.emailMain.toLowerCase()))bl.emails.push(u.emailMain.toLowerCase());
+    if(u.name&&!bl.names.includes(u.name.toLowerCase()))bl.names.push(u.name.toLowerCase());
+    saveBlacklist(bl);renderBlacklist();showToast(`⛔ ${sanitize(u.name)} blacklisté`);
+  }
+  else if(action==='delete'){
+    if(!confirm(`Supprimer définitivement ${u.name} ?`))return;
+    if(fbReady&&u.fbId){await deletePro(u.fbId).catch(()=>{});}
+    allPros.splice(allPros.indexOf(u),1);showToast('Supprimé');
+    updateDashboard();renderProsTable();return;
+  }
+  if(fbReady&&u.fbId)await updatePro(u.fbId,{status:u.status}).catch(()=>{});
+  else{const saved=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');const idx=saved.findIndex(p=>p.id===u.id);if(idx>=0){saved[idx].status=u.status;localStorage.setItem('matloub_pros_v6',JSON.stringify(saved));}}
+  showToast(`${sanitize(u.name)} → ${action}`);
+  document.getElementById('pro-modal')?.classList.remove('active');
+  updateDashboard();renderProsTable();
+}
+
+function openProModal(id){
+  const u=allPros.find(p=>(p.fbId||p.id+'')==id);if(!u)return;
+  document.getElementById('pro-modal-title').textContent=sanitize(u.name)+' — '+sanitize(u.job||'');
+  document.getElementById('pro-modal-body').innerHTML=`
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="width:72px;height:72px;border-radius:18px;overflow:hidden;margin:0 auto 10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:28px;">
+        ${u.selfie?`<img src="${u.selfie}" style="width:100%;height:100%;object-fit:cover;">`:(u.photos&&u.photos.length?`<img src="${u.photos[0]}" style="width:100%;height:100%;object-fit:cover;">`:u.name?u.name[0].toUpperCase():'?')}
+      </div>
+      <div style="font-weight:800;font-size:1rem;">${sanitize(u.name)}</div>
+      <div style="color:var(--primary);font-weight:700;font-size:0.85rem;">${sanitize(u.job||'')}</div>
+      <span class="badge badge-${u.status||'active'}" style="margin-top:6px;display:inline-block;">${{active:'✅ Actif',pending:'⏳ En attente',suspended:'⏸ Suspendu',banned:'🚫 Banni'}[u.status]||u.status}</span>
+      ${u.fbId?`<span class="badge" style="background:#FEF3C7;color:#92400E;margin-left:6px;">🔥 Firebase</span>`:''}
+      ${u.emailVerified?`<span class="badge" style="background:#EEF2FF;color:#4F46E5;margin-left:6px;">✅ Vérifié</span>`:''}
+    </div>
+    <div style="display:grid;gap:7px;font-size:0.82rem;">
+      <div style="background:var(--bg);border-radius:10px;padding:12px;display:grid;gap:6px;">
+        ${u.fbId?`<div><strong>🔥 Firebase ID:</strong> <code style="font-size:0.72rem;background:#E8EAFF;padding:2px 6px;border-radius:4px;">${u.fbId}</code></div>`:''}
+        <div><strong>📱 Tel principal:</strong> ${sanitize(u.mainContact||u.phone||'—')}</div>
+        <div><strong>📱 Tel backup:</strong> ${sanitize(u.phoneBackup||'—')}</div>
+        <div><strong>📧 Email:</strong> ${sanitize(u.emailMain||u.email||'—')}</div>
+        <div><strong>📧 Email backup:</strong> ${sanitize(u.emailBackup||'—')}</div>
+        <div><strong>📍 Commune:</strong> ${sanitize(u.commune||'—')}</div>
+        <div><strong>🏠 Adresse:</strong> ${sanitize(u.address||'—')}</div>
+        <div><strong>📅 Inscription:</strong> ${u.joinDate||'—'}</div>
+        <div><strong>👁 Vues:</strong> ${u.views||0}</div>
+        <div><strong>⭐ Note:</strong> ${getAvg(u)} (${(u.reviews||[]).length} avis)</div>
+        <div><strong>🚩 Signalements:</strong> ${u.reports||0}</div>
+        <div><strong>📵 "Ne répond pas":</strong> ${u.noResponseReports||0}</div>
+        <div><strong>🟢 Disponible:</strong> ${u.available===false?'❌ Non':'✅ Oui'}</div>
+      </div>
+      ${u.bio?`<div style="background:#EEF2FF;border-radius:10px;padding:10px;">${sanitize(u.bio)}</div>`:''}
+      ${(u.reportDetails||[]).length?`<div><div style="font-weight:800;font-size:0.82rem;margin-bottom:6px;">Signalements détaillés:</div>${u.reportDetails.map(r=>`<div style="background:#FEF3C7;border-radius:7px;padding:7px 10px;margin-bottom:5px;font-size:0.78rem;"><strong>${r.reason}</strong> · ${r.date||''}<br>${r.desc?sanitize(r.desc):''}</div>`).join('')}</div>`:''}
+    </div>
+    ${u.selfie?`<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><div style="font-weight:800;font-size:0.82rem;margin-bottom:8px;">🤳 Selfie d'identité (Admin uniquement)</div><img src="${u.selfie}" style="width:100px;height:100px;border-radius:12px;object-fit:cover;border:3px solid var(--primary);"></div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      ${u.status!=='active'?`<button class="btn btn-success btn-sm" onclick="proAction('${u.fbId||u.id}','activate')">✅ Activer</button>`:''}
+      ${u.status==='active'?`<button class="btn btn-sm" style="background:#FEF3C7;color:#92400E;" onclick="proAction('${u.fbId||u.id}','suspend')">⏸ Suspendre</button>`:''}
+      <button class="btn btn-danger btn-sm" onclick="proAction('${u.fbId||u.id}','ban')">🚫 Bannir</button>
+      <button class="btn btn-sm" style="background:#1A1040;color:white;" onclick="proAction('${u.fbId||u.id}','blacklist')">⛔ Blacklist</button>
+    </div>`;
+  document.getElementById('pro-modal').classList.add('active');
+}
+
+// ════════════════════════════════════════════
+// ➕ AJOUTER PRO
+// ════════════════════════════════════════════
+function fillAPCommunes(){
+  const d=document.getElementById('ap-daira').value;const cs=document.getElementById('ap-commune');
+  cs.innerHTML='<option value="">Choisir...</option>';
+  (oranData.communes[d]||[]).forEach(c=>cs.innerHTML+=`<option value="${c}">${c}</option>`);
+}
+async function adminAddPro(){
+  const name=document.getElementById('ap-name').value.trim();const job=document.getElementById('ap-job').value;
+  const phone=document.getElementById('ap-phone').value.trim();const email=document.getElementById('ap-email').value.trim();
+  const pass=document.getElementById('ap-pass').value;const status=document.getElementById('ap-status').value;
+  const daira=document.getElementById('ap-daira').value;const commune=document.getElementById('ap-commune').value;
+  const bio=document.getElementById('ap-bio').value;
+  if(!name||!job||!phone||!email||!pass)return showToast('Remplissez les champs *');
+  const btn=document.getElementById('ap-save-btn');const msg=document.getElementById('ap-msg');
+  btn.disabled=true;msg.style.display='none';
+  try{
+    const passHash=await sha256(pass);
+    let catId='plombier';categories.forEach(c=>{if(job.toLowerCase().includes(c.name.toLowerCase().split(' ')[0]))catId=c.id;});
+    const proData={name:sanitize(name),job,phone,email,emailMain:email,mainContact:phone,pass:passHash,passHash,role:'pro',daira,commune,location:sanitize(commune)+', '+(oranData.dairas.find(d=>d.id===daira)?.name||'Oran'),bio:sanitize(bio),category:catId,rating:0,reviews:[],reports:0,reportDetails:[],noResponseReports:0,status,available:true,photos:[],views:0,messages:[],joinDate:new Date().toISOString().split('T')[0],addedByAdmin:true};
+    if(fbReady){
+      const ref=db.collection('professionals').doc();
+      proData.fbId=ref.id;proData.createdAt=firebase.firestore.FieldValue.serverTimestamp();proData.updatedAt=firebase.firestore.FieldValue.serverTimestamp();
+      await ref.set(proData);allPros.unshift(proData);
+      msg.textContent=`✅ ${name} créé sur Firebase ! ID: ${ref.id}`;msg.style.color='#166534';
+    }else{proData.id=Date.now()+'';allPros.unshift(proData);const saved=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');saved.unshift(proData);localStorage.setItem('matloub_pros_v6',JSON.stringify(saved));msg.textContent=`✅ ${name} créé (local — Firebase non configuré)`;msg.style.color='#92400E';}
+    msg.style.display='block';showToast(`✅ ${sanitize(name)} créé avec succès`);clearAddForm();updateDashboard();renderProsTable();
+  }catch(e){msg.textContent='❌ Erreur: '+e.message;msg.style.color='#991B1B';msg.style.display='block';}
+  finally{btn.disabled=false;}
+}
+function clearAddForm(){['ap-name','ap-phone','ap-email','ap-pass','ap-bio'].forEach(id=>document.getElementById(id).value='');document.getElementById('ap-job').value='';document.getElementById('ap-daira').value='';document.getElementById('ap-commune').innerHTML='<option value="">Choisir...</option>';document.getElementById('ap-msg').style.display='none';}
+
+// ════════════════════════════════════════════
+// 🚩 SIGNALEMENTS
+// ════════════════════════════════════════════
+function renderReports(){
+  const filter=document.getElementById('rep-filter')?.value||'';
+  const pros=allPros.filter(u=>(u.reports||0)>0);
+  const container=document.getElementById('reports-list');
+  if(!pros.length){container.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3);">✅ Aucun signalement</div>';return;}
+  let html='';
+  pros.forEach(u=>{
+    const details=(u.reportDetails||[]).filter(r=>!filter||r.reason===filter);
+    if(!details.length&&filter)return;
+    html+=`<div style="background:var(--bg);border-radius:14px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          ${u.selfie?`<img src="${u.selfie}" style="width:100%;height:100%;object-fit:cover;">`:(u.name?u.name[0].toUpperCase():'?')}
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:0.88rem;">${sanitize(u.name)}</div>
+          <div style="font-size:0.75rem;color:var(--text3);">${sanitize(u.job||'')} · 🚩${u.reports||0} · 📵${u.noResponseReports||0}</div>
+        </div>
+        <span class="badge badge-${u.status||'active'}">${{active:'Actif',pending:'Attente',suspended:'Suspendu',banned:'Banni'}[u.status]||u.status}</span>
+      </div>
+      ${(details.length?details:(u.reportDetails||[])).slice(0,5).map(r=>`<div style="background:white;border-radius:8px;padding:7px 10px;margin-bottom:5px;font-size:0.78px;border-left:3px solid #EF4444;font-size:0.78rem;"><strong>${r.reason}</strong> · ${r.date||''}${r.desc?`<br><span style="color:var(--text2);">${sanitize(r.desc)}</span>`:''}</div>`).join('')}
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        ${u.status==='active'?`<button class="act-btn act-orange" onclick="proAction('${u.fbId||u.id}','suspend');renderReports();">⏸ Suspendre</button>`:''}
+        <button class="act-btn act-red" onclick="proAction('${u.fbId||u.id}','ban');renderReports();">🚫 Bannir</button>
+        <button class="act-btn act-dark" onclick="proAction('${u.fbId||u.id}','blacklist');renderReports();">⛔ Blacklist</button>
+      </div>
+    </div>`;
+  });
+  container.innerHTML=html||'<div style="text-align:center;padding:20px;color:var(--text3);">Aucun résultat pour ce filtre</div>';
+}
+
+// ════════════════════════════════════════════
+// ⛔ BLACKLIST
+// ════════════════════════════════════════════
+function renderBlacklist(){
+  const bl=getBlacklist();
+  const list=document.getElementById('blacklist-list');
+  const items=[...bl.phones.map(v=>({t:'phone',v})),...bl.emails.map(v=>({t:'email',v})),...bl.names.map(v=>({t:'name',v}))];
+  list.innerHTML=items.length?items.map(item=>`<div class="bl-item"><div style="display:flex;align-items:center;gap:8px;"><span class="bl-tag bl-${item.t}">${{phone:'📱 Tel',email:'📧 Email',name:'👤 Nom'}[item.t]}</span><span style="font-weight:600;">${sanitize(item.v)}</span></div><button class="act-btn act-gray" onclick="removeFromBL('${item.t}','${item.v}')">✕</button></div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);">Blacklist vide</div>';
+}
+function addToBlacklist(){
+  const type=document.getElementById('bl-type').value;const val=document.getElementById('bl-value').value.trim();
+  if(!val)return showToast('Entrez une valeur');
+  const bl=getBlacklist();const k=type+'s';if(!bl[k])bl[k]=[];const norm=type==='email'?val.toLowerCase():val;
+  if(!bl[k].includes(norm))bl[k].push(norm);saveBlacklist(bl);document.getElementById('bl-modal').classList.remove('active');document.getElementById('bl-value').value='';renderBlacklist();showToast('⛔ Ajouté à la blacklist');
+}
+function removeFromBL(type,val){const bl=getBlacklist();bl[type+'s']=(bl[type+'s']||[]).filter(v=>v!==val);saveBlacklist(bl);renderBlacklist();showToast('✅ Retiré');}
+
+// ════════════════════════════════════════════
+// 📊 TRAFIC
+// ════════════════════════════════════════════
+async function renderTraffic(){
+  const traffic=await loadTraffic();
+  document.getElementById('t-today').textContent=traffic.today;document.getElementById('t-month').textContent=traffic.month;document.getElementById('t-year').textContent=traffic.year;
+  const pros=allPros.filter(u=>u.status==='active').sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,6);
+  const maxV=pros[0]?.views||1;
+  document.getElementById('top-pros').innerHTML=pros.length?pros.map(u=>`<div style="margin-bottom:7px;"><div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px;"><span style="font-weight:700;">${sanitize(u.name)}</span><span>👁 ${u.views||0}</span></div><div style="background:var(--bg);border-radius:4px;height:7px;overflow:hidden;"><div style="width:${Math.round((u.views||0)/maxV*100)}%;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-light));border-radius:4px;"></div></div></div>`).join(''):'<div style="color:var(--text3);font-size:0.82rem;">Aucun pro actif</div>';
+  const cats={};allPros.forEach(u=>cats[u.category]=(cats[u.category]||0)+1);const maxC=Math.max(...Object.values(cats),1);
+  document.getElementById('cats-chart').innerHTML=categories.map(c=>`<div class="chart-row"><div class="chart-label">${c.name}</div><div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.round((cats[c.id]||0)/maxC*100)}%;background:${c.color};">${cats[c.id]||0}</div></div><div class="chart-val">${cats[c.id]||0}</div></div>`).join('');
+}
+
+// ════════════════════════════════════════════
+// 📤 EXPORT
+// ════════════════════════════════════════════
+function exportJSON(){
+  const data={pros:allPros,blacklist:getBlacklist(),exportDate:new Date().toISOString(),source:fbReady?'Firebase':'LocalStorage'};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`matloub_export_${new Date().toISOString().split('T')[0]}.json`;a.click();showToast('✅ Export JSON téléchargé');
+}
+function exportCSV(){
+  const pros=allPros.filter(u=>!u.role||u.role==='pro');
+  const headers='Nom,Métier,Téléphone,Email,Commune,Daïra,Statut,Note,Avis,Vues,Date inscription,Firebase ID';
+  const rows=pros.map(u=>`"${u.name||''}","${u.job||''}","${u.phone||u.mainContact||''}","${u.emailMain||u.email||''}","${u.commune||''}","${u.daira||''}","${u.status||''}","${u.rating||0}","${(u.reviews||[]).length}","${u.views||0}","${u.joinDate||''}","${u.fbId||''}"`);
+  const blob=new Blob([[headers,...rows].join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`matloub_pros_${new Date().toISOString().split('T')[0]}.csv`;a.click();showToast('✅ Export CSV téléchargé');
+}
+function exportBlacklist(){
+  const bl=getBlacklist();const blob=new Blob([JSON.stringify(bl,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='matloub_blacklist.json';a.click();showToast('✅ Blacklist exportée');
+}
+async function resetDemoData(){if(!confirm('Réinitialiser TOUTES les données démo ?'))return;localStorage.removeItem('matloub_pros_v6');localStorage.removeItem('matloub_blacklist');allPros=[];await updateDashboard();renderProsTable();showToast('🔄 Données réinitialisées');}
+
+// ════════════════════════════════════════════
+// 🗂️ NAVIGATION
+// ════════════════════════════════════════════
+function gotoSection(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id)?.classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');else document.querySelectorAll('.nav-link').forEach(l=>{if(l.getAttribute('onclick')?.includes(`'${id}'`))l.classList.add('active');});
+  const titles={dashboard:'Dashboard','pros':'Professionnels',reports:'Signalements',blacklist:'Blacklist',traffic:'Trafic & Stats',export:'Export Données',settings:'Paramètres','add-pro':'Ajouter un Pro'};
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+  if(id==='pros')renderProsTable();if(id==='reports')renderReports();if(id==='blacklist')renderBlacklist();if(id==='traffic')renderTraffic();
+  if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open');
+}
+function refreshAll(){loadAllPros().then(()=>{updateDashboard();renderProsTable();renderReports();showToast('✅ Actualisé depuis Firebase');});}
+function showNotifPanel(){const pending=allPros.filter(u=>u.status==='pending').length;const reports=allPros.filter(u=>(u.reports||0)>0&&u.status==='active').length;let msg='';if(pending)msg+=`⏳ ${pending} pro(s) en attente de validation\n`;if(reports)msg+=`🚩 ${reports} pro(s) avec signalements actifs\n`;alert(msg||'✅ Aucune notification urgente');}
+
+function showToast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='0.3s';setTimeout(()=>t.remove(),300);},3000);}
+
+document.getElementById('pro-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('active');});
+document.getElementById('bl-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('active');});
+
+// ════════════════════════════════════════════
+// 🚀 INIT APP
+// ════════════════════════════════════════════
+function initApp(){
+  document.getElementById('dashboard-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Fill jobs
+  const jsel=document.getElementById('ap-job');allJobs.forEach(j=>jsel.innerHTML+=`<option value="${j}">${j}</option>`);
+  // Fill dairas
+  const dsel=document.getElementById('ap-daira');oranData.dairas.forEach(d=>dsel.innerHTML+=`<option value="${d.id}">${d.name}</option>`);
+  // Real-time listener si Firebase
+  if(fbReady){db.collection('professionals').onSnapshot(snap=>{allPros=snap.docs.map(d=>({...d.data(),id:d.id,fbId:d.id}));updateDashboard();renderProsTable();renderReports();},e=>console.warn('Realtime:',e));}
+  updateDashboard();renderProsTable();renderBlacklist();
+  // Auto-refresh every 30s
+  setInterval(()=>{if(!fbReady){loadAllPros().then(()=>{updateDashboard();renderProsTable();});}},30000);
+}
+
+// ════════════════════════════════════════════
+// 🚀 BOOT
+// ════════════════════════════════════════════
+(async()=>{
+  const fbOk=await initFirebase();
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  console.log(`%c🔥 MATLOUB Admin Panel\n✅ Firebase: ${fbOk?'Connecté':'Non configuré (mode local)'}`, 'color:#6C3CE1;font-weight:bold;');
+})();
+</script>
+</body>
+</html>

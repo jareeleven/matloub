@@ -1,0 +1,2991 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="description" content="MATLOUB — Trouvez les meilleurs professionnels à Oran, Algérie">
+<meta name="theme-color" content="#6C3CE1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MATLOUB">
+<meta property="og:title" content="MATLOUB — Professionnels Oran">
+<meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran">
+<meta property="og:type" content="website">
+<title>MATLOUB — Professionnels à Oran</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #6C3CE1;
+  --primary-light: #8B5CF6;
+  --accent: #00D4AA;
+  --accent2: #FF6B6B;
+  --accent3: #FFB547;
+  --bg: #F0F2FF;
+  --bg2: #E8EBFF;
+  --surface: #FFFFFF;
+  --text: #1A1040;
+  --text2: #5A5780;
+  --text3: #9E9CBB;
+  --border: rgba(108,60,225,0.1);
+  --shadow: 0 8px 32px rgba(108,60,225,0.12);
+  --shadow-sm: 0 2px 12px rgba(108,60,225,0.08);
+  --r: 20px;
+  --r-sm: 14px;
+  --nav-h: 72px;
+  --header-h: 60px;
+}
+
+/* ── DARK MODE ── */
+[data-theme="dark"] {
+  --bg: #0F0A1E;
+  --bg2: #1A1040;
+  --surface: #1E1535;
+  --text: #F0EEFF;
+  --text2: #A89ECC;
+  --text3: #6A5F90;
+  --border: rgba(139,92,246,0.15);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] body { background: var(--bg); }
+[data-theme="dark"] header { background: rgba(30,21,53,0.97); }
+[data-theme="dark"] .bottom-nav { background: #1E1535; border: 1px solid rgba(139,92,246,0.2); }
+[data-theme="dark"] .search-input { background: #1E1535; color: var(--text); }
+[data-theme="dark"] .input-field { background: #1A1040; border-color: rgba(139,92,246,0.2); color: var(--text); }
+[data-theme="dark"] .input-field::placeholder { color: var(--text3); }
+[data-theme="dark"] .modal-sheet { background: #1E1535; }
+[data-theme="dark"] .card, [data-theme="dark"] .card-sm { background: #1E1535; }
+[data-theme="dark"] .pro-card { background: #1E1535; }
+[data-theme="dark"] .chip { background: #1A1040; color: var(--text2); }
+[data-theme="dark"] .btn-ghost { background: #1A1040; color: var(--text2); }
+[data-theme="dark"] select.input-field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A89ECC' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); }
+[data-theme="dark"] .hero-banner { background: linear-gradient(135deg,#2D1B69,#4C1D95,#6C3CE1); }
+[data-theme="dark"] .review-item { background: #1A1040; }
+
+/* ── XSS SAFE OUTPUT ── */
+.safe-text { /* text rendered via textContent only */ }
+
+/* ── PULSE ANIMATION (new pro / top) ── */
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(108,60,225,0.3)} 50%{box-shadow:0 0 0 8px rgba(108,60,225,0)} }
+.pulse-ring { animation: pulse 2s infinite; }
+
+/* ── SEARCH SUGGESTIONS ── */
+.suggestions-box { position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border-radius:var(--r-sm);box-shadow:var(--shadow);z-index:150;max-height:220px;overflow-y:auto;border:1px solid var(--border); }
+.suggestion-item { padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:600;color:var(--text2);transition:background 0.15s; }
+.suggestion-item:hover { background:var(--bg); }
+.suggestion-icon { font-size:16px;color:var(--primary); }
+
+/* ── TRUST BADGE ── */
+.trust-badge { display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#059669,#10B981);color:white;font-size:0.62rem;font-weight:800;padding:3px 8px;border-radius:50px;letter-spacing:0.3px; }
+.trust-badge-gold { background:linear-gradient(135deg,#D97706,#F59E0B); }
+.trust-badge-blue { background:linear-gradient(135deg,#1D4ED8,#3B82F6); }
+
+/* ── RATE LIMIT INDICATOR ── */
+.rate-limit-bar { height:3px;background:var(--accent2);border-radius:2px;transition:width 0.3s;position:absolute;bottom:0;left:0; }
+
+/* ── SKELETON LOADER ── */
+.skeleton { background:linear-gradient(90deg,var(--bg) 25%,var(--bg2) 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--r-sm); }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { height:100px;margin-bottom:12px; }
+.skeleton-text { height:14px;margin-bottom:8px;border-radius:6px; }
+
+/* ── MESSAGE MODAL ── */
+.msg-bubble { background:var(--bg);border-radius:14px 14px 14px 4px;padding:10px 14px;margin-bottom:8px;max-width:85%;font-size:0.85rem;line-height:1.4; }
+.msg-bubble.sent { background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border-radius:14px 14px 4px 14px;margin-left:auto; }
+
+/* ── SHARE BUTTON ── */
+.share-btn { background:linear-gradient(135deg,#1877F2,#1565C0);color:white; }
+
+/* ── PROGRESS STEPS (inscription) ── */
+.reg-steps { display:flex;justify-content:center;gap:6px;margin-bottom:16px; }
+.reg-step-dot { width:8px;height:8px;border-radius:50%;background:var(--border);transition:0.3s; }
+.reg-step-dot.active { background:var(--primary);width:24px;border-radius:4px; }
+.reg-step-dot.done { background:var(--accent); }
+
+/* ── SECURITY LOCK ICON ── */
+.secure-badge { display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--accent);font-weight:700; }
+
+/* ── PASSWORD STRENGTH ── */
+.pass-strength { height:4px;border-radius:2px;margin-top:6px;transition:all 0.3s;background:var(--border); }
+.pass-strength.weak { background:#EF4444;width:33%; }
+.pass-strength.medium { background:#F59E0B;width:66%; }
+.pass-strength.strong { background:#10B981;width:100%; }
+.pass-strength-label { font-size:0.7rem;font-weight:700;margin-top:3px; }
+.pass-weak { color:#EF4444; }
+.pass-medium { color:#F59E0B; }
+.pass-strong { color:#10B981; }
+
+/* ── COOKIE / RGPD BANNER ── */
+#rgpd-banner { position:fixed;bottom:calc(var(--nav-h)+16px);left:12px;right:12px;background:rgba(26,16,64,0.97);color:white;border-radius:16px;padding:14px 16px;z-index:400;font-size:0.78rem;backdrop-filter:blur(10px);display:none; }
+
+/* ── VERIFIED SELFIE BADGE ── */
+.id-verified { background:linear-gradient(135deg,#059669,#10B981);color:white;font-size:0.6rem;font-weight:900;padding:2px 6px;border-radius:4px;letter-spacing:0.5px; }
+
+/* ── DARK MODE TOGGLE ── */
+.theme-toggle { width:36px;height:36px;border-radius:10px;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:0.2s; }
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;outline:none;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padding-bottom:calc(var(--nav-h) + 20px);overflow-x:hidden;min-height:100vh;}
+
+/* ── UTILITAIRES ── */
+.hidden{display:none!important;}
+.flex{display:flex;}
+.col{flex-direction:column;}
+.center{align-items:center;justify-content:center;}
+.gap8{gap:8px;}
+.gap12{gap:12px;}
+.gap16{gap:16px;}
+.w100{width:100%;}
+.text-center{text-align:center;}
+.ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);height:var(--header-h);padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:0 2px 20px rgba(108,60,225,0.06);}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.logo-icon span{color:white;font-size:18px;}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.hdr-btn{width:36px;height:36px;border-radius:10px;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);position:relative;}
+.hdr-btn.notif::after{content:'';position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--accent2);border-radius:50%;border:2px solid white;}
+.avatar-hdr{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;cursor:pointer;overflow:hidden;}
+.avatar-hdr img{width:100%;height:100%;object-fit:cover;}
+
+/* ── PAGES ── */
+.page{padding:16px;max-width:560px;margin:0 auto;display:none;animation:fadeUp 0.35s cubic-bezier(0.16,1,0.3,1);}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:12px;left:12px;right:12px;height:var(--nav-h);background:white;border-radius:28px;display:flex;justify-content:space-around;align-items:center;box-shadow:0 8px 40px rgba(108,60,225,0.18);z-index:300;border:1px solid rgba(255,255,255,0.8);}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);text-decoration:none;font-size:0.62rem;font-weight:700;padding:8px 14px;border-radius:18px;transition:all 0.25s;letter-spacing:0.3px;cursor:pointer;border:none;background:none;}
+.nav-item span.material-icons-round{font-size:22px;transition:0.25s;}
+.nav-item.active{color:var(--primary);background:rgba(108,60,225,0.08);}
+.nav-item.active span.material-icons-round{transform:scale(1.1);}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.card-sm{background:var(--surface);border-radius:var(--r-sm);padding:14px;box-shadow:var(--shadow-sm);}
+
+/* ── SEARCH ── */
+.search-wrap{position:relative;margin-bottom:16px;}
+.search-input{width:100%;padding:14px 50px 14px 48px;border-radius:var(--r);border:2px solid transparent;background:var(--surface);box-shadow:var(--shadow-sm);font-size:0.95rem;font-family:'Nunito',sans-serif;color:var(--text);transition:0.2s;}
+.search-input:focus{border-color:var(--primary);box-shadow:var(--shadow);}
+.search-input::placeholder{color:var(--text3);}
+.search-icon-l{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:20px;}
+.search-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--primary);border:none;border-radius:12px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;}
+
+/* ── CHIPS / FILTER ── */
+.chips-scroll{display:flex;gap:8px;overflow-x:auto;padding:4px 6px 10px 6px;margin-bottom:0;scrollbar-width:none;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+.chips-scroll::-webkit-scrollbar{display:none;}
+.chip{padding:8px 14px;background:var(--surface);border-radius:50px;font-size:0.8rem;font-weight:700;white-space:nowrap;border:2px solid transparent;cursor:pointer;color:var(--text2);transition:0.2s;box-shadow:var(--shadow-sm);display:inline-flex;align-items:center;gap:5px;flex-shrink:0;}
+.chip:active{transform:scale(0.97);}
+.chip.active{background:var(--primary);color:white;border-color:var(--primary);box-shadow:0 4px 14px rgba(108,60,225,0.3);}
+.chip-icon{font-size:14px;}
+.chip-sm{padding:5px 12px;font-size:0.75rem;background:rgba(108,60,225,0.07);border-radius:50px;color:var(--primary);font-weight:700;display:inline-flex;align-items:center;gap:4px;}
+
+/* ── CATEGORY GRID ── */
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+.cat-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform 0.2s;}
+.cat-item:active{transform:scale(0.94);}
+.cat-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.cat-icon span{font-size:22px;}
+.cat-label{font-size:0.65rem;font-weight:700;text-align:center;color:var(--text2);line-height:1.2;}
+
+/* ── PRO CARD ── */
+.pro-card{display:flex;gap:14px;align-items:flex-start;cursor:pointer;transition:transform 0.2s;background:var(--surface);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;overflow:hidden;}
+.pro-card::before{display:none;}
+.pro-card:active{transform:scale(0.99);}
+.pro-avatar{width:68px;height:68px;border-radius:16px;object-fit:cover;flex-shrink:0;background:#ddd;}
+.pro-info{flex:1;min-width:0;}
+.pro-name{font-weight:800;font-size:0.95rem;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pro-job{font-size:0.82rem;font-weight:700;margin-bottom:4px;}
+.pro-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pro-rating{color:#F59E0B;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:2px;}
+.pro-loc{font-size:0.72rem;color:var(--text3);display:flex;align-items:center;gap:2px;}
+.pro-loc span.material-icons-round{font-size:12px;}
+.badge-new{background:#DCFCE7;color:#166534;font-size:0.62rem;font-weight:800;padding:2px 8px;border-radius:50px;}
+.badge-top{background:#FEF3C7;color:#92400E;font-size:0.62rem;font-weight:800;padding:2px 8px;border-radius:50px;}
+.fav-btn-card{position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;}
+.fav-btn-card.active{color:var(--accent2);}
+.pro-status-dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:inline-block;margin-right:4px;}
+.pro-status-dot.available{background:var(--accent);}
+
+/* ── INPUTS ── */
+.input-group{margin-bottom:14px;}
+.input-group label{display:block;margin-bottom:6px;font-size:0.8rem;color:var(--text2);font-weight:700;}
+.input-field{width:100%;padding:12px 14px;border-radius:var(--r-sm);border:2px solid #E8EAFF;background:#FAFBFF;font-size:0.9rem;font-family:'Nunito',sans-serif;color:var(--text);transition:0.2s;}
+.input-field:focus{border-color:var(--primary);background:white;}
+.input-field::placeholder{color:var(--text3);}
+select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A5780' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+
+/* ── BUTTONS ── */
+.btn{padding:14px 20px;border-radius:14px;border:none;font-weight:800;cursor:pointer;width:100%;font-size:0.95rem;font-family:'Nunito',sans-serif;transition:0.2s;letter-spacing:0.2px;}
+.btn:active{transform:scale(0.98);}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 6px 20px rgba(108,60,225,0.3);}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#00B894);color:white;box-shadow:0 6px 20px rgba(0,212,170,0.3);}
+.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary);}
+.btn-danger{background:linear-gradient(135deg,#EF4444,#DC2626);color:white;box-shadow:0 4px 14px rgba(239,68,68,0.3);}
+.btn-ghost{background:var(--bg);color:var(--text2);border:none;}
+.btn-sm{padding:8px 14px;font-size:0.8rem;border-radius:10px;width:auto;}
+.btn-wa{background:linear-gradient(135deg,#25D366,#128C7E);color:white;}
+.btn-call{background:linear-gradient(135deg,var(--accent2),#E74C3C);color:white;}
+
+/* ── ACTION BUTTONS ── */
+.action-row{display:flex;gap:10px;margin-top:14px;}
+.action-btn{flex:1;padding:10px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.8rem;display:flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:0.2s;}
+.action-btn:active{transform:scale(0.97);}
+.action-btn span.material-icons-round{font-size:17px;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,10,60,0.5);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.active{display:flex;}
+.modal-sheet{background:var(--surface);padding:24px 20px 32px;border-radius:28px 28px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);}
+.modal-inner{background:var(--surface);padding:24px;border-radius:var(--r);width:92%;max-width:420px;max-height:88vh;overflow-y:auto;position:relative;animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1);margin:20px auto;}
+.modal-overlay.center-modal{align-items:center;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:44px;height:5px;background:#E2E4F0;border-radius:3px;margin:0 auto 20px;}
+.close-btn{position:absolute;top:16px;right:16px;background:var(--bg);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:18px;}
+
+/* ── PHOTO GRID ── */
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.photo-slot{aspect-ratio:1;background:var(--bg);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--text3);position:relative;overflow:hidden;cursor:pointer;border:2px dashed var(--border);}
+.photo-slot.filled{border:none;}
+.photo-slot img{width:100%;height:100%;object-fit:cover;}
+.photo-slot .add-icon{font-size:26px;}
+.photo-del{position:absolute;top:3px;right:3px;background:var(--accent2);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:none;font-weight:900;}
+.photo-slot input[type=file]{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;}
+
+/* ── STARS RATING ── */
+.stars-input{display:flex;gap:6px;margin:12px 0;}
+.stars-input span{font-size:28px;cursor:pointer;color:#E2E4F0;transition:0.15s;}
+.stars-input span.lit{color:#F59E0B;}
+
+/* ── ADMIN ── */
+.admin-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+.admin-stat-card{padding:16px;border-radius:var(--r);color:white;position:relative;overflow:hidden;}
+.admin-stat-card::after{content:'';position:absolute;bottom:-10px;right:-10px;width:60px;height:60px;background:rgba(255,255,255,0.1);border-radius:50%;}
+.admin-stat-value{font-size:1.8rem;font-weight:900;line-height:1;}
+.admin-stat-label{font-size:0.75rem;opacity:0.85;margin-top:4px;font-weight:600;}
+.admin-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;}
+.admin-tab{padding:8px 16px;border-radius:50px;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;border:2px solid var(--border);background:var(--surface);color:var(--text2);transition:0.2s;}
+.admin-tab.active{background:var(--primary);color:white;border-color:var(--primary);}
+.status-badge{padding:3px 10px;border-radius:6px;font-size:0.7rem;font-weight:800;display:inline-block;}
+.status-active{background:#DCFCE7;color:#166534;}
+.status-suspended{background:#FEE2E2;color:#991B1B;}
+.status-pending{background:#FEF3C7;color:#92400E;}
+.status-banned{background:#1A1040;color:white;}
+.pro-row{background:var(--surface);border-radius:var(--r-sm);padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.pro-row-top{display:flex;align-items:center;gap:12px;}
+.pro-row-avatar{width:44px;height:44px;border-radius:12px;object-fit:cover;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:18px;}
+.pro-row-info{flex:1;min-width:0;}
+.pro-row-name{font-weight:800;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pro-row-job{font-size:0.75rem;color:var(--text2);}
+.pro-row-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+/* ── PROFIL PRO ── */
+.pro-hero{background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:var(--r);padding:20px;color:white;margin-bottom:16px;position:relative;overflow:hidden;}
+.pro-hero::after{content:'';position:absolute;bottom:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,0.08);border-radius:50%;}
+.pro-hero-avatar{width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:12px;overflow:hidden;}
+.pro-hero-avatar img{width:100%;height:100%;object-fit:cover;}
+
+/* ── SECTION TITRE ── */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.section-title{font-weight:800;font-size:1rem;color:var(--text);}
+.section-link{font-size:0.8rem;font-weight:700;color:var(--primary);cursor:pointer;padding:4px 10px;background:rgba(108,60,225,0.07);border-radius:50px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--nav-h) + 20px);left:50%;transform:translateX(-50%);background:rgba(26,16,64,0.9);color:white;padding:10px 22px;border-radius:50px;z-index:9999;font-size:0.85rem;font-weight:700;white-space:nowrap;animation:fadeUp 0.3s;}
+
+/* ── DETAIL MODAL ── */
+.detail-photos{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin:12px 0;scrollbar-width:none;}
+.detail-photos::-webkit-scrollbar{display:none;}
+.detail-photo{width:90px;height:90px;border-radius:14px;object-fit:cover;flex-shrink:0;}
+.detail-stat{text-align:center;flex:1;}
+.detail-stat-val{font-size:1.3rem;font-weight:900;color:var(--primary);}
+.detail-stat-lbl{font-size:0.7rem;color:var(--text3);font-weight:600;}
+.review-item{background:var(--bg);border-radius:14px;padding:12px;margin-bottom:10px;}
+.review-author{font-weight:700;font-size:0.85rem;}
+.review-text{font-size:0.82rem;color:var(--text2);margin-top:4px;}
+
+/* ── EXPLORE FILTERS ── */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+.filter-select{flex:1;padding:10px 12px;border-radius:12px;border:2px solid var(--border);background:var(--surface);font-size:0.82rem;font-family:'Nunito',sans-serif;font-weight:700;color:var(--text);-webkit-appearance:none;}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:48px 20px;color:var(--text3);}
+.empty-state span.material-icons-round{font-size:56px;margin-bottom:12px;display:block;}
+.empty-state h3{font-size:1rem;color:var(--text2);margin-bottom:6px;}
+.empty-state p{font-size:0.82rem;}
+
+/* ── VERIFY CODE ── */
+.code-inputs{display:flex;gap:10px;justify-content:center;margin:16px 0;}
+.code-input{width:48px;height:56px;border-radius:14px;border:2px solid var(--border);background:var(--bg);font-size:1.4rem;font-weight:800;text-align:center;color:var(--primary);font-family:'Space Grotesk',sans-serif;transition:0.2s;}
+.code-input:focus{border-color:var(--primary);background:white;}
+
+/* ── NOTIFICATION BADGE ── */
+.notif-badge{position:absolute;top:-4px;right:-4px;background:var(--accent2);color:white;font-size:0.6rem;font-weight:900;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid white;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:360px){
+  .cat-grid{grid-template-columns:repeat(4,1fr);gap:6px;}
+  .cat-icon{width:44px;height:44px;}
+  .cat-label{font-size:0.6rem;}
+  .photo-grid{grid-template-columns:repeat(3,1fr);}
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* ── HOME HERO BANNER ── */
+.hero-banner{background:linear-gradient(135deg,var(--primary) 0%,#9B59B6 50%,var(--primary-light) 100%);border-radius:var(--r);padding:20px;color:white;margin-bottom:18px;position:relative;overflow:hidden;}
+.hero-banner::before{content:'';position:absolute;top:-30px;right:-20px;width:140px;height:140px;background:rgba(255,255,255,0.07);border-radius:50%;}
+.hero-banner::after{content:'';position:absolute;bottom:-40px;right:40px;width:100px;height:100px;background:rgba(255,255,255,0.05);border-radius:50%;}
+.hero-title{font-size:1.2rem;font-weight:900;margin-bottom:6px;}
+.hero-sub{font-size:0.82rem;opacity:0.85;font-weight:600;}
+.hero-count{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:50px;padding:5px 12px;font-size:0.8rem;font-weight:700;margin-top:12px;}
+
+/* ── DAIRA DROPDOWN ── */
+.location-dropdowns{display:flex;gap:8px;margin-bottom:16px;}
+.location-dropdowns select{flex:1;}
+
+/* ── SUPER ADMIN ── */
+.sa-header{background:linear-gradient(135deg,#1A1040,#6C3CE1);color:white;border-radius:var(--r);padding:20px;margin-bottom:20px;}
+.traffic-bar{height:32px;background:var(--bg);border-radius:8px;overflow:hidden;margin-bottom:4px;}
+.traffic-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--primary),var(--primary-light));display:flex;align-items:center;padding-left:10px;color:white;font-size:0.75rem;font-weight:700;}
+
+/* ── OTP Timer ── */
+.otp-timer{font-size:0.82rem;color:var(--text3);text-align:center;margin-top:8px;}
+.otp-resend{color:var(--primary);font-weight:700;cursor:pointer;}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--bg);border-radius:14px;padding:4px;gap:4px;margin-bottom:16px;}
+.tab-btn{flex:1;padding:9px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:0.2s;color:var(--text2);background:none;}
+.tab-btn.active{background:white;color:var(--primary);box-shadow:var(--shadow-sm);}
+
+/* ── LOADING SPINNER ── */
+.spinner{width:24px;height:24px;border:3px solid rgba(108,60,225,0.15);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon"><span class="material-icons-round" style="font-size:18px;color:white;">handshake</span></div>
+    <div class="logo-text">MATLOUB</div>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Mode sombre/clair">
+      <span class="material-icons-round" id="theme-icon" style="font-size:20px;">dark_mode</span>
+    </button>
+    <button class="hdr-btn notif" id="hdr-notif-btn" onclick="showModal('notif-modal')" title="Notifications">
+      <span class="material-icons-round" style="font-size:20px;">notifications_none</span>
+    </button>
+    <div class="avatar-hdr" id="hdr-avatar" onclick="navTo('profile')">
+      <span class="material-icons-round" style="font-size:20px;">person</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════ PAGE ACCUEIL ══════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- Hero -->
+  <div class="hero-banner">
+    <div class="hero-title">Trouvez un Pro à Oran 🔍</div>
+    <div class="hero-sub">Plombier, Médecin, Électricien... à portée de main</div>
+    <div class="hero-count"><span class="material-icons-round" style="font-size:16px;">verified</span><span id="hero-count-text">0 professionnels vérifiés</span></div>
+  </div>
+
+  <!-- Recherche avec suggestions -->
+  <div class="search-wrap" style="position:relative;">
+    <span class="material-icons-round search-icon-l">search</span>
+    <input type="text" class="search-input" id="home-search" placeholder="Plombier, Médecin, Coiffeur..."
+      oninput="app.onSearch(this.value); showSuggestions(this.value, 'home-suggestions')"
+      onkeydown="if(event.key==='Enter'){hideSuggestions('home-suggestions');app.doSearch();}"
+      onfocus="showSuggestions(this.value,'home-suggestions')"
+      onblur="setTimeout(()=>hideSuggestions('home-suggestions'),200)"
+      autocomplete="off" spellcheck="false">
+    <button class="search-btn" onclick="app.doSearch()"><span class="material-icons-round" style="font-size:18px;">arrow_forward</span></button>
+    <div class="suggestions-box" id="home-suggestions" style="display:none;"></div>
+  </div>
+
+  <!-- Filtres Daïra / Commune -->
+  <div class="location-dropdowns">
+    <select class="input-field" id="home-daira" onchange="app.onDairaChange('home'); app.renderHomePros();" style="margin-bottom:0;">
+      <option value="">📍 Toute Wilaya</option>
+    </select>
+    <select class="input-field" id="home-commune" onchange="app.renderHomePros();" style="margin-bottom:0;">
+      <option value="">Commune</option>
+    </select>
+  </div>
+
+  <!-- Catégories -->
+  <div class="section-header">
+    <div class="section-title">Catégories</div>
+    <div class="section-link" onclick="app.showAllCats()">Voir tout</div>
+  </div>
+  <div class="cat-grid" id="cat-grid"></div>
+
+  <!-- Professionnels -->
+  <div class="section-header">
+    <div class="section-title">À proximité</div>
+    <div class="section-link" onclick="navTo('explore')">Explorer</div>
+  </div>
+  <div id="home-pros-list"></div>
+
+</div>
+
+<!-- ══════════════════════ PAGE EXPLORER ══════════════════════ -->
+<div id="page-explore" class="page">
+  <div class="section-title" style="margin-bottom:14px;font-size:1.1rem;">🔎 Explorer</div>
+
+  <div class="search-wrap" style="position:relative;">
+    <span class="material-icons-round search-icon-l">search</span>
+    <input type="text" class="search-input" id="explore-search" placeholder="Rechercher un métier..." oninput="app.renderExplorePros()" onkeydown="if(event.key==='Enter') app.renderExplorePros()" autocomplete="off">
+    <button class="search-btn" onclick="app.renderExplorePros()"><span class="material-icons-round" style="font-size:18px;">arrow_forward</span></button>
+    <div class="suggestions-box" id="exp-suggestions" style="display:none;"></div>
+  </div>
+
+  <div class="location-dropdowns">
+    <select class="input-field" id="exp-daira" onchange="app.onDairaChange('exp'); app.renderExplorePros();" style="margin-bottom:0;">
+      <option value="">📍 Toute Daïra</option>
+    </select>
+    <select class="input-field" id="exp-commune" onchange="app.renderExplorePros();" style="margin-bottom:0;">
+      <option value="">Commune</option>
+    </select>
+  </div>
+
+  <!-- Chips catégories avec scroll horizontal amélioré -->
+  <div style="position:relative;margin-bottom:16px;">
+    <!-- Flèche gauche -->
+    <button id="chips-arrow-left" onclick="scrollChips(-1)" style="position:absolute;left:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(108,60,225,0.2);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--primary);">
+      <span class="material-icons-round" style="font-size:16px;">chevron_left</span>
+    </button>
+    <!-- Flèche droite -->
+    <button id="chips-arrow-right" onclick="scrollChips(1)" style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(108,60,225,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--primary);">
+      <span class="material-icons-round" style="font-size:16px;">chevron_right</span>
+    </button>
+    <!-- Gradient fade left -->
+    <div id="chips-fade-left" style="position:absolute;left:0;top:0;bottom:8px;width:28px;background:linear-gradient(to right,var(--bg),transparent);z-index:5;pointer-events:none;display:none;border-radius:50px 0 0 50px;"></div>
+    <!-- Gradient fade right -->
+    <div id="chips-fade-right" style="position:absolute;right:0;top:0;bottom:8px;width:28px;background:linear-gradient(to left,var(--bg),transparent);z-index:5;pointer-events:none;border-radius:0 50px 50px 0;"></div>
+    <div class="chips-scroll" id="explore-cat-chips" onscroll="updateChipsArrows()">
+      <div class="chip active" onclick="app.selectExploreCat('', this)">Tous</div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <select class="filter-select" id="exp-sort" onchange="app.renderExplorePros()">
+      <option value="rating">⭐ Mieux notés</option>
+      <option value="new">🆕 Plus récents</option>
+      <option value="reviews">💬 Plus d'avis</option>
+    </select>
+  </div>
+
+  <div id="explore-pros-list"></div>
+</div>
+
+<!-- ══════════════════════ PAGE FAVORIS ══════════════════════ -->
+<div id="page-favorites" class="page">
+  <div class="section-title" style="margin-bottom:16px;font-size:1.1rem;">❤️ Mes Favoris</div>
+  <div id="favorites-list"></div>
+</div>
+
+<!-- ══════════════════════ PAGE PROFIL ══════════════════════ -->
+<div id="page-profile" class="page">
+
+  <!-- Non connecté -->
+  <div id="auth-section">
+    <div style="text-align:center;padding:32px 0 20px;">
+      <div style="width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <span class="material-icons-round" style="font-size:40px;color:white;">person</span>
+      </div>
+      <h2 style="font-size:1.2rem;margin-bottom:6px;">Bienvenue sur MATLOUB</h2>
+      <p style="color:var(--text2);font-size:0.85rem;margin-bottom:28px;">Connectez-vous ou inscrivez-vous</p>
+    </div>
+    <button class="btn btn-primary" style="margin-bottom:12px;" onclick="showModal('login-modal')">Se connecter</button>
+    <button class="btn btn-outline" onclick="showModal('register-type-modal')">Inscription Professionnel</button>
+    <div style="margin-top:24px;background:var(--bg);border-radius:14px;padding:14px;">
+      <div style="font-size:0.78rem;color:var(--text3);font-weight:700;margin-bottom:8px;">🔐 ACCÈS SUPER ADMIN</div>
+      <div style="display:flex;gap:8px;font-size:0.8rem;">
+        <span style="background:white;padding:4px 10px;border-radius:8px;font-weight:700;">user: <code>admin</code></span>
+        <span style="background:white;padding:4px 10px;border-radius:8px;font-weight:700;">pass: <code>Admin@2024</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connecté – Client -->
+  <div id="client-dashboard" class="hidden">
+    <div class="pro-hero" style="background:linear-gradient(135deg,#0EA5E9,#06B6D4);">
+      <div class="pro-hero-avatar" id="client-avatar-hero"><span class="material-icons-round" style="font-size:32px;">person</span></div>
+      <div style="font-size:1.1rem;font-weight:900;" id="client-name-hero">Client</div>
+      <div style="opacity:0.8;font-size:0.82rem;">Membre Oran</div>
+      <div style="display:flex;gap:10px;margin-top:16px;position:relative;z-index:1;">
+        <button class="btn" style="flex:1;background:rgba(255,255,255,0.2);color:white;padding:10px;" onclick="app.logout()">Déconnexion</button>
+      </div>
+    </div>
+    <div class="section-title" style="margin-bottom:12px;">Mes activités</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card-sm text-center" onclick="navTo('favorites')">
+        <span class="material-icons-round" style="font-size:28px;color:var(--accent2);">favorite</span>
+        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;">Favoris</div>
+      </div>
+      <div class="card-sm text-center" onclick="navTo('explore')">
+        <span class="material-icons-round" style="font-size:28px;color:var(--primary);">manage_search</span>
+        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;">Explorer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connecté – Pro -->
+  <div id="pro-dashboard" class="hidden">
+    <div class="pro-hero">
+      <div class="pro-hero-avatar" id="pro-avatar-hero"><span class="material-icons-round" style="font-size:32px;">engineering</span></div>
+      <div style="font-size:1.1rem;font-weight:900;" id="pro-name-hero">Professionnel</div>
+      <div style="opacity:0.8;font-size:0.82rem;" id="pro-job-hero">Métier</div>
+      <div id="pro-status-hero" class="status-badge status-active" style="margin-top:8px;display:inline-block;">Actif</div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showProTab('edit',this)">Mon Profil</button>
+      <button class="tab-btn" onclick="showProTab('stats',this)">Statistiques</button>
+      <button class="tab-btn" onclick="showProTab('reviews',this)">Avis</button>
+    </div>
+
+    <!-- Tab: Edition -->
+    <div id="pro-tab-edit">
+      <div class="card">
+        <div class="input-group"><label>Nom Complet</label><input type="text" id="edit-name" class="input-field"></div>
+        <div class="input-group"><label>Téléphone</label><input type="text" id="edit-phone" class="input-field"></div>
+        <div class="input-group"><label>Email</label><input type="email" id="edit-email" class="input-field"></div>
+        <div class="input-group">
+          <label>Daïra</label>
+          <select id="edit-daira" class="input-field" onchange="app.onDairaChange('edit')"></select>
+        </div>
+        <div class="input-group">
+          <label>Commune</label>
+          <select id="edit-commune" class="input-field"></select>
+        </div>
+        <div class="input-group"><label>Bio / Description</label>
+          <textarea id="edit-bio" class="input-field" rows="3" placeholder="Décrivez vos services..."></textarea>
+        </div>
+
+        <!-- Disponibilité -->
+        <div style="background:var(--bg);border-radius:14px;padding:14px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-weight:800;font-size:0.9rem;">🟢 Disponibilité</div>
+              <div style="font-size:0.78rem;color:var(--text3);margin-top:3px;" id="avail-subtitle">Je suis disponible pour les clients</div>
+            </div>
+            <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;">
+              <input type="checkbox" id="edit-available" style="opacity:0;width:0;height:0;" onchange="app.toggleAvailability()">
+              <span id="avail-toggle-track" style="position:absolute;inset:0;background:#ccc;border-radius:14px;transition:0.3s;"></span>
+              <span id="avail-toggle-thumb" style="position:absolute;left:4px;top:4px;width:20px;height:20px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2);"></span>
+            </label>
+          </div>
+          <div id="unavail-reason-wrap" style="display:none;margin-top:10px;">
+            <label style="font-size:0.78rem;color:var(--text2);font-weight:700;">Raison (optionnel)</label>
+            <select id="unavail-reason" class="input-field" style="margin-top:4px;">
+              <option value="">Sélectionner une raison...</option>
+              <option value="maladie">🤒 Maladie / Congé maladie</option>
+              <option value="voyage">✈️ Voyage / Déplacement</option>
+              <option value="vacances">🏖️ Vacances</option>
+              <option value="surcharge">📋 Surchargé de travail</option>
+              <option value="autre">📝 Autre raison personnelle</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Photos (Max 8)</label>
+          <div class="photo-grid" id="pro-photo-grid"></div>
+        </div>
+        <button class="btn btn-primary" onclick="app.saveProChanges()" style="margin-top:4px;">💾 Enregistrer</button>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="app.logout()">Déconnexion</button>
+      </div>
+    </div>
+
+    <!-- Tab: Stats -->
+    <div id="pro-tab-stats" class="hidden">
+      <div class="admin-stat-grid">
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));">
+          <div class="admin-stat-value" id="pro-stat-views">0</div>
+          <div class="admin-stat-label">Vues profil</div>
+        </div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">
+          <div class="admin-stat-value" id="pro-stat-rating">0</div>
+          <div class="admin-stat-label">Note moyenne</div>
+        </div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,var(--accent),#0EA5E9);">
+          <div class="admin-stat-value" id="pro-stat-favs">0</div>
+          <div class="admin-stat-label">En favoris</div>
+        </div>
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#EC4899,#A855F7);">
+          <div class="admin-stat-value" id="pro-stat-reviews">0</div>
+          <div class="admin-stat-label">Avis reçus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Avis -->
+    <div id="pro-tab-reviews" class="hidden">
+      <div id="pro-reviews-list"><div class="empty-state"><span class="material-icons-round">rate_review</span><h3>Pas encore d'avis</h3></div></div>
+    </div>
+  </div>
+
+  <!-- Connecté – Super Admin -->
+  <div id="admin-dashboard" class="hidden">
+    <div class="sa-header">
+      <div style="font-size:0.8rem;opacity:0.7;font-weight:700;letter-spacing:1px;">SUPER ADMIN</div>
+      <div style="font-size:1.2rem;font-weight:900;margin-top:4px;">Tableau de Bord</div>
+      <div style="font-size:0.82rem;opacity:0.8;margin-top:4px;">MATLOUB — Oran</div>
+    </div>
+
+    <div class="admin-stat-grid">
+      <div class="admin-stat-card" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));">
+        <div class="admin-stat-value" id="sa-total">0</div>
+        <div class="admin-stat-label">Total Pros</div>
+      </div>
+      <div class="admin-stat-card" style="background:linear-gradient(135deg,var(--accent),#0EA5E9);">
+        <div class="admin-stat-value" id="sa-active">0</div>
+        <div class="admin-stat-label">Actifs</div>
+      </div>
+      <div class="admin-stat-card" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">
+        <div class="admin-stat-value" id="sa-reports">0</div>
+        <div class="admin-stat-label">Signalés</div>
+      </div>
+      <div class="admin-stat-card" style="background:linear-gradient(135deg,#6366F1,#EC4899);">
+        <div class="admin-stat-value" id="sa-traffic">0</div>
+        <div class="admin-stat-label">Visites/mois</div>
+      </div>
+    </div>
+
+    <!-- Trafic -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-weight:800;margin-bottom:12px;">📊 Trafic</div>
+      <div style="font-size:0.78rem;color:var(--text3);margin-bottom:4px;">Aujourd'hui</div>
+      <div class="traffic-bar"><div class="traffic-fill" id="traffic-day" style="width:30%">30</div></div>
+      <div style="font-size:0.78rem;color:var(--text3);margin:8px 0 4px;">Ce mois</div>
+      <div class="traffic-bar"><div class="traffic-fill" id="traffic-month" style="width:65%">650</div></div>
+      <div style="font-size:0.78rem;color:var(--text3);margin:8px 0 4px;">Cette année</div>
+      <div class="traffic-bar"><div class="traffic-fill" id="traffic-year" style="width:80%">4200</div></div>
+    </div>
+
+    <div class="admin-tabs" id="admin-tabs">
+      <div class="admin-tab active" onclick="app.switchAdminTab('all',this)">Tous</div>
+      <div class="admin-tab" onclick="app.switchAdminTab('pending',this)">En attente</div>
+      <div class="admin-tab" onclick="app.switchAdminTab('suspended',this)">Suspendus</div>
+      <div class="admin-tab" onclick="app.switchAdminTab('reports',this)">Signalés</div>
+    </div>
+
+    <div class="search-wrap" style="margin-bottom:12px;">
+      <span class="material-icons-round search-icon-l" style="font-size:18px;">search</span>
+      <input type="text" class="search-input" id="admin-search" placeholder="Rechercher un pro..." oninput="app.renderAdmin()" style="padding:10px 14px 10px 40px;">
+    </div>
+
+    <div id="admin-users-list"></div>
+
+    <button class="btn btn-danger" onclick="app.logout()" style="margin-top:10px;">Déconnexion Admin</button>
+  </div>
+
+</div>
+
+<!-- RGPD Banner -->
+<div id="rgpd-banner">
+  <div style="display:flex;align-items:flex-start;gap:10px;">
+    <span class="material-icons-round" style="font-size:20px;color:var(--accent);flex-shrink:0;margin-top:2px;">privacy_tip</span>
+    <div style="flex:1;">
+      <div style="font-weight:800;margin-bottom:3px;">🔒 Confidentialité & Données</div>
+      <div style="opacity:0.8;line-height:1.4;">MATLOUB stocke vos données localement sur votre appareil. Vos informations ne sont jamais partagées avec des tiers. Vous pouvez les supprimer à tout moment.</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:10px;">
+    <button onclick="acceptRGPD()" style="flex:1;padding:8px;background:var(--accent);color:#0A2A22;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:0.82rem;">✅ J'accepte</button>
+    <button onclick="document.getElementById('rgpd-banner').style.display='none'" style="padding:8px 14px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.82rem;">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal Message Pro -->
+<div id="msg-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1rem;font-weight:900;margin-bottom:4px;">💬 Message à <span id="msg-pro-name"></span></div>
+    <p style="color:var(--text3);font-size:0.78rem;margin-bottom:12px;">Ce message sera visible par le professionnel dans son tableau de bord</p>
+    <div style="max-height:180px;overflow-y:auto;margin-bottom:12px;" id="msg-history"></div>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="msg-input" class="input-field" placeholder="Votre message..." style="flex:1;" onkeydown="if(event.key==='Enter')app.sendMessage()">
+      <button class="btn btn-primary btn-sm" onclick="app.sendMessage()"><span class="material-icons-round" style="font-size:18px;">send</span></button>
+    </div>
+    <input type="hidden" id="msg-target-id">
+    <button class="btn btn-ghost" style="margin-top:8px;width:100%;" onclick="closeModal('msg-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="navTo('home',this)">
+    <span class="material-icons-round">home_filled</span>Accueil
+  </button>
+  <button class="nav-item" id="nav-explore" onclick="navTo('explore',this)">
+    <span class="material-icons-round">manage_search</span>Explorer
+  </button>
+  <button class="nav-item" id="nav-favorites" onclick="navTo('favorites',this)">
+    <span class="material-icons-round">favorite_border</span>Favoris
+  </button>
+  <button class="nav-item" id="nav-profile" onclick="navTo('profile',this)">
+    <span class="material-icons-round">person_outline</span>Profil
+  </button>
+</nav>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Connexion -->
+<div id="login-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:20px;">🔐 Connexion</div>
+    <div class="input-group"><label>Email ou Téléphone</label><input type="text" id="login-user" class="input-field" placeholder="admin ou 0661..."></div>
+    <div class="input-group"><label>Mot de passe</label><input type="password" id="login-pass" class="input-field" placeholder="••••••••"></div>
+    <button class="btn btn-primary" onclick="app.login()">Se connecter</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('login-modal')">Annuler</button>
+  </div>
+</div>
+
+<!-- Type inscription -->
+<div id="register-type-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:8px;">🚀 S'inscrire</div>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:20px;">Choisissez votre type de compte</p>
+    <button class="btn btn-primary" style="margin-bottom:12px;" onclick="closeModal('register-type-modal');showModal('register-pro-modal')">
+      <span style="font-size:1.1rem;">🛠️</span> Je suis Professionnel (Gratuit)
+    </button>
+    <button class="btn btn-outline" onclick="closeModal('register-type-modal');showModal('register-client-modal')">
+      <span style="font-size:1.1rem;">👤</span> Je suis Client
+    </button>
+  </div>
+</div>
+
+<!-- Inscription Pro -->
+<div id="register-pro-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:4px;">🛠️ Inscription Professionnel</div>
+    <p style="color:var(--text2);font-size:0.78rem;margin-bottom:16px;">Inscription 100% gratuite · Vérification identité requise</p>
+
+    <!-- ETAPE 1: Identité -->
+    <div style="background:rgba(108,60,225,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--primary);margin-bottom:10px;">① IDENTITÉ</div>
+      <div class="input-group"><label>Nom & Prénom *</label><input type="text" id="reg-name" class="input-field" placeholder="Votre nom complet" oninput="app.checkBlacklist()"></div>
+      <div class="input-group">
+        <label>Métier *</label>
+        <select id="reg-job-select" class="input-field" onchange="app.onJobSelectChange()">
+          <option value="">-- Choisir votre métier --</option>
+        </select>
+        <input type="text" id="reg-job-custom" class="input-field" placeholder="Ou saisir votre métier..." style="margin-top:6px;" oninput="if(this.value) document.getElementById('reg-job-select').value=''">
+      </div>
+    </div>
+
+    <!-- ETAPE 2: Contact principal -->
+    <div style="background:rgba(0,212,170,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--accent);margin-bottom:10px;">② CONTACT PRINCIPAL (au choix)</div>
+      <div class="input-group">
+        <label>Mode de contact principal *</label>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bg);padding:10px;border-radius:12px;cursor:pointer;font-size:0.85rem;font-weight:700;border:2px solid transparent;" id="auth-phone-label">
+            <input type="radio" name="auth-mode" value="phone" checked onchange="app.toggleAuthMode('phone')"> 📱 Téléphone
+          </label>
+          <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bg);padding:10px;border-radius:12px;cursor:pointer;font-size:0.85rem;font-weight:700;border:2px solid transparent;" id="auth-email-label">
+            <input type="radio" name="auth-mode" value="email" onchange="app.toggleAuthMode('email')"> 📧 Email
+          </label>
+        </div>
+      </div>
+      <div id="auth-phone-fields">
+        <div class="input-group"><label>Téléphone principal *</label><input type="tel" id="reg-phone" class="input-field" placeholder="0661 23 45 67" oninput="app.checkBlacklist()"></div>
+      </div>
+      <div id="auth-email-fields" style="display:none;">
+        <div class="input-group"><label>Email principal *</label><input type="email" id="reg-email-main" class="input-field" placeholder="votre@email.com" oninput="app.checkBlacklist()"></div>
+      </div>
+      <div class="input-group"><label>Mot de passe *</label>
+        <input type="password" id="reg-pass" class="input-field" placeholder="Min. 6 caractères (majuscule + chiffre recommandé)">
+        <div class="pass-strength" id="reg-pass-bar"></div>
+        <div class="pass-strength-label" id="reg-pass-label"></div>
+      </div>
+    </div>
+
+    <!-- ETAPE 3: Contacts de récupération -->
+    <div style="background:rgba(255,107,107,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--accent2);margin-bottom:10px;">③ CONTACTS DE RÉCUPÉRATION</div>
+      <div class="input-group"><label>Email de récupération *</label><input type="email" id="reg-email" class="input-field" placeholder="email.backup@exemple.com"></div>
+      <div class="input-group"><label>Téléphone de récupération *</label><input type="tel" id="reg-phone-backup" class="input-field" placeholder="0550 XX XX XX (différent du principal)"></div>
+    </div>
+
+    <!-- ETAPE 4: Localisation -->
+    <div style="background:rgba(59,130,246,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:0.8rem;font-weight:800;color:#3B82F6;margin-bottom:10px;">④ LOCALISATION</div>
+      <div class="input-group">
+        <label>Daïra / Zone *</label>
+        <select id="reg-daira" class="input-field" onchange="app.onDairaChange('reg')">
+          <option value="">Choisir la Daïra</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Commune *</label>
+        <select id="reg-commune" class="input-field">
+          <option value="">Choisir la Commune</option>
+        </select>
+      </div>
+      <div class="input-group"><label>Adresse précise</label><input type="text" id="reg-address" class="input-field" placeholder="Rue, quartier, cité..."></div>
+    </div>
+
+    <!-- ETAPE 5: Selfie -->
+    <div style="background:rgba(168,85,247,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:0.8rem;font-weight:800;color:#A855F7;margin-bottom:6px;">⑤ SELFIE D'IDENTITÉ *</div>
+      <p style="font-size:0.75rem;color:var(--text3);margin-bottom:10px;">Une photo de votre visage est requise pour protéger les clients. Elle sera visible uniquement par l'administrateur.</p>
+      <div id="selfie-preview" style="width:90px;height:90px;border-radius:16px;background:var(--bg);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;position:relative;overflow:hidden;">
+        <span class="material-icons-round" style="font-size:32px;color:var(--text3);">add_a_photo</span>
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:4px;">Selfie</div>
+        <input type="file" id="reg-selfie" accept="image/*" capture="user" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;" onchange="app.previewSelfie(this)">
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('reg-selfie').click()">
+          <span class="material-icons-round" style="font-size:16px;">camera_alt</span> Prendre un selfie
+        </button>
+      </div>
+    </div>
+
+    <!-- Bio -->
+    <div class="input-group"><label>Bio / Description de vos services</label><textarea id="reg-bio" class="input-field" rows="2" placeholder="Ex: 10 ans d'expérience, interventions rapides..."></textarea></div>
+
+    <!-- Alerte blacklist -->
+    <div id="blacklist-warning" style="display:none;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:12px;padding:12px;margin-bottom:12px;">
+      <div style="font-weight:800;color:#991B1B;font-size:0.85rem;">⛔ Compte bloqué détecté</div>
+      <div style="font-size:0.78rem;color:#7F1D1D;margin-top:4px;" id="blacklist-msg"></div>
+    </div>
+
+    <button class="btn btn-accent" onclick="app.registerPro()" id="reg-submit-btn">Créer mon compte Pro 🎉</button>
+    <p style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:8px;">Un code de 6 chiffres sera envoyé pour valider votre compte</p>
+    <button class="btn btn-ghost" style="margin-top:6px;" onclick="closeModal('register-pro-modal');showModal('register-type-modal')">← Retour</button>
+  </div>
+</div>
+
+<!-- Inscription Client -->
+<div id="register-client-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:20px;">👤 Inscription Client</div>
+    <div class="input-group"><label>Nom *</label><input type="text" id="cl-name" class="input-field" placeholder="Votre nom"></div>
+    <div class="input-group"><label>Email *</label><input type="email" id="cl-email" class="input-field" placeholder="votre@email.com"></div>
+    <div class="input-group"><label>Mot de passe *</label><input type="password" id="cl-pass" class="input-field" placeholder="Min. 6 caractères"></div>
+    <button class="btn btn-primary" onclick="app.registerClient()">Créer mon compte</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('register-client-modal')">Annuler</button>
+  </div>
+</div>
+
+<!-- Vérification OTP -->
+<div id="verify-modal" class="modal-overlay">
+  <div class="modal-sheet" style="text-align:center;">
+    <div class="modal-handle"></div>
+    <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <span class="material-icons-round" style="font-size:32px;color:white;" id="verify-icon">mark_email_read</span>
+    </div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:6px;" id="verify-title">Vérification du compte</div>
+    <p style="color:var(--text2);font-size:0.83rem;margin-bottom:6px;">Un code de <strong>6 chiffres</strong> a été envoyé à :</p>
+    <p style="font-weight:800;color:var(--primary);font-size:0.9rem;margin-bottom:16px;" id="verify-contact-display"></p>
+    <div style="background:rgba(0,212,170,0.1);border-radius:10px;padding:8px 14px;display:inline-block;margin-bottom:16px;">
+      <span style="font-size:0.78rem;color:var(--accent);font-weight:700;">🔐 Code démo : <strong>123456</strong></span>
+    </div>
+    <div class="code-inputs" style="gap:6px;">
+      <input type="number" class="code-input" id="c1" maxlength="1" oninput="moveOTP(this,'c2')" onkeydown="backOTP(event,this,'')">
+      <input type="number" class="code-input" id="c2" maxlength="1" oninput="moveOTP(this,'c3')" onkeydown="backOTP(event,this,'c1')">
+      <input type="number" class="code-input" id="c3" maxlength="1" oninput="moveOTP(this,'c4')" onkeydown="backOTP(event,this,'c2')">
+      <input type="number" class="code-input" id="c4" maxlength="1" oninput="moveOTP(this,'c5')" onkeydown="backOTP(event,this,'c3')">
+      <input type="number" class="code-input" id="c5" maxlength="1" oninput="moveOTP(this,'c6')" onkeydown="backOTP(event,this,'c4')">
+      <input type="number" class="code-input" id="c6" maxlength="1" oninput="moveOTP(this,'')" onkeydown="backOTP(event,this,'c5')">
+    </div>
+    <div class="otp-timer" style="margin-top:10px;">Renvoyer dans <span id="otp-countdown">60</span>s &nbsp;<span class="otp-resend" onclick="app.resendOTP()" id="resend-btn" style="display:none;">↺ Renvoyer</span></div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="app.verifyOTP()">✅ Valider mon compte</button>
+    <button class="btn btn-ghost" style="margin-top:6px;" onclick="closeModal('verify-modal')">Annuler</button>
+  </div>
+</div>
+
+<!-- Signalement -->
+<div id="report-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:8px;">🚩 Signaler ce professionnel</div>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:16px;">Votre signalement sera examiné par notre équipe.</p>
+    <input type="hidden" id="report-target-id">
+    <div class="input-group">
+      <label>Raison du signalement</label>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="report-reasons">
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Ne répond pas"> 📵 Ne répond pas aux clients
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Arnaque"> 🔴 Arnaque / Escroquerie
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Comportement"> 😡 Mauvais comportement
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Prix abusif"> 💰 Prix abusif / Surfacturation
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Service non rendu"> ❌ Service non rendu
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Faux profil"> 👤 Faux profil / Usurpation
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:10px 14px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">
+          <input type="radio" name="report-r" value="Autre"> 📝 Autre
+        </label>
+      </div>
+    </div>
+    <div class="input-group">
+      <label>Détails supplémentaires</label>
+      <textarea id="report-desc" class="input-field" rows="3" placeholder="Décrivez ce qui s'est passé..."></textarea>
+    </div>
+    <button class="btn btn-danger" onclick="app.submitReport()">Envoyer le signalement</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('report-modal')">Annuler</button>
+  </div>
+</div>
+
+<!-- Modal Détail Pro -->
+<div id="detail-modal" class="modal-overlay">
+  <div class="modal-sheet" id="detail-content"></div>
+</div>
+
+<!-- Modal Notation -->
+<div id="rate-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:8px;">⭐ Donner un avis</div>
+    <input type="hidden" id="rate-target-id">
+    <div class="stars-input" id="star-input"></div>
+    <div class="input-group" style="margin-top:4px;">
+      <label>Votre commentaire</label>
+      <textarea id="rate-comment" class="input-field" rows="3" placeholder="Partagez votre expérience..."></textarea>
+    </div>
+    <div class="input-group"><label>Votre prénom</label><input type="text" id="rate-author" class="input-field" placeholder="Anonyme si vide"></div>
+    <button class="btn btn-accent" onclick="app.submitRating()">Publier l'avis ✨</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('rate-modal')">Annuler</button>
+  </div>
+</div>
+
+<!-- Modal Notifications -->
+<div id="notif-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:16px;">🔔 Notifications</div>
+    <div id="notif-list">
+      <div class="empty-state" style="padding:20px 0;">
+        <span class="material-icons-round">notifications_none</span>
+        <h3>Aucune notification</h3>
+      </div>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('notif-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal Toutes Catégories -->
+<div id="all-cats-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:16px;">🗂️ Toutes les catégories</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="all-cats-grid"></div>
+    <button class="btn btn-ghost" style="margin-top:16px;" onclick="closeModal('all-cats-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+// ────────────────────────────────────────────
+//  DONNÉES ORAN — 9 Daïras, 26 Communes
+// ────────────────────────────────────────────
+// ── DONNÉES OFFICIELLES WILAYA D'ORAN (27 communes) ──
+const oranData = {
+  // Regroupement logique par zones géographiques pour le menu
+  dairas: [
+    {id:"all",        name:"Toute la Wilaya"},
+    {id:"oran",       name:"Oran (Centre)"},
+    {id:"bir",        name:"Bir El Djir / Est"},
+    {id:"essenia",    name:"Es Sénia / Sud"},
+    {id:"gdyel",      name:"Gdyel / Nord-Est"},
+    {id:"arzew",      name:"Arzew / Est-Côte"},
+    {id:"bethioua",   name:"Béthioua / Côte Est"},
+    {id:"ainek",      name:"Aïn El Turk / Ouest"},
+    {id:"boutlelis",  name:"Boutlélis / Sud-Ouest"},
+    {id:"oued",       name:"Oued Tlelat / Sud"}
+  ],
+  communes: {
+    "all":       ["Oran","Ben Freha","Gdyel","Hassi Mefsoukh","Bir El Djir","Hassi Ben Okba","Hassi Bounif","El Kerma","Es Sénia","Sidi Chami","Arzew","Sidi Ben Yebka","Aïn Biya","Béthioua","Marsat El Hadjadj","Aïn El Turk","Bousfer","El Ançor","Mers El Kébir","Boufatis","El Braya","Oued Tlelat","Tafraoui","Aïn Kerma","Boutlélis","Messerghin"],
+    "oran":      ["Oran"],
+    "bir":       ["Bir El Djir","Hassi Ben Okba","Hassi Bounif","Hassi Mefsoukh"],
+    "essenia":   ["Es Sénia","El Kerma","Sidi Chami"],
+    "gdyel":     ["Gdyel","Ben Freha"],
+    "arzew":     ["Arzew","Sidi Ben Yebka","Aïn Biya"],
+    "bethioua":  ["Béthioua","Marsat El Hadjadj"],
+    "ainek":     ["Aïn El Turk","Bousfer","El Ançor","Mers El Kébir"],
+    "boutlelis": ["Boutlélis","Messerghin","Aïn Kerma"],
+    "oued":      ["Oued Tlelat","Boufatis","El Braya","Tafraoui"]
+  },
+  // Liste complète pour recherche rapide
+  allCommunes: ["Oran","Ben Freha","Gdyel","Hassi Mefsoukh","Bir El Djir","Hassi Ben Okba","Hassi Bounif","El Kerma","Es Sénia","Sidi Chami","Arzew","Sidi Ben Yebka","Aïn Biya","Béthioua","Marsat El Hadjadj","Aïn El Turk","Bousfer","El Ançor","Mers El Kébir","Boufatis","El Braya","Oued Tlelat","Tafraoui","Aïn Kerma","Boutlélis","Messerghin"]
+};
+
+// ────────────────────────────────────────────
+//  CATÉGORIES (20 catégories)
+// ────────────────────────────────────────────
+const categories = [
+  {id:"plombier",   name:"Plombier",       icon:"plumbing",         color:"#F59E0B"},
+  {id:"elec",       name:"Électricien",    icon:"electric_bolt",    color:"#3B82F6"},
+  {id:"med",        name:"Médecin",        icon:"medical_services", color:"#EF4444"},
+  {id:"menuisier",  name:"Menuisier",      icon:"carpenter",        color:"#D97706"},
+  {id:"dev",        name:"Informatique",   icon:"computer",         color:"#8B5CF6"},
+  {id:"coiffure",   name:"Coiffure",       icon:"content_cut",      color:"#EC4899"},
+  {id:"mecano",     name:"Mécanicien",     icon:"car_repair",       color:"#6366F1"},
+  {id:"clim",       name:"Climatisation",  icon:"ac_unit",          color:"#0EA5E9"},
+  {id:"mason",      name:"Maçon",          icon:"handyman",         color:"#92400E"},
+  {id:"peintre",    name:"Peintre",        icon:"format_paint",     color:"#10B981"},
+  {id:"serrurier",  name:"Serrurier",      icon:"lock",             color:"#64748B"},
+  {id:"vitrier",    name:"Vitrier",        icon:"window",           color:"#06B6D4"},
+  {id:"deco",       name:"Décoration",     icon:"design_services",  color:"#F472B6"},
+  {id:"jardin",     name:"Jardinage",      icon:"yard",             color:"#22C55E"},
+  {id:"photo",      name:"Photographe",    icon:"photo_camera",     color:"#A855F7"},
+  {id:"avocat",     name:"Avocat",         icon:"gavel",            color:"#DC2626"},
+  {id:"transport",  name:"Transport",      icon:"local_shipping",   color:"#EA580C"},
+  {id:"nettoyage",  name:"Nettoyage",      icon:"cleaning_services",color:"#14B8A6"},
+  {id:"cuisine",    name:"Cuisinier",      icon:"restaurant",       color:"#F97316"},
+  {id:"sante",      name:"Santé",          icon:"health_and_safety",color:"#BE185D"}
+];
+
+// ────────────────────────────────────────────
+//  MÉTIERS COMPLETS (30+)
+// ────────────────────────────────────────────
+const allJobs = [
+  "Plombier","Électricien","Médecin Généraliste","Médecin Spécialiste","Dentiste",
+  "Pharmacien","Infirmier","Menuisier","Charpentier","Développeur Web",
+  "Technicien Informatique","Réparateur Téléphone","Coiffeur Homme","Coiffeuse Femme",
+  "Mécanicien Auto","Carrossier","Climatiseur Technicien","Maçon","Peintre en Bâtiment",
+  "Serrurier","Vitrier","Décorateur Intérieur","Jardinier","Photographe",
+  "Vidéaste","Avocat","Notaire","Comptable","Chauffeur / Transport",
+  "Déménagement","Agent de Nettoyage","Femme de ménage","Cuisinier Traiteur",
+  "Boulanger / Pâtissier","Électroménager Technicien","Soudeur","Carreleur",
+  "Plâtrier","Couvreur / Toiture","Couturier / Tailleur","Professeur Particulier",
+  "Coach Sportif","Kinésithérapeute","Psychologue","Sage-femme",
+  "Vétérinaire","Architecte","Géomètre","Ingénieur Bâtiment","Agent Immobilier"
+];
+
+// ────────────────────────────────────────────
+//  BASE DE DONNÉES LOCALE (localStorage)
+// ────────────────────────────────────────────
+let db = {
+  users: [],
+  currentUser: null,
+  traffic: {day:0, month:0, year:0},
+  notifications: []
+};
+
+let adminFilter = 'all';
+let exploreCatFilter = '';
+let ratingSelected = 0;
+let otpTimer = null;
+let pendingVerifyId = null;
+
+// ════════════════════════════════════════════════════════
+//  🔐 MOTEUR DE SÉCURITÉ MATLOUB v6
+// ════════════════════════════════════════════════════════
+
+// ── SHA-256 (password hashing) ──
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ── AES-256-GCM Chiffrement des données sensibles ──
+const CRYPTO_KEY_NAME = 'matloub_ck_v6';
+async function getOrCreateKey() {
+  const stored = localStorage.getItem(CRYPTO_KEY_NAME);
+  if (stored) {
+    try {
+      const raw = Uint8Array.from(atob(stored), c => c.charCodeAt(0));
+      return await crypto.subtle.importKey('raw', raw, {name:'AES-GCM'}, false, ['encrypt','decrypt']);
+    } catch(e) {}
+  }
+  const key = await crypto.subtle.generateKey({name:'AES-GCM',length:256}, true, ['encrypt','decrypt']);
+  const exported = await crypto.subtle.exportKey('raw', key);
+  localStorage.setItem(CRYPTO_KEY_NAME, btoa(String.fromCharCode(...new Uint8Array(exported))));
+  return key;
+}
+
+let _cryptoKey = null;
+async function initCrypto() {
+  _cryptoKey = await getOrCreateKey();
+}
+
+async function encryptData(plaintext) {
+  if (!_cryptoKey) return plaintext; // fallback if crypto not ready
+  try {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(JSON.stringify(plaintext));
+    const ct = await crypto.subtle.encrypt({name:'AES-GCM',iv}, _cryptoKey, encoded);
+    return btoa(String.fromCharCode(...iv) + String.fromCharCode(...new Uint8Array(ct)));
+  } catch(e) { return plaintext; }
+}
+
+async function decryptData(ciphertext) {
+  if (!_cryptoKey || typeof ciphertext !== 'string') return ciphertext;
+  try {
+    const raw = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
+    const iv  = raw.slice(0, 12);
+    const ct  = raw.slice(12);
+    const dec = await crypto.subtle.decrypt({name:'AES-GCM',iv}, _cryptoKey, ct);
+    return JSON.parse(new TextDecoder().decode(dec));
+  } catch(e) { return ciphertext; }
+}
+
+// ── XSS SANITIZER — supprime tout HTML/script injecté ──
+function sanitize(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#x27;')
+    .replace(/\//g,'&#x2F;')
+    .replace(/javascript:/gi,'')
+    .replace(/on\w+\s*=/gi,'')
+    .trim();
+}
+
+// Safe text setter — écrit toujours en textContent, jamais innerHTML
+function safeSet(elementId, text) {
+  const el = document.getElementById(elementId);
+  if (el) el.textContent = String(text || '');
+}
+
+// ── RATE LIMITER — anti-bruteforce login ──
+const loginAttempts = { count: 0, lastTime: 0, lockUntil: 0 };
+function checkRateLimit() {
+  const now = Date.now();
+  if (now < loginAttempts.lockUntil) {
+    const remaining = Math.ceil((loginAttempts.lockUntil - now) / 1000);
+    toast(`🔒 Trop de tentatives. Attendez ${remaining}s`);
+    return false;
+  }
+  // Reset count after 5 minutes
+  if (now - loginAttempts.lastTime > 300000) loginAttempts.count = 0;
+  loginAttempts.count++;
+  loginAttempts.lastTime = now;
+  if (loginAttempts.count >= 5) {
+    loginAttempts.lockUntil = now + 120000; // lock 2 minutes
+    loginAttempts.count = 0;
+    toast('🚨 5 tentatives échouées — Bloqué 2 minutes');
+    return false;
+  }
+  return true;
+}
+function resetRateLimit() { loginAttempts.count = 0; loginAttempts.lockUntil = 0; }
+
+// ── SESSION TOKEN — token aléatoire pour chaque session ──
+function generateToken(len = 32) {
+  const arr = new Uint8Array(len);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── SQL / NO-SQL INJECTION PATTERN DETECTOR ──
+const INJECTION_PATTERNS = [
+  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/i,
+  /<script/i, /javascript:/i, /on(load|click|error|mouseover)=/i,
+  /eval\s*\(/i, /document\.(cookie|write)/i, /window\.location/i
+];
+function hasInjection(str) {
+  return INJECTION_PATTERNS.some(p => p.test(str));
+}
+function validateInput(value, fieldName) {
+  if (!value) return true; // empty ok — required check elsewhere
+  if (hasInjection(value)) {
+    toast(`⚠️ Caractères non autorisés dans le champ "${fieldName}"`);
+    return false;
+  }
+  return true;
+}
+
+// ── PASSWORD STRENGTH ──
+function getPasswordStrength(pass) {
+  if (!pass || pass.length < 6) return { level: 'weak', label: '🔴 Faible', score: 1 };
+  let score = 0;
+  if (pass.length >= 8) score++;
+  if (pass.length >= 12) score++;
+  if (/[A-Z]/.test(pass)) score++;
+  if (/[0-9]/.test(pass)) score++;
+  if (/[^A-Za-z0-9]/.test(pass)) score++;
+  if (score <= 2) return { level: 'weak',   label: '🔴 Faible',  score };
+  if (score <= 3) return { level: 'medium', label: '🟡 Moyen',   score };
+  return              { level: 'strong', label: '🟢 Fort',    score };
+}
+
+function updatePasswordUI(inputId, barId, labelId) {
+  const val = document.getElementById(inputId)?.value || '';
+  const s   = getPasswordStrength(val);
+  const bar = document.getElementById(barId);
+  const lbl = document.getElementById(labelId);
+  if (bar) { bar.className = `pass-strength ${s.level}`; }
+  if (lbl) { lbl.textContent = val ? s.label : ''; lbl.className = `pass-strength-label pass-${s.level}`; }
+}
+
+// ── DARK MODE ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+  localStorage.setItem('matloub_theme', isDark ? 'light' : 'dark');
+}
+function loadTheme() {
+  const saved = localStorage.getItem('matloub_theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    const icon = document.getElementById('theme-icon');
+    if (icon) icon.textContent = saved === 'dark' ? 'light_mode' : 'dark_mode';
+  }
+}
+
+// ── SEARCH SUGGESTIONS ──
+function showSuggestions(val, containerId) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  if (!val || val.length < 2) { box.style.display = 'none'; return; }
+  const q = val.toLowerCase();
+  const jobMatches = allJobs.filter(j => j.toLowerCase().includes(q)).slice(0, 4);
+  const proMatches = db.users.filter(u => u.role==='pro' && u.status==='active' &&
+    (u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q))).slice(0, 3);
+  if (!jobMatches.length && !proMatches.length) { box.style.display = 'none'; return; }
+  let html = '';
+  jobMatches.forEach(j => {
+    const cat = categories.find(c => j.toLowerCase().includes(c.name.toLowerCase().split(' ')[0]));
+    html += `<div class="suggestion-item" onclick="selectSuggestion('${sanitize(j)}','${containerId}')">
+      <span class="material-icons-round suggestion-icon" style="color:${cat?.color||'var(--primary)'};">${cat?.icon||'search'}</span>
+      <span>${sanitize(j)}</span>
+    </div>`;
+  });
+  if (proMatches.length) {
+    html += `<div style="padding:6px 16px;font-size:0.7rem;font-weight:800;color:var(--text3);text-transform:uppercase;">Professionnels</div>`;
+    proMatches.forEach(u => {
+      html += `<div class="suggestion-item" onclick="app.showDetail(${u.id});hideSuggestions('${containerId}')">
+        <span class="material-icons-round suggestion-icon">person</span>
+        <div><div style="font-weight:700;font-size:0.85rem;">${sanitize(u.name)}</div><div style="font-size:0.72rem;color:var(--text3);">${sanitize(u.job)} · ${sanitize(u.commune||'')}</div></div>
+      </div>`;
+    });
+  }
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+function hideSuggestions(id) { const b = document.getElementById(id); if(b) b.style.display='none'; }
+function selectSuggestion(val, containerId) {
+  const isHome = containerId === 'home-suggestions';
+  const inputId = isHome ? 'home-search' : 'explore-search';
+  const el = document.getElementById(inputId);
+  if (el) el.value = val;
+  hideSuggestions(containerId);
+  if (isHome) { navTo('explore'); document.getElementById('explore-search').value = val; app.renderExplorePros(); }
+  else app.renderExplorePros();
+}
+
+// ── RGPD ──
+function checkRGPD() {
+  if (!localStorage.getItem('matloub_rgpd')) {
+    setTimeout(() => { document.getElementById('rgpd-banner').style.display = 'block'; }, 2000);
+  }
+}
+function acceptRGPD() {
+  localStorage.setItem('matloub_rgpd', '1');
+  document.getElementById('rgpd-banner').style.display = 'none';
+  toast('✅ Préférences enregistrées');
+}
+
+// ── PARTAGE DE PROFIL ──
+async function sharePro(id) {
+  const u = db.users.find(us => us.id === id);
+  if (!u) return;
+  const text = `🔧 ${u.name} — ${u.job}\n📍 ${u.commune || 'Oran'}\n📱 ${u.phone || ''}\n\nTrouvé sur MATLOUB — L'app des pros à Oran!`;
+  if (navigator.share) {
+    try { await navigator.share({ title: u.name, text, url: window.location.href }); }
+    catch(e) { copyToClipboard(text); }
+  } else { copyToClipboard(text); }
+}
+function copyToClipboard(text) {
+  navigator.clipboard?.writeText(text).then(() => toast('📋 Profil copié !'));
+}
+
+// ════════════════════════════════════════════════════════
+//  🔥 FIREBASE — Couche base de données en ligne
+//  Remplace localStorage → données stockées sur matloub.com
+// ════════════════════════════════════════════════════════
+
+// ── CONFIG FIREBASE (remplacez par vos propres clés sur console.firebase.google.com) ──
+const FIREBASE_CONFIG = {
+  apiKey:            "VOTRE_API_KEY",
+  authDomain:        "matloub-oran.firebaseapp.com",
+  projectId:         "matloub-oran",
+  storageBucket:     "matloub-oran.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId:             "VOTRE_APP_ID",
+  databaseURL:       "https://matloub-oran-default-rtdb.europe-west1.firebasedatabase.app"
+};
+
+// ── DÉTECTION MODE : Firebase ou localStorage (fallback demo) ──
+let USE_FIREBASE = false;
+let firebaseDB = null;
+let firebaseStorage = null;
+let firebaseAuth = null;
+
+// ── INITIALISATION FIREBASE ──
+async function initFirebase() {
+  try {
+    // Import Firebase SDK (chargé via CDN dans le head)
+    const { initializeApp }              = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+    const { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, serverTimestamp }
+                                         = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    const { getStorage, ref, uploadString, getDownloadURL, deleteObject }
+                                         = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js');
+    const { getAuth, signInAnonymously, onAuthStateChanged }
+                                         = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+
+    if (FIREBASE_CONFIG.apiKey === 'VOTRE_API_KEY') {
+      console.warn('⚠️ Firebase non configuré — mode localStorage activé');
+      USE_FIREBASE = false;
+      return false;
+    }
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    firebaseDB      = getFirestore(app);
+    firebaseStorage = getStorage(app);
+    firebaseAuth    = getAuth(app);
+
+    // Auth anonyme pour accès Firestore (règles de sécurité côté Firebase)
+    await signInAnonymously(firebaseAuth);
+    USE_FIREBASE = true;
+
+    // ─ Attacher les fonctions Firestore à l'objet global FB ─
+    window.FB = {
+      collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+      onSnapshot, query, where, orderBy, limit, serverTimestamp,
+      ref, uploadString, getDownloadURL, deleteObject,
+      db: firebaseDB, storage: firebaseStorage, auth: firebaseAuth
+    };
+
+    console.log('🔥 Firebase connecté — données stockées en ligne sur matloub.com');
+    return true;
+  } catch(e) {
+    console.warn('Firebase indisponible, mode hors-ligne activé:', e.message);
+    USE_FIREBASE = false;
+    return false;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  COUCHE D'ABSTRACTION — même API peu importe le backend
+// ════════════════════════════════════════════════════════
+
+// ── CHARGER TOUS LES PROS (lecture initiale) ──
+async function loadProsFromFirebase() {
+  try {
+    const snap = await FB.getDocs(FB.collection(FB.db, 'professionals'));
+    const pros = [];
+    snap.forEach(d => pros.push({ ...d.data(), id: d.id }));
+    return pros;
+  } catch(e) { console.error('Erreur lecture pros:', e); return []; }
+}
+
+// ── SAUVEGARDER / METTRE À JOUR UN PRO ──
+async function savePro(user) {
+  if (!USE_FIREBASE) { saveDB(); return; }
+  try {
+    const id = String(user.id);
+    // Ne jamais stocker le mot de passe en clair — seulement le hash
+    const data = { ...user };
+    delete data.pass;          // supprimer mot de passe clair
+    delete data.selfie;        // selfie uploadé séparément via Storage
+    data.updatedAt = FB.serverTimestamp();
+    await FB.setDoc(FB.doc(FB.db, 'professionals', id), data, { merge: true });
+  } catch(e) { console.error('Erreur sauvegarde pro:', e); saveDB(); }
+}
+
+// ── UPLOADER PHOTO (Storage Firebase) ──
+async function uploadPhotoToFirebase(base64Data, path) {
+  if (!USE_FIREBASE) return base64Data; // fallback: garder base64 local
+  try {
+    const storageRef = FB.ref(FB.storage, path);
+    await FB.uploadString(storageRef, base64Data, 'data_url');
+    return await FB.getDownloadURL(storageRef);
+  } catch(e) { console.error('Erreur upload photo:', e); return base64Data; }
+}
+
+// ── UPLOADER SELFIE D'IDENTITÉ ──
+async function uploadSelfie(userId, base64Data) {
+  return await uploadPhotoToFirebase(base64Data, `selfies/${userId}/identity.jpg`);
+}
+
+// ── UPLOADER PHOTO DE PROFIL ──
+async function uploadProPhoto(userId, index, base64Data) {
+  return await uploadPhotoToFirebase(base64Data, `pros/${userId}/photo_${index}.jpg`);
+}
+
+// ── SUPPRIMER UN PRO ──
+async function deleteProFromFirebase(id) {
+  if (!USE_FIREBASE) { saveDB(); return; }
+  try {
+    await FB.deleteDoc(FB.doc(FB.db, 'professionals', String(id)));
+  } catch(e) { console.error('Erreur suppression:', e); }
+}
+
+// ── SAUVEGARDER AVIS ──
+async function saveReviewFirebase(proId, review) {
+  if (!USE_FIREBASE) { saveDB(); return; }
+  try {
+    const id   = String(proId);
+    const pro  = await FB.getDoc(FB.doc(FB.db, 'professionals', id));
+    if (!pro.exists()) return;
+    const reviews = pro.data().reviews || [];
+    reviews.push({ ...review, timestamp: Date.now() });
+    await FB.updateDoc(FB.doc(FB.db, 'professionals', id), { reviews });
+  } catch(e) { console.error('Erreur sauvegarde avis:', e); }
+}
+
+// ── SAUVEGARDER SIGNALEMENT ──
+async function saveReportFirebase(proId, reportDetail) {
+  if (!USE_FIREBASE) { saveDB(); return; }
+  try {
+    const id  = String(proId);
+    const pro = await FB.getDoc(FB.doc(FB.db, 'professionals', id));
+    if (!pro.exists()) return;
+    const data = pro.data();
+    const reports       = (data.reports || 0) + 1;
+    const reportDetails = data.reportDetails || [];
+    reportDetails.push(reportDetail);
+    let status = data.status;
+    if (reports >= 5 && status === 'active') status = 'suspended';
+    await FB.updateDoc(FB.doc(FB.db, 'professionals', id), { reports, reportDetails, status });
+  } catch(e) { console.error('Erreur signalement:', e); }
+}
+
+// ── BLACKLIST FIREBASE ──
+async function saveBlacklistFirebase(entry) {
+  if (!USE_FIREBASE) {
+    const bl = JSON.parse(localStorage.getItem('matloub_blacklist') || '{"phones":[],"emails":[],"names":[]}');
+    if (entry.phone && !bl.phones.includes(entry.phone)) bl.phones.push(entry.phone);
+    if (entry.email && !bl.emails.includes(entry.email)) bl.emails.push(entry.email);
+    if (entry.name  && !bl.names.includes(entry.name))   bl.names.push(entry.name);
+    localStorage.setItem('matloub_blacklist', JSON.stringify(bl));
+    return;
+  }
+  try {
+    await FB.setDoc(FB.doc(FB.db, 'blacklist', String(Date.now())), { ...entry, createdAt: FB.serverTimestamp() });
+  } catch(e) { console.error('Erreur blacklist:', e); }
+}
+
+async function loadBlacklistFirebase() {
+  if (!USE_FIREBASE) return getBlacklist();
+  try {
+    const snap = await FB.getDocs(FB.collection(FB.db, 'blacklist'));
+    const phones = [], emails = [], names = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.phone) phones.push(data.phone);
+      if (data.email) emails.push(data.email.toLowerCase());
+      if (data.name)  names.push(data.name.toLowerCase());
+    });
+    return { phones, emails, names };
+  } catch(e) { return getBlacklist(); }
+}
+
+// ── TRAFIC FIREBASE ──
+async function recordTrafficFirebase() {
+  if (!USE_FIREBASE) return;
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const ref   = FB.doc(FB.db, 'traffic', today);
+    const snap  = await FB.getDoc(ref);
+    if (snap.exists()) {
+      await FB.updateDoc(ref, { visits: (snap.data().visits || 0) + 1, date: today });
+    } else {
+      await FB.setDoc(ref, { visits: 1, date: today, month: today.slice(0,7), year: today.slice(0,4) });
+    }
+  } catch(e) {}
+}
+
+// ── MESSAGES FIREBASE ──
+async function saveMessageFirebase(proId, message) {
+  if (!USE_FIREBASE) { saveDB(); return; }
+  try {
+    const msgId = String(Date.now());
+    await FB.setDoc(FB.doc(FB.db, 'messages', msgId), {
+      proId: String(proId),
+      ...message,
+      timestamp: FB.serverTimestamp()
+    });
+  } catch(e) { console.error('Erreur message:', e); }
+}
+
+// ── LISTENER TEMPS RÉEL (mise à jour auto des pros) ──
+function startRealtimeListener() {
+  if (!USE_FIREBASE) return;
+  try {
+    FB.onSnapshot(FB.collection(FB.db, 'professionals'), (snap) => {
+      snap.docChanges().forEach(change => {
+        const data = { ...change.doc.data(), id: change.doc.id };
+        if (change.type === 'added' || change.type === 'modified') {
+          const idx = db.users.findIndex(u => String(u.id) === String(data.id));
+          if (idx !== -1) db.users[idx] = { ...db.users[idx], ...data };
+          else db.users.push(data);
+        }
+        if (change.type === 'removed') {
+          db.users = db.users.filter(u => String(u.id) !== String(data.id));
+        }
+      });
+      // Refresh UI if on active page
+      const activePage = document.querySelector('.page.active')?.id;
+      if (activePage === 'page-home')    app.renderHomePros();
+      if (activePage === 'page-explore') app.renderExplorePros();
+      updateHeroCount();
+    });
+  } catch(e) {}
+}
+
+// ════════════════════════════════════════════════════════
+//  FONCTIONS DB PRINCIPALES (localStorage + Firebase)
+// ════════════════════════════════════════════════════════
+
+function loadDB() {
+  const saved = localStorage.getItem('matloub_v3_users');
+  if (saved) {
+    db.users = JSON.parse(saved);
+  } else {
+    // Données démo (visibles avant connexion Firebase)
+    db.users = [
+      {id:1,name:"Ahmed Benali",job:"Plombier",phone:"0661123456",email:"ahmed@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"Oran",location:"Oran",address:"Rue de la Liberté",bio:"Plombier expérimenté, interventions rapides 24h/24",rating:4.8,reviews:[{author:"Karim",stars:5,text:"Excellent travail, très rapide!",date:"2024-01-10"},{author:"Fatima",stars:5,text:"Très professionnel",date:"2024-01-15"}],reports:0,status:"active",photos:[],views:142,joinDate:"2024-01-01",category:"plombier",available:true},
+      {id:2,name:"Dr. Sofiane Meziane",job:"Médecin Généraliste",phone:"0550987654",email:"sofiane@demo.dz",pass:"123456",role:"pro",daira:"bir",commune:"Bir El Djir",location:"Bir El Djir",address:"Cité USTO",bio:"Médecin généraliste, consultation à domicile possible",rating:5.0,reviews:[{author:"Sara",stars:5,text:"Très compétent et à l'écoute",date:"2024-01-20"}],reports:0,status:"active",photos:[],views:89,joinDate:"2024-01-05",category:"med",available:true},
+      {id:3,name:"Karim Informatique",job:"Développeur Web",phone:"0770112233",email:"karim@demo.dz",pass:"123456",role:"pro",daira:"essenia",commune:"Es Sénia",location:"Es Sénia",address:"",bio:"Sites web, applications mobiles, formation.",rating:4.5,reviews:[],reports:0,status:"active",photos:[],views:55,joinDate:"2024-01-08",category:"dev",available:true},
+      {id:4,name:"Nadia Coiffure",job:"Coiffeuse Femme",phone:"0555321654",email:"nadia@demo.dz",pass:"123456",role:"pro",daira:"ainek",commune:"Aïn El Turk",location:"Aïn El Turk",address:"Centre Aïn El Turk",bio:"Coiffure femme, mèches, défrisage, soins capillaires",rating:4.7,reviews:[{author:"Imane",stars:5,text:"Super coiffeuse!",date:"2024-02-01"}],reports:0,status:"active",photos:[],views:78,joinDate:"2024-01-12",category:"coiffure",available:true},
+      {id:5,name:"Rachid Électricité",job:"Électricien",phone:"0660445566",email:"rachid@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"El Hamri",location:"El Hamri",address:"",bio:"Installations électriques, dépannages, mises aux normes",rating:4.3,reviews:[],reports:0,status:"active",photos:[],views:34,joinDate:"2024-02-01",category:"elec",available:true},
+      {id:6,name:"Youcef Menuiserie",job:"Menuisier",phone:"0551234567",email:"youcef@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"Sidi El Houari",location:"Sidi El Houari",address:"",bio:"Menuiserie sur mesure, cuisines équipées, portes et fenêtres",rating:4.6,reviews:[{author:"Ali",stars:5,text:"Travail soigné et propre",date:"2024-03-01"}],reports:0,status:"active",photos:[],views:67,joinDate:"2024-01-20",category:"menuisier",available:true},
+      {id:7,name:"Mohamed Maçonnerie",job:"Maçon",phone:"0665432198",email:"mohamed@demo.dz",pass:"123456",role:"pro",daira:"bir",commune:"Hassi Ben Okba",location:"Hassi Ben Okba",address:"",bio:"Gros œuvre, rénovation, carrelage et plâtrerie",rating:4.4,reviews:[],reports:0,status:"active",photos:[],views:45,joinDate:"2024-02-10",category:"mason",available:true},
+      {id:8,name:"Hana Déco Intérieur",job:"Décorateur Intérieur",phone:"0770654321",email:"hana@demo.dz",pass:"123456",role:"pro",daira:"essenia",commune:"Sidi Chami",location:"Sidi Chami",address:"",bio:"Décoration intérieure, aménagement, design moderne et classique",rating:4.9,reviews:[{author:"Meriem",stars:5,text:"Magnifique travail! Très créative",date:"2024-03-15"}],reports:0,status:"active",photos:[],views:110,joinDate:"2024-01-15",category:"deco",available:true},
+      {id:9,name:"Abdelkader Climatisation",job:"Climatiseur Technicien",phone:"0553219876",email:"abdelkader@demo.dz",pass:"123456",role:"pro",daira:"gdyel",commune:"Gdyel",location:"Gdyel",address:"",bio:"Installation, entretien et réparation de climatiseurs toutes marques",rating:4.5,reviews:[],reports:0,status:"active",photos:[],views:29,joinDate:"2024-02-20",category:"clim",available:true},
+      {id:10,name:"Fatima Photographe",job:"Photographe",phone:"0662345678",email:"fatima@demo.dz",pass:"123456",role:"pro",daira:"ainek",commune:"Mers El Kébir",location:"Mers El Kébir",address:"",bio:"Photographe professionnelle: mariages, portraits, évènements, studio",rating:5.0,reviews:[{author:"Nassim",stars:5,text:"Photos magnifiques, très pro",date:"2024-03-20"},{author:"Amel",stars:5,text:"Excellent travail!",date:"2024-04-01"}],reports:0,status:"active",photos:[],views:203,joinDate:"2024-01-10",category:"photo",available:true},
+      {id:11,name:"Kamel Transport",job:"Chauffeur / Transport",phone:"0554321987",email:"kamel@demo.dz",pass:"123456",role:"pro",daira:"oued",commune:"Oued Tlelat",location:"Oued Tlelat",address:"",bio:"Transport de personnes et de marchandises, déménagements",rating:4.2,reviews:[],reports:0,status:"active",photos:[],views:18,joinDate:"2024-03-01",category:"transport",available:true},
+      {id:12,name:"Safia Nettoyage",job:"Agent de Nettoyage",phone:"0776543210",email:"safia@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"Médioni",location:"Médioni",address:"",bio:"Nettoyage maison, bureaux, fin de chantier, désinfection",rating:4.7,reviews:[{author:"Samira",stars:5,text:"Très efficace et sérieuse",date:"2024-02-28"}],reports:0,status:"active",photos:[],views:56,joinDate:"2024-02-05",category:"nettoyage",available:true},
+      {id:13,name:"Djamel Serrurier",job:"Serrurier",phone:"0551122334",email:"djamel@demo.dz",pass:"123456",role:"pro",daira:"oran",commune:"El Othmania",location:"El Othmania",address:"",bio:"Ouverture de portes, changement de serrures, coffres-forts",rating:4.3,reviews:[],reports:0,status:"active",photos:[],views:41,joinDate:"2024-02-15",category:"serrurier",available:true},
+      {id:14,name:"Rania Couturier",job:"Couturier / Tailleur",phone:"0663344556",email:"rania@demo.dz",pass:"123456",role:"pro",daira:"boutlelis",commune:"Messerghin",location:"Messerghin",address:"",bio:"Couture sur mesure, retouches, robes de mariée, traditionnel",rating:4.8,reviews:[{author:"Houria",stars:5,text:"Robe parfaite, très talentueuse!",date:"2024-04-05"}],reports:0,status:"active",photos:[],views:88,joinDate:"2024-01-25",category:"coiffure",available:true},
+      {id:101,name:"Admin MATLOUB",job:"Administrateur",phone:"0000000000",email:"admin",pass:"Admin@2024",role:"admin",status:"active",photos:[]}
+    ];
+    saveDB();
+  }
+  // Traffic simulation (localStorage fallback)
+  db.traffic = JSON.parse(localStorage.getItem('matloub_traffic') || '{"day":30,"month":650,"year":4200}');
+  db.traffic.day   += 1;
+  db.traffic.month += 1;
+  db.traffic.year  += 1;
+  localStorage.setItem('matloub_traffic', JSON.stringify(db.traffic));
+
+  db.currentUser = JSON.parse(sessionStorage.getItem('matloub_session') || 'null');
+}
+
+// ── Sync Firebase → charger les vrais pros par-dessus la démo ──
+async function syncFromFirebase() {
+  if (!USE_FIREBASE) return;
+  try {
+    showLoadingOverlay('Chargement des professionnels...');
+    const pros = await loadProsFromFirebase();
+    if (pros.length > 0) {
+      // Remplacer les données démo par les vraies données Firebase
+      db.users = [
+        ...db.users.filter(u => u.role === 'admin'), // garder admin local
+        ...pros
+      ];
+    }
+    await recordTrafficFirebase();
+    startRealtimeListener();
+    hideLoadingOverlay();
+    app.renderHomePros();
+    updateHeroCount();
+  } catch(e) {
+    console.error('Sync Firebase échoué:', e);
+    hideLoadingOverlay();
+  }
+}
+
+function saveDB() {
+  localStorage.setItem('matloub_v3_users', JSON.stringify(db.users));
+}
+
+// ── Wrapper saveDB qui sync aussi Firebase ──
+function saveDBAndSync(user) {
+  saveDB();
+  if (USE_FIREBASE && user) savePro(user);
+}
+
+function saveSession() {
+  sessionStorage.setItem('matloub_session', JSON.stringify(db.currentUser));
+}
+
+// ── OVERLAY CHARGEMENT ──
+function showLoadingOverlay(msg = 'Chargement...') {
+  let ov = document.getElementById('loading-overlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'loading-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,10,30,0.7);z-index:9990;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+    ov.innerHTML = `<div style="background:var(--surface);border-radius:20px;padding:28px 36px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
+      <div style="width:44px;height:44px;border:4px solid rgba(108,60,225,0.2);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;"></div>
+      <div style="font-weight:800;color:var(--text);" id="loading-msg">${msg}</div>
+    </div>`;
+    document.body.appendChild(ov);
+  } else {
+    document.getElementById('loading-msg').textContent = msg;
+    ov.style.display = 'flex';
+  }
+}
+function hideLoadingOverlay() {
+  const ov = document.getElementById('loading-overlay');
+  if (ov) ov.style.display = 'none';
+}
+
+
+// ────────────────────────────────────────────
+//  BLACKLIST — mémorisation des bannis/suspendus
+// ────────────────────────────────────────────
+function getBlacklist() {
+  // Construit dynamiquement depuis les pros bannis/suspendus
+  const banned = db.users.filter(u => u.role==='pro' && (u.status==='banned' || u.status==='suspended'));
+  const phones = new Set();
+  const emails = new Set();
+  const names  = [];
+  banned.forEach(u => {
+    if (u.phone) phones.add(u.phone);
+    if (u.phoneBackup) phones.add(u.phoneBackup);
+    if (u.email) emails.add(u.email.toLowerCase());
+    if (u.emailBackup) emails.add(u.emailBackup.toLowerCase());
+    if (u.emailMain) emails.add(u.emailMain.toLowerCase());
+    if (u.name) names.push(u.name.toLowerCase());
+  });
+  // Persist aussi une liste manuelle admin
+  const manual = JSON.parse(localStorage.getItem('matloub_blacklist') || '{"phones":[],"emails":[],"names":[]}');
+  manual.phones.forEach(p => phones.add(p));
+  manual.emails.forEach(e => emails.add(e));
+  manual.names.forEach(n => names.push(n));
+  return { phones: [...phones], emails: [...emails], names };
+}
+
+// Similarité de chaînes (Dice coefficient)
+function strSimilarity(a, b) {
+  if (a === b) return 1;
+  if (a.length < 2 || b.length < 2) return 0;
+  const getBigrams = s => {
+    const b = new Set();
+    for (let i = 0; i < s.length - 1; i++) b.add(s.slice(i,i+2));
+    return b;
+  };
+  const ba = getBigrams(a), bb = getBigrams(b);
+  let inter = 0;
+  ba.forEach(bg => { if (bb.has(bg)) inter++; });
+  return (2 * inter) / (ba.size + bb.size);
+}
+
+// ────────────────────────────────────────────
+//  NAVIGATION
+// ────────────────────────────────────────────
+function navTo(pageId, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = el || document.getElementById('nav-' + pageId);
+  if (navEl) navEl.classList.add('active');
+
+  if (pageId === 'home') { app.renderHomePros(); updateHeroCount(); }
+  if (pageId === 'explore') { app.renderExplorePros(); buildExploreChips(); }
+  if (pageId === 'favorites') app.renderFavorites();
+  if (pageId === 'profile') app.renderProfile();
+  window.scrollTo(0,0);
+}
+
+// ────────────────────────────────────────────
+//  INIT DATA UI
+// ────────────────────────────────────────────
+function initUI() {
+  // Remplir catégories grid accueil
+  const cg = document.getElementById('cat-grid');
+  cg.innerHTML = categories.slice(0,8).map(c => `
+    <div class="cat-item" onclick="app.filterByCat('${c.id}')">
+      <div class="cat-icon" style="background:${c.color}18;">
+        <span class="material-icons-round" style="color:${c.color};">${c.icon}</span>
+      </div>
+      <div class="cat-label">${c.name}</div>
+    </div>`).join('');
+
+  // Remplir all-cats-grid
+  const ag = document.getElementById('all-cats-grid');
+  ag.innerHTML = categories.map(c => `
+    <div class="cat-item" onclick="app.filterByCat('${c.id}');closeModal('all-cats-modal')">
+      <div class="cat-icon" style="background:${c.color}18;width:56px;height:56px;">
+        <span class="material-icons-round" style="color:${c.color};font-size:26px;">${c.icon}</span>
+      </div>
+      <div class="cat-label">${c.name}</div>
+    </div>`).join('');
+
+  // Remplir Daïras dans tous les selects
+  ['home-daira','exp-daira','reg-daira','edit-daira'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const isFilter = id.startsWith('home') || id.startsWith('exp');
+    if (isFilter) {
+      sel.innerHTML = '<option value="">📍 Toute Wilaya</option>';
+      oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
+        sel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+      });
+    } else {
+      sel.innerHTML = '<option value="">Choisir la Daïra</option>';
+      oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
+        sel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+      });
+    }
+  });
+
+  // Remplir jobs dans select inscription
+  const jsel = document.getElementById('reg-job-select');
+  allJobs.forEach(j => {
+    jsel.innerHTML += `<option value="${j}">${j}</option>`;
+  });
+
+  // Stars rating
+  buildStarInput();
+
+  updateHeroCount();
+  // Init auth mode labels
+  if (app.toggleAuthMode) app.toggleAuthMode('phone');
+}
+
+function updateHeroCount() {
+  const actives = db.users.filter(u => u.role === 'pro' && u.status === 'active').length;
+  document.getElementById('hero-count-text').textContent = actives + ' professionnels vérifiés';
+}
+
+function buildExploreChips() {
+  const chips = document.getElementById('explore-cat-chips');
+  chips.innerHTML = `<div class="chip ${exploreCatFilter==='' ? 'active':''}" onclick="app.selectExploreCat('',this)">🔍 Tous</div>`;
+  categories.forEach(c => {
+    chips.innerHTML += `<div class="chip ${exploreCatFilter===c.id ? 'active':''}" onclick="app.selectExploreCat('${c.id}',this)" style="${exploreCatFilter===c.id ? '' : 'border-color:'+c.color+'22;'}">
+      <span class="chip-icon" style="color:${c.color};">${getCatEmoji(c.id)}</span>${c.name}
+    </div>`;
+  });
+  setTimeout(updateChipsArrows, 50);
+}
+
+function getCatEmoji(id) {
+  const map = {plombier:'🔧',elec:'⚡',med:'🩺',menuisier:'🪚',dev:'💻',coiffure:'✂️',mecano:'🔩',clim:'❄️',mason:'🧱',peintre:'🎨',serrurier:'🔐',vitrier:'🪟',deco:'🛋️',jardin:'🌿',photo:'📸',avocat:'⚖️',transport:'🚚',nettoyage:'🧹',cuisine:'👨‍🍳',sante:'💊'};
+  return map[id] || '•';
+}
+
+function scrollChips(dir) {
+  const el = document.getElementById('explore-cat-chips');
+  el.scrollBy({ left: dir * 160, behavior: 'smooth' });
+}
+
+function updateChipsArrows() {
+  const el = document.getElementById('explore-cat-chips');
+  if (!el) return;
+  const atStart = el.scrollLeft <= 4;
+  const atEnd   = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+  const arrowL  = document.getElementById('chips-arrow-left');
+  const arrowR  = document.getElementById('chips-arrow-right');
+  const fadeL   = document.getElementById('chips-fade-left');
+  const fadeR   = document.getElementById('chips-fade-right');
+  if (arrowL) arrowL.style.display = atStart ? 'none' : 'flex';
+  if (arrowR) arrowR.style.display = atEnd   ? 'none' : 'flex';
+  if (fadeL)  fadeL.style.display  = atStart ? 'none' : '';
+  if (fadeR)  fadeR.style.display  = atEnd   ? 'none' : '';
+}
+
+function buildStarInput() {
+  const si = document.getElementById('star-input');
+  si.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const s = document.createElement('span');
+    s.className = 'material-icons-round';
+    s.textContent = 'star';
+    s.dataset.v = i;
+    s.onclick = function() {
+      ratingSelected = +this.dataset.v;
+      document.querySelectorAll('#star-input span').forEach((el,idx) => {
+        el.classList.toggle('lit', idx < ratingSelected);
+      });
+    };
+    si.appendChild(s);
+  }
+}
+
+// ────────────────────────────────────────────
+//  DAÏRA → COMMUNES CHAIN
+// ────────────────────────────────────────────
+function fillCommunes(prefix, dairaId) {
+  const suffixes = {home:'home-commune',exp:'exp-commune',reg:'reg-commune',edit:'edit-commune'};
+  const csel = document.getElementById(suffixes[prefix] || prefix+'-commune');
+  if (!csel) return;
+  const isAll = prefix==='home'||prefix==='exp';
+  csel.innerHTML = isAll ? '<option value="">Toutes communes</option>' : '<option value="">Choisir la Commune</option>';
+  const list = dairaId ? (oranData.communes[dairaId] || []) : (isAll ? oranData.allCommunes : []);
+  list.forEach(c => csel.innerHTML += `<option value="${c}">${c}</option>`);
+}
+
+// ────────────────────────────────────────────
+//  CRÉATION CARTE PRO
+// ────────────────────────────────────────────
+function createProCard(u, showFavBtn=true) {
+  const favs = getFavs();
+  const isFav = favs.includes(u.id);
+  const avgRating = getAvgRating(u);
+  const cat = categories.find(c => c.id === u.category) || categories[0];
+  const avatar = u.photos && u.photos.length > 0
+    ? `<img src="${u.photos[0]}" class="pro-avatar" alt="${u.name}">`
+    : `<div class="pro-avatar" style="background:${cat.color}20;display:flex;align-items:center;justify-content:center;"><span class="material-icons-round" style="color:${cat.color};font-size:28px;">${cat.icon}</span></div>`;
+  const isNew = u.joinDate && (Date.now() - new Date(u.joinDate).getTime()) < 60*24*3600*1000;
+  const isTop = avgRating >= 4.8 && u.reviews && u.reviews.length >= 2;
+
+  return `<div class="pro-card" onclick="app.showDetail(${u.id})" style="border-left:4px solid ${cat.color};">
+    ${avatar}
+    <div class="pro-info">
+      <div class="pro-name">${u.name}${u.emailVerified ? ' ✅' : ''}</div>
+      <div class="pro-job" style="color:${cat.color};">${u.job}</div>
+      <div class="pro-meta">
+        <div class="pro-rating"><span class="material-icons-round" style="font-size:13px;">star</span> ${avgRating} (${u.reviews ? u.reviews.length : 0})</div>
+        <div class="pro-loc"><span class="material-icons-round">location_on</span>${u.commune||u.location||'Oran'}</div>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
+        ${isNew ? '<span class="badge-new">NOUVEAU</span>' : ''}
+        ${isTop ? '<span class="badge-top">⭐ TOP</span>' : ''}
+        ${u.available === false
+          ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;color:var(--accent2);font-weight:700;"><span class="pro-status-dot" style="background:var(--accent2);"></span>Indisponible</span>`
+          : `<span style="display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;color:var(--accent);font-weight:700;"><span class="pro-status-dot available"></span>Disponible</span>`
+        }
+      </div>
+    </div>
+    ${showFavBtn ? `<button class="fav-btn-card ${isFav?'active':''}" onclick="event.stopPropagation();app.toggleFav(${u.id})">
+      <span class="material-icons-round" style="font-size:20px;">${isFav?'favorite':'favorite_border'}</span>
+    </button>` : ''}
+  </div>`;
+}
+
+function getAvgRating(u) {
+  if (!u.reviews || u.reviews.length === 0) return u.rating || 0;
+  const sum = u.reviews.reduce((a,b) => a + (b.stars||0), 0);
+  return +(sum / u.reviews.length).toFixed(1);
+}
+
+function getFavs() {
+  return JSON.parse(localStorage.getItem('matloub_favs') || '[]');
+}
+function saveFavs(f) {
+  localStorage.setItem('matloub_favs', JSON.stringify(f));
+}
+
+// ────────────────────────────────────────────
+//  APP OBJECT
+// ────────────────────────────────────────────
+const app = {
+
+  onSearch(val) { /* live search sur accueil */ app.renderHomePros(val); },
+  doSearch() {
+    const val = document.getElementById('home-search').value;
+    if (val.trim()) { navTo('explore'); document.getElementById('explore-search').value = val; app.renderExplorePros(); }
+  },
+
+  onDairaChange(prefix) {
+    const dairaSel = document.getElementById(
+      prefix==='home'?'home-daira':prefix==='exp'?'exp-daira':prefix==='edit'?'edit-daira':'reg-daira'
+    );
+    fillCommunes(prefix, dairaSel.value);
+  },
+
+  onJobSelectChange() {
+    const v = document.getElementById('reg-job-select').value;
+    if (v) document.getElementById('reg-job-custom').value = '';
+  },
+
+  filterByCat(catId) {
+    exploreCatFilter = catId;
+    navTo('explore');
+  },
+
+  showAllCats() { showModal('all-cats-modal'); },
+
+  selectExploreCat(catId, el) {
+    exploreCatFilter = catId;
+    document.querySelectorAll('#explore-cat-chips .chip').forEach(c => c.classList.remove('active'));
+    if (el) el.classList.add('active');
+    app.renderExplorePros();
+  },
+
+  // ── RENDU PROS ACCUEIL ──
+  renderHomePros(search='') {
+    const daira = document.getElementById('home-daira').value;
+    const commune = document.getElementById('home-commune').value;
+    const q = search.toLowerCase() || document.getElementById('home-search').value.toLowerCase();
+
+    let list = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+    if (q) list = list.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.location||'').toLowerCase().includes(q));
+    if (daira) list = list.filter(u => u.daira === daira);
+    if (commune) list = list.filter(u => u.commune === commune);
+    list = list.sort((a,b) => getAvgRating(b) - getAvgRating(a));
+
+    const container = document.getElementById('home-pros-list');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty-state"><span class="material-icons-round">search_off</span><h3>Aucun résultat</h3><p>Essayez une autre recherche</p></div>`;
+    } else {
+      container.innerHTML = list.slice(0,8).map(u => createProCard(u)).join('');
+    }
+  },
+
+  // ── RENDU PROS EXPLORER ──
+  renderExplorePros() {
+    const q = (document.getElementById('explore-search').value || '').toLowerCase();
+    const daira = document.getElementById('exp-daira').value;
+    const commune = document.getElementById('exp-commune').value;
+    const sort = document.getElementById('exp-sort').value;
+
+    let list = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+
+    if (exploreCatFilter) list = list.filter(u => u.category === exploreCatFilter);
+    if (q) list = list.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.location||'').toLowerCase().includes(q));
+    if (daira) list = list.filter(u => u.daira === daira);
+    if (commune) list = list.filter(u => u.commune === commune);
+
+    if (sort === 'rating') list.sort((a,b) => getAvgRating(b) - getAvgRating(a));
+    else if (sort === 'new') list.sort((a,b) => b.id - a.id);
+    else if (sort === 'reviews') list.sort((a,b) => (b.reviews||[]).length - (a.reviews||[]).length);
+
+    const container = document.getElementById('explore-pros-list');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty-state"><span class="material-icons-round">search_off</span><h3>Aucun professionnel trouvé</h3><p>Modifiez vos filtres</p></div>`;
+    } else {
+      container.innerHTML = list.map(u => createProCard(u)).join('');
+    }
+  },
+
+  renderFavorites() {
+    const favs = getFavs();
+    const list = db.users.filter(u => favs.includes(u.id));
+    const container = document.getElementById('favorites-list');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty-state"><span class="material-icons-round">favorite_border</span><h3>Aucun favori</h3><p>Ajoutez des pros à vos favoris</p></div>`;
+    } else {
+      container.innerHTML = list.map(u => createProCard(u)).join('');
+    }
+  },
+
+  toggleFav(id) {
+    let favs = getFavs();
+    if (favs.includes(id)) { favs = favs.filter(f => f !== id); toast('Retiré des favoris'); }
+    else { favs.push(id); toast('Ajouté aux favoris ❤️'); }
+    saveFavs(favs);
+    app.renderHomePros();
+    if (document.getElementById('page-favorites').classList.contains('active')) app.renderFavorites();
+    if (document.getElementById('detail-content').innerHTML) app.showDetail(id);
+  },
+
+  // ── DÉTAIL PRO ──
+  showDetail(id) {
+    const u = db.users.find(us => us.id === id);
+    if (!u) return;
+    // Incrémenter vues
+    u.views = (u.views || 0) + 1;
+    saveDB();
+
+    const favs = getFavs();
+    const isFav = favs.includes(id);
+    const avgRating = getAvgRating(u);
+    const cat = categories.find(c => c.id === u.category) || categories[0];
+    const photosHtml = u.photos && u.photos.length > 0
+      ? u.photos.map(p => `<img src="${p}" class="detail-photo" alt="photo">`).join('')
+      : '';
+    const reviewsHtml = u.reviews && u.reviews.length > 0
+      ? u.reviews.map(r => `<div class="review-item">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="review-author">${sanitize(r.author || 'Anonyme')}</div>
+            <div class="pro-rating"><span class="material-icons-round" style="font-size:12px;">star</span> ${+r.stars||0}</div>
+          </div>
+          <div class="review-text">${sanitize(r.text||'')}</div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:4px;">${sanitize(r.date||'')}</div>
+        </div>`).join('')
+      : '<div class="empty-state" style="padding:16px 0;"><span class="material-icons-round" style="font-size:36px;">rate_review</span><p>Pas encore d\'avis</p></div>';
+
+    const avatarHtml = u.photos && u.photos.length > 0
+      ? `<img src="${u.photos[0]}" style="width:80px;height:80px;border-radius:20px;object-fit:cover;margin:0 auto 12px;display:block;">`
+      : `<div style="width:80px;height:80px;border-radius:20px;background:${cat.color}20;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><span class="material-icons-round" style="color:${cat.color};font-size:38px;">${cat.icon}</span></div>`;
+
+    document.getElementById('detail-content').innerHTML = `
+      <div class="modal-handle"></div>
+      ${avatarHtml}
+      <div style="text-align:center;margin-bottom:16px;">
+        <h2 style="font-size:1.15rem;margin-bottom:4px;">${sanitize(u.name)}${u.emailVerified ? ' <span style="font-size:0.8rem;color:#059669;">✅</span>' : ''}</h2>
+        <div style="color:${cat.color};font-weight:700;font-size:0.9rem;">${sanitize(u.job)}</div>
+        <div style="color:var(--text3);font-size:0.8rem;margin-top:4px;">${sanitize(u.commune||'')}, ${sanitize(oranData.dairas.find(d=>d.id===u.daira)?.name||u.location||'Oran')}</div>
+        <div style="margin-top:8px;">
+          ${u.available===false
+            ? `<span style="background:#FEE2E2;color:#991B1B;padding:4px 14px;border-radius:50px;font-size:0.78rem;font-weight:800;">🔴 Indisponible actuellement</span>`
+            : `<span style="background:#DCFCE7;color:#166534;padding:4px 14px;border-radius:50px;font-size:0.78rem;font-weight:800;">🟢 Disponible</span>`
+          }
+        </div>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;">
+          <div class="detail-stat"><div class="detail-stat-val">${avgRating || '—'}</div><div class="detail-stat-lbl">Note</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">${(u.reviews||[]).length}</div><div class="detail-stat-lbl">Avis</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">${u.views||0}</div><div class="detail-stat-lbl">Vues</div></div>
+        </div>
+      </div>
+      ${photosHtml ? `<div class="detail-photos">${photosHtml}</div>` : ''}
+      ${u.bio ? `<div style="background:var(--bg);border-radius:14px;padding:12px;margin-bottom:14px;font-size:0.85rem;color:var(--text2);">${sanitize(u.bio)}</div>` : ''}
+      <div class="action-row">
+        <a href="tel:${sanitize(u.phone||'')}" class="action-btn btn-call"><span class="material-icons-round">call</span>Appeler</a>
+        <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer"><span class="material-icons-round">chat</span>WhatsApp</a>
+      </div>
+      <div class="action-row" style="margin-top:8px;">
+        <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav(${u.id})">
+          <span class="material-icons-round">${isFav?'favorite':'favorite_border'}</span>${isFav?'Favori':'Ajouter'}
+        </button>
+        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="app.openMessage(${u.id})">
+          <span class="material-icons-round">chat_bubble_outline</span>Message
+        </button>
+        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="sharePro(${u.id})">
+          <span class="material-icons-round">share</span>Partager
+        </button>
+      </div>
+      <div class="action-row" style="margin-top:8px;">
+        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="app.openRate(${u.id})">
+          <span class="material-icons-round">star_rate</span>Noter
+        </button>
+        <button class="action-btn btn-ghost" style="border:2px solid #FEE2E2;color:#EF4444;flex:2;" onclick="app.openReport(${u.id})">
+          <span class="material-icons-round">flag</span>Signaler
+        </button>
+      </div>
+      <div style="margin-top:20px;">
+        <div style="font-weight:800;margin-bottom:10px;">Avis clients</div>
+        ${reviewsHtml}
+      </div>`;
+
+    showModal('detail-modal');
+  },
+
+  // ── NOTATION ──
+  openRate(id) {
+    document.getElementById('rate-target-id').value = id;
+    ratingSelected = 0;
+    document.querySelectorAll('#star-input span').forEach(s => s.classList.remove('lit'));
+    document.getElementById('rate-comment').value = '';
+    document.getElementById('rate-author').value = '';
+    closeModal('detail-modal');
+    showModal('rate-modal');
+  },
+
+  submitRating() {
+    if (!ratingSelected) return toast('Choisissez une note ⭐');
+    const id = +document.getElementById('rate-target-id').value;
+    const u = db.users.find(us => us.id === id);
+    if (!u) return;
+    const commentRaw = document.getElementById('rate-comment').value.trim();
+    const authorRaw  = document.getElementById('rate-author').value.trim();
+    if (commentRaw.length > 400) return toast('Commentaire trop long (400 car. max)');
+    if (!validateInput(commentRaw, 'Commentaire')) return;
+    if (!u.reviews) u.reviews = [];
+    u.reviews.push({
+      author: sanitize(authorRaw) || 'Anonyme',
+      stars: ratingSelected,
+      text: sanitize(commentRaw),
+      date: new Date().toLocaleDateString('fr-FR')
+    });
+    saveDB();
+    closeModal('rate-modal');
+    toast('Merci pour votre avis ! ⭐');
+    app.showDetail(id);
+  },
+
+  // ── SIGNALEMENT ──
+  openReport(id) {
+    document.getElementById('report-target-id').value = id;
+    document.getElementById('report-desc').value = '';
+    document.querySelectorAll('[name="report-r"]').forEach(r => r.checked = false);
+    closeModal('detail-modal');
+    showModal('report-modal');
+  },
+
+  submitReport() {
+    const reasonEl = document.querySelector('[name="report-r"]:checked');
+    if (!reasonEl) return toast('Choisissez une raison de signalement');
+    const reason = reasonEl.value;
+    const id = +document.getElementById('report-target-id').value;
+    const u  = db.users.find(us => us.id === id);
+    if (u) {
+      if (!u.reportDetails) u.reportDetails = [];
+      u.reportDetails.push({
+        reason,
+        desc: document.getElementById('report-desc').value,
+        date: new Date().toLocaleDateString('fr-FR')
+      });
+      u.reports = (u.reports || 0) + 1;
+
+      // Compteur "Ne répond pas"
+      if (reason === 'Ne répond pas') {
+        u.noResponseReports = (u.noResponseReports || 0) + 1;
+        if (u.noResponseReports >= 10) {
+          // Avertissement simulé (en prod → envoi email réel)
+          u.status = 'suspended';
+          addNotif(`⚠️ ${u.name} suspendu : 10 signalements "Ne répond pas".`);
+          toast('Ce professionnel a été suspendu automatiquement.');
+        } else if (u.noResponseReports >= 5) {
+          // Avertissement par email simulé
+          u.warningEmailSent = true;
+          addNotif(`📧 Avertissement envoyé à ${u.name} (${u.noResponseReports} signalements "Ne répond pas")`);
+        }
+      }
+
+      // Suspension après 5 signalements toutes raisons
+      if (u.reports >= 5 && u.status === 'active') {
+        u.status = 'suspended';
+        addNotif(`🚫 ${u.name} suspendu après ${u.reports} signalements.`);
+      }
+
+      saveDB();
+    }
+    closeModal('report-modal');
+    toast('✅ Signalement envoyé. Merci pour votre vigilance !');
+  },
+
+  // ── AUTH MODE TOGGLE (Tel/Email) ──
+  toggleAuthMode(mode) {
+    document.getElementById('auth-phone-fields').style.display = mode==='phone' ? '' : 'none';
+    document.getElementById('auth-email-fields').style.display = mode==='email' ? '' : 'none';
+    // Style labels
+    document.getElementById('auth-phone-label').style.background = mode==='phone' ? 'rgba(108,60,225,0.1)' : 'var(--bg)';
+    document.getElementById('auth-phone-label').style.borderColor = mode==='phone' ? 'var(--primary)' : 'transparent';
+    document.getElementById('auth-email-label').style.background = mode==='email' ? 'rgba(108,60,225,0.1)' : 'var(--bg)';
+    document.getElementById('auth-email-label').style.borderColor = mode==='email' ? 'var(--primary)' : 'transparent';
+  },
+
+  // ── SELFIE PREVIEW ──
+  previewSelfie(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const prev = document.getElementById('selfie-preview');
+        prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">
+          <input type="file" id="reg-selfie" accept="image/*" capture="user" style="position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;" onchange="app.previewSelfie(this)">`;
+        prev._selfieData = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  },
+
+  // ── VÉRIFICATION BLACKLIST ──
+  checkBlacklist() {
+    const name  = (document.getElementById('reg-name')?.value||'').trim().toLowerCase();
+    const phone = (document.getElementById('reg-phone')?.value||'').trim();
+    const emailM = (document.getElementById('reg-email-main')?.value||'').trim().toLowerCase();
+    const emailR = (document.getElementById('reg-email')?.value||'').trim().toLowerCase();
+    const bl = getBlacklist();
+    const warn = document.getElementById('blacklist-warning');
+    const msg  = document.getElementById('blacklist-msg');
+    if (!warn) return;
+
+    // Check phone
+    if (phone && bl.phones.includes(phone)) {
+      msg.textContent = `Ce numéro (${phone}) correspond à un compte suspendu ou banni. Inscription refusée.`;
+      warn.style.display = '';
+      document.getElementById('reg-submit-btn').disabled = true;
+      return;
+    }
+    // Check email
+    const emailCheck = emailM || emailR;
+    if (emailCheck && bl.emails.includes(emailCheck)) {
+      msg.textContent = `Cet email (${emailCheck}) correspond à un compte suspendu ou banni. Inscription refusée.`;
+      warn.style.display = '';
+      document.getElementById('reg-submit-btn').disabled = true;
+      return;
+    }
+    // Check name similarity
+    if (name.length > 4) {
+      const match = bl.names.find(n => {
+        const sim = strSimilarity(name, n);
+        return sim > 0.8;
+      });
+      if (match) {
+        msg.textContent = `Un compte similaire (${match}) a déjà été banni ou suspendu. Vérification requise par l'administrateur.`;
+        warn.style.display = '';
+        document.getElementById('reg-submit-btn').disabled = true;
+        return;
+      }
+    }
+
+    warn.style.display = 'none';
+    document.getElementById('reg-submit-btn').disabled = false;
+  },
+
+  // ── INSCRIPTION PRO ──
+  async registerPro() {
+    const name     = document.getElementById('reg-name').value.trim();
+    const jobSel   = document.getElementById('reg-job-select').value;
+    const jobCust  = document.getElementById('reg-job-custom').value.trim();
+    const job      = jobSel || jobCust;
+    const authMode = document.querySelector('[name="auth-mode"]:checked')?.value || 'phone';
+    const phone    = document.getElementById('reg-phone').value.trim();
+    const emailMain= document.getElementById('reg-email-main').value.trim();
+    const emailRec = document.getElementById('reg-email').value.trim();
+    const phoneRec = document.getElementById('reg-phone-backup').value.trim();
+    const pass     = document.getElementById('reg-pass').value;
+    const daira    = document.getElementById('reg-daira').value;
+    const commune  = document.getElementById('reg-commune').value;
+    const address  = document.getElementById('reg-address').value.trim();
+    const bio      = document.getElementById('reg-bio').value.trim();
+    const selfieEl = document.getElementById('selfie-preview');
+    const selfie   = selfieEl._selfieData || null;
+
+    // Validation
+    if (!name || !job) return toast('Remplissez votre nom et métier *');
+    if (!validateInput(name, 'Nom')) return;
+    if (!validateInput(bio, 'Bio')) return;
+    if (authMode === 'phone' && !phone) return toast('Entrez votre numéro de téléphone *');
+    if (authMode === 'email' && !emailMain) return toast('Entrez votre email principal *');
+    if (!emailRec) return toast('L\'email de récupération est obligatoire *');
+    if (!phoneRec) return toast('Le téléphone de récupération est obligatoire *');
+    if (!pass || pass.length < 6) return toast('Mot de passe trop court (6 min)');
+    const pwStrength = getPasswordStrength(pass);
+    if (pwStrength.level === 'weak') return toast('🔴 Mot de passe trop faible — ajoutez des chiffres et majuscules');
+    if (!daira || !commune) return toast('Choisissez votre daïra et commune *');
+    if (!selfie) return toast('Le selfie est obligatoire pour votre sécurité 📸');
+
+    const mainContact = authMode === 'phone' ? phone : emailMain;
+    if (authMode === 'phone' && phoneRec === phone) return toast('Le téléphone de récupération doit être différent du principal');
+    if (authMode === 'email' && emailRec.toLowerCase() === emailMain.toLowerCase()) return toast('L\'email de récupération doit être différent du principal');
+
+    // Vérification blacklist stricte
+    const bl = getBlacklist();
+    if (phone && bl.phones.includes(phone)) return toast('⛔ Ce numéro est bloqué');
+    if (emailMain && bl.emails.includes(emailMain.toLowerCase())) return toast('⛔ Cet email est bloqué');
+    if (emailRec && bl.emails.includes(emailRec.toLowerCase())) return toast('⛔ Email de récupération bloqué');
+    if (phoneRec && bl.phones.includes(phoneRec)) return toast('⛔ Téléphone de récupération bloqué');
+
+    // Vérifier doublons actifs
+    if (db.users.find(u => u.role==='pro' && (
+      (u.phone && phone && u.phone === phone) ||
+      (u.email && emailMain && u.email.toLowerCase() === emailMain.toLowerCase()) ||
+      (u.email && emailRec && u.email.toLowerCase() === emailRec.toLowerCase())
+    ))) return toast('Un compte existe déjà avec ces coordonnées');
+
+    // Catégorie
+    let catId = 'plombier';
+    categories.forEach(c => {
+      if (job.toLowerCase().includes(c.name.toLowerCase().split(' ')[0])) catId = c.id;
+    });
+
+    // 🔐 Hachage SHA-256 du mot de passe
+    const passHash = await sha256(pass);
+
+    const newUser = {
+      id: Date.now(),
+      name: sanitize(name), job: sanitize(job),
+      phone: authMode==='phone' ? phone : phoneRec,
+      phoneBackup: authMode==='phone' ? phoneRec : phone,
+      email: authMode==='email' ? emailMain : emailRec,
+      emailMain: authMode==='email' ? emailMain : emailRec,
+      emailBackup: authMode==='phone' ? emailRec : emailMain,
+      authMode, mainContact,
+      pass: passHash,      // 🔐 stocké en SHA-256
+      passHash,            // double référence
+      passLegacy: '[HASHED]',
+      role: 'pro', daira, commune,
+      location: sanitize(commune) + ', ' + (oranData.dairas.find(d=>d.id===daira)?.name||''),
+      address: sanitize(address), bio: sanitize(bio),
+      category: catId,
+      selfie,
+      rating: 0, reviews: [], reports: 0, reportDetails: [],
+      noResponseReports: 0,
+      status: 'pending',
+      available: true,
+      unavailReason: '',
+      photos: [], views: 0, messages: [],
+      joinDate: new Date().toISOString().split('T')[0],
+      sessionToken: null
+    };
+
+    db.users.push(newUser);
+    pendingVerifyId = newUser.id;
+    saveDB();
+    closeModal('register-pro-modal');
+
+    // ✅ ACTIVATION INSTANTANÉE — accès immédiat au compte
+    newUser.status = 'active';
+    saveDB();
+    db.currentUser = newUser;
+    saveSession();
+    updateHeroCount();
+    navTo('profile');
+    toast('🎉 Compte créé ! Bienvenue sur MATLOUB');
+
+    // 🔥 Sauvegarder sur Firebase Storage + Firestore (en arrière-plan)
+    if (USE_FIREBASE) {
+      (async () => {
+        try {
+          if (selfie && selfie.startsWith('data:')) {
+            const selfieUrl = await uploadSelfie(newUser.id, selfie);
+            newUser.selfieUrl = selfieUrl;
+            newUser.selfie    = selfieUrl;
+          }
+          newUser.status = 'active';
+          await savePro(newUser);
+          const idx = db.users.findIndex(u => u.id === newUser.id);
+          if (idx !== -1) db.users[idx] = newUser;
+          saveDB();
+          addNotif(`🔥 ${newUser.name} sauvegardé sur Firebase`);
+        } catch(e) { console.error('Firebase sync error:', e); }
+      })();
+    }
+
+    // Envoyer OTP en arrière-plan (vérification secondaire)
+    setTimeout(() => {
+      const icon = authMode === 'email' ? 'email' : 'sms';
+      document.getElementById('verify-icon').textContent = icon === 'email' ? 'mark_email_read' : 'sms';
+      document.getElementById('verify-title').textContent = '📧 Vérifiez votre compte';
+      document.getElementById('verify-contact-display').textContent = mainContact;
+      // Réinitialiser les champs OTP
+      ['c1','c2','c3','c4','c5','c6'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+      showModal('verify-modal');
+      startOTPTimer();
+    }, 1500);
+
+    addNotif(`🆕 Nouveau pro inscrit: ${name} (${job} - ${commune})`);
+  },
+
+  // ── VÉRIFICATION OTP 6 chiffres (confirmation secondaire) ──
+  verifyOTP() {
+    const code = ['c1','c2','c3','c4','c5','c6'].map(id => document.getElementById(id).value).join('');
+    if (code === '123456') {
+      const u = db.users.find(us => us.id === pendingVerifyId);
+      if (u) {
+        u.emailVerified = true;
+        saveDB();
+        if (db.currentUser && db.currentUser.id === u.id) {
+          db.currentUser.emailVerified = true;
+          saveSession();
+        }
+        clearOTPTimer();
+        closeModal('verify-modal');
+        toast('✅ Email/SMS confirmé ! Badge vérifié ajouté');
+        app.renderProfile();
+      }
+    } else {
+      toast('Code incorrect — Code démo: 123456');
+    }
+  },
+
+  // ── DISPONIBILITÉ ──
+  toggleAvailability() {
+    const cb     = document.getElementById('edit-available');
+    const track  = document.getElementById('avail-toggle-track');
+    const thumb  = document.getElementById('avail-toggle-thumb');
+    const sub    = document.getElementById('avail-subtitle');
+    const wrap   = document.getElementById('unavail-reason-wrap');
+    const avail  = cb.checked; // checked = disponible
+
+    track.style.background = avail ? 'var(--accent)' : '#EF4444';
+    thumb.style.left = avail ? '28px' : '4px';
+    sub.textContent = avail ? 'Je suis disponible pour les clients' : 'Je suis indisponible (clients informés)';
+    sub.style.color = avail ? 'var(--accent)' : 'var(--accent2)';
+    wrap.style.display = avail ? 'none' : '';
+
+    if (db.currentUser) {
+      db.currentUser.available = avail;
+      db.currentUser.unavailReason = avail ? '' : '';
+      const idx = db.users.findIndex(u => u.id === db.currentUser.id);
+      if (idx !== -1) db.users[idx].available = avail;
+      saveDB();
+      saveSession();
+    }
+  },
+
+  // ── INSCRIPTION CLIENT ──
+  registerClient() {
+    const name  = document.getElementById('cl-name').value.trim();
+    const email = document.getElementById('cl-email').value.trim();
+    const pass  = document.getElementById('cl-pass').value;
+    if (!name || !email || !pass) return toast('Remplissez tous les champs');
+    if (pass.length < 6) return toast('Mot de passe trop court');
+    const newClient = {id: Date.now(), name, email, pass, role:'client', status:'active', photos:[]};
+    db.users.push(newClient);
+    saveDB();
+    db.currentUser = newClient;
+    saveSession();
+    closeModal('register-client-modal');
+    toast('Compte créé avec succès ! 🎉');
+    navTo('profile');
+  },
+
+  resendOTP() {
+    const u = db.users.find(us => us.id === pendingVerifyId);
+    const contact = u ? (u.mainContact || u.email || u.phone) : '—';
+    toast(`Code renvoyé à : ${contact}`);
+    startOTPTimer();
+  },
+  // ── CONNEXION SÉCURISÉE ──
+  async login() {
+    if (!checkRateLimit()) return;
+
+    const userIn = sanitize(document.getElementById('login-user').value.trim());
+    const pass   = document.getElementById('login-pass').value;
+
+    if (!userIn || !pass) return toast('Remplissez tous les champs');
+    if (hasInjection(userIn)) return toast('⚠️ Caractères non autorisés');
+
+    // Admin — hash check
+    const passHash = await sha256(pass);
+    const adminHashRef = await sha256('Admin@2024');
+
+    if (userIn === 'admin' && (pass === 'Admin@2024' || passHash === adminHashRef)) {
+      resetRateLimit();
+      db.currentUser = db.users.find(u => u.role === 'admin') || {id:101,name:'Admin',role:'admin',status:'active'};
+      db.currentUser.sessionToken = generateToken();
+      saveSession();
+      closeModal('login-modal');
+      navTo('profile');
+      toast('👋 Bienvenue Admin !');
+      return;
+    }
+
+    // User — compare hash ou pass direct (rétrocompatible avec anciens comptes demo)
+    const u = db.users.find(us => {
+      const contactMatch = (us.email === userIn || us.phone === userIn || us.mainContact === userIn);
+      const passMatch    = (us.pass === pass || us.passHash === passHash);
+      return contactMatch && passMatch;
+    });
+
+    if (!u) {
+      toast(`❌ Identifiants incorrects (${loginAttempts.count}/5 tentatives)`);
+      return;
+    }
+    if (u.status === 'suspended') return toast('⏸ Compte suspendu. Contactez l\'admin.');
+    if (u.status === 'banned')    return toast('🚫 Compte banni définitivement.');
+    if (u.status === 'pending')   return toast('⏳ Compte en attente d\'activation.');
+
+    resetRateLimit();
+    u.sessionToken = generateToken();
+    u.lastLogin    = new Date().toISOString();
+    db.currentUser = u;
+    saveSession();
+    saveDB();
+    closeModal('login-modal');
+    navTo('profile');
+    toast(`👋 Bienvenue ${sanitize(u.name)} !`);
+  },
+
+  logout() {
+    if (db.currentUser) {
+      // Invalider le token
+      const idx = db.users.findIndex(u => u.id === db.currentUser.id);
+      if (idx !== -1) { db.users[idx].sessionToken = null; saveDB(); }
+    }
+    db.currentUser = null;
+    sessionStorage.removeItem('matloub_session');
+    navTo('home');
+    toast('Déconnecté avec succès');
+  },
+
+  // ── MESSAGERIE ──
+  openMessage(id) {
+    const u = db.users.find(us => us.id === id);
+    if (!u) return;
+    document.getElementById('msg-target-id').value = id;
+    document.getElementById('msg-pro-name').textContent = sanitize(u.name);
+    document.getElementById('msg-input').value = '';
+    // Afficher historique
+    const msgs = u.messages || [];
+    const hist = document.getElementById('msg-history');
+    if (msgs.length === 0) {
+      hist.innerHTML = `<div style="text-align:center;color:var(--text3);font-size:0.82rem;padding:12px;">Commencez la conversation...</div>`;
+    } else {
+      hist.innerHTML = msgs.map(m => `
+        <div style="margin-bottom:6px;display:flex;flex-direction:column;${m.fromClient?'align-items:flex-end':'align-items:flex-start'};">
+          <div class="msg-bubble ${m.fromClient?'sent':''}">${sanitize(m.text)}</div>
+          <div style="font-size:0.65rem;color:var(--text3);margin-top:2px;">${m.date}</div>
+        </div>`).join('');
+      hist.scrollTop = hist.scrollHeight;
+    }
+    closeModal('detail-modal');
+    showModal('msg-modal');
+  },
+
+  sendMessage() {
+    const id   = +document.getElementById('msg-target-id').value;
+    const text = sanitize(document.getElementById('msg-input').value.trim());
+    if (!text) return;
+    if (text.length > 500) return toast('Message trop long (500 car. max)');
+
+    const u = db.users.find(us => us.id === id);
+    if (!u) return;
+    if (!u.messages) u.messages = [];
+    u.messages.push({
+      text,
+      fromClient: true,
+      date: new Date().toLocaleString('fr-FR'),
+      sender: db.currentUser?.name || 'Anonyme'
+    });
+    saveDB();
+    document.getElementById('msg-input').value = '';
+    // Refresh display
+    const hist = document.getElementById('msg-history');
+    hist.innerHTML = u.messages.map(m => `
+      <div style="margin-bottom:6px;display:flex;flex-direction:column;${m.fromClient?'align-items:flex-end':'align-items:flex-start'};">
+        <div class="msg-bubble ${m.fromClient?'sent':''}">${sanitize(m.text)}</div>
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:2px;">${m.date}</div>
+      </div>`).join('');
+    hist.scrollTop = hist.scrollHeight;
+    toast('✅ Message envoyé');
+    addNotif(`💬 Nouveau message pour ${u.name}`);
+  },
+
+  // ── PROFIL ──
+  renderProfile() {
+    const u = db.currentUser;
+    ['auth-section','client-dashboard','pro-dashboard','admin-dashboard'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+
+    if (!u) {
+      document.getElementById('auth-section').classList.remove('hidden');
+      return;
+    }
+
+    if (u.role === 'admin') {
+      document.getElementById('admin-dashboard').classList.remove('hidden');
+      app.renderAdmin();
+      app.updateAdminStats();
+    } else if (u.role === 'pro') {
+      document.getElementById('pro-dashboard').classList.remove('hidden');
+      document.getElementById('pro-name-hero').textContent = u.name;
+      document.getElementById('pro-job-hero').textContent = u.job;
+      const sb = document.getElementById('pro-status-hero');
+      sb.textContent = {active:'Actif',suspended:'Suspendu',pending:'En attente',banned:'Banni'}[u.status]||u.status;
+      sb.className = 'status-badge status-' + u.status;
+      document.getElementById('edit-name').value = u.name;
+      document.getElementById('edit-phone').value = u.phone||'';
+      document.getElementById('edit-email').value = u.email||'';
+      document.getElementById('edit-bio').value = u.bio||'';
+
+      // Disponibilité
+      const avail = u.available !== false; // default true
+      const cb = document.getElementById('edit-available');
+      if (cb) {
+        cb.checked = avail;
+        const track = document.getElementById('avail-toggle-track');
+        const thumb = document.getElementById('avail-toggle-thumb');
+        const sub   = document.getElementById('avail-subtitle');
+        const wrap  = document.getElementById('unavail-reason-wrap');
+        if (track) track.style.background = avail ? 'var(--accent)' : '#EF4444';
+        if (thumb) thumb.style.left = avail ? '28px' : '4px';
+        if (sub)   { sub.textContent = avail ? 'Je suis disponible pour les clients' : 'Je suis indisponible (clients informés)'; sub.style.color = avail ? 'var(--accent)' : 'var(--accent2)'; }
+        if (wrap)  wrap.style.display = avail ? 'none' : '';
+      }
+      // Daïras edit
+      ['edit-daira'].forEach(() => {
+        const sel = document.getElementById('edit-daira');
+        sel.innerHTML = '<option value="">Choisir la Daïra</option>';
+        oranData.dairas.forEach(d => sel.innerHTML += `<option value="${d.id}" ${u.daira===d.id?'selected':''}>${d.name}</option>`);
+        fillCommunes('edit', u.daira);
+        setTimeout(() => {
+          const cs = document.getElementById('edit-commune');
+          if (cs) Array.from(cs.options).forEach(o => { if (o.value===u.commune) o.selected=true; });
+        }, 50);
+      });
+      app.renderPhotoGrid();
+      // Stats pro
+      document.getElementById('pro-stat-views').textContent = u.views||0;
+      document.getElementById('pro-stat-rating').textContent = getAvgRating(u)||'—';
+      const favs = getFavs();
+      document.getElementById('pro-stat-favs').textContent = favs.filter(f=>f===u.id).length;
+      document.getElementById('pro-stat-reviews').textContent = (u.reviews||[]).length;
+      // Avis
+      const rl = document.getElementById('pro-reviews-list');
+      rl.innerHTML = (u.reviews||[]).length ? u.reviews.map(r =>
+        `<div class="review-item"><div class="review-author">${r.author||'Anonyme'} <span style="color:#F59E0B;">★ ${r.stars}</span></div><div class="review-text">${r.text}</div></div>`
+      ).join('') : '<div class="empty-state" style="padding:12px 0;"><span class="material-icons-round" style="font-size:32px;">rate_review</span><p>Pas encore d\'avis</p></div>';
+    } else {
+      document.getElementById('client-dashboard').classList.remove('hidden');
+      document.getElementById('client-name-hero').textContent = u.name;
+    }
+
+    // Header avatar
+    const ha = document.getElementById('hdr-avatar');
+    if (u.photos && u.photos.length > 0) {
+      ha.innerHTML = `<img src="${u.photos[0]}" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+      ha.innerHTML = `<span style="font-weight:800;font-size:0.8rem;">${(u.name||'?')[0].toUpperCase()}</span>`;
+    }
+  },
+
+  renderPhotoGrid() {
+    const grid = document.getElementById('pro-photo-grid');
+    const photos = db.currentUser.photos || [];
+    let html = photos.map((p,i) => `
+      <div class="photo-slot filled">
+        <img src="${p}" alt="photo">
+        <button class="photo-del" onclick="app.removePhoto(${i})">&times;</button>
+      </div>`).join('');
+    if (photos.length < 8) {
+      html += `<div class="photo-slot">
+        <span class="material-icons-round add-icon">add_photo_alternate</span>
+        <input type="file" accept="image/*" onchange="app.addPhoto(this)">
+      </div>`;
+    }
+    grid.innerHTML = html;
+  },
+
+  addPhoto(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = async e => {
+        const base64 = e.target.result;
+        let photoUrl = base64;
+        // 🔥 Upload vers Firebase Storage si disponible
+        if (USE_FIREBASE) {
+          const photoIndex = db.currentUser.photos.length;
+          photoUrl = await uploadProPhoto(db.currentUser.id, photoIndex, base64);
+        }
+        db.currentUser.photos.push(photoUrl);
+        const idx = db.users.findIndex(u => u.id === db.currentUser.id);
+        if (idx !== -1) db.users[idx].photos = db.currentUser.photos;
+        saveDB();
+        if (USE_FIREBASE) savePro(db.users[idx]);
+        app.renderPhotoGrid();
+        toast('📸 Photo ajoutée');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  },
+
+  removePhoto(idx) {
+    db.currentUser.photos.splice(idx, 1);
+    const i = db.users.findIndex(u => u.id === db.currentUser.id);
+    if (i !== -1) db.users[i].photos = db.currentUser.photos;
+    saveDB();
+    if (USE_FIREBASE) savePro(db.users[i]);
+    app.renderPhotoGrid();
+  },
+
+  saveProChanges() {
+    const u = db.currentUser;
+    const nameVal = sanitize(document.getElementById('edit-name').value.trim());
+    const bioVal  = sanitize(document.getElementById('edit-bio').value);
+    if (!validateInput(nameVal, 'Nom')) return;
+    if (!validateInput(bioVal, 'Bio')) return;
+
+    u.name    = nameVal || u.name;
+    u.phone   = document.getElementById('edit-phone').value.trim() || u.phone;
+    u.email   = sanitize(document.getElementById('edit-email').value.trim()) || u.email;
+    u.bio     = bioVal;
+    const nd  = document.getElementById('edit-daira').value;
+    const nc  = document.getElementById('edit-commune').value;
+    if (nd) { u.daira = nd; u.location = (nc||u.commune) + ', ' + (oranData.dairas.find(d=>d.id===nd)?.name||''); }
+    if (nc) u.commune = nc;
+    u.unavailReason = document.getElementById('unavail-reason')?.value || u.unavailReason;
+
+    const idx = db.users.findIndex(us => us.id === u.id);
+    if (idx !== -1) db.users[idx] = u;
+    saveDB();
+    saveSession();
+    // 🔥 Sync Firebase
+    if (USE_FIREBASE) savePro(u);
+    toast('✅ Profil mis à jour et sauvegardé en ligne');
+  },
+
+  // ── ADMIN ──
+  updateAdminStats() {
+    const pros = db.users.filter(u => u.role==='pro');
+    document.getElementById('sa-total').textContent = pros.length;
+    document.getElementById('sa-active').textContent = pros.filter(u=>u.status==='active').length;
+    document.getElementById('sa-reports').textContent = pros.filter(u=>u.reports>0).length;
+    document.getElementById('sa-traffic').textContent = db.traffic.month || 0;
+    const td = document.getElementById('traffic-day');
+    const tm = document.getElementById('traffic-month');
+    const ty = document.getElementById('traffic-year');
+    if (td) { td.textContent = db.traffic.day; td.style.width = Math.min(db.traffic.day / 2, 100)+'%'; }
+    if (tm) { tm.textContent = db.traffic.month; tm.style.width = Math.min(db.traffic.month / 10, 100)+'%'; }
+    if (ty) { ty.textContent = db.traffic.year; ty.style.width = Math.min(db.traffic.year / 50, 100)+'%'; }
+  },
+
+  switchAdminTab(filter, el) {
+    adminFilter = filter;
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    app.renderAdmin();
+  },
+
+  renderAdmin() {
+    const q = (document.getElementById('admin-search')?.value || '').toLowerCase();
+    let pros = db.users.filter(u => u.role === 'pro');
+
+    if (adminFilter === 'pending') pros = pros.filter(u => u.status === 'pending');
+    else if (adminFilter === 'suspended') pros = pros.filter(u => u.status === 'suspended' || u.status === 'banned');
+    else if (adminFilter === 'reports') pros = pros.filter(u => u.reports > 0);
+
+    if (q) pros = pros.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q));
+
+    const list = document.getElementById('admin-users-list');
+    if (pros.length === 0) {
+      list.innerHTML = `<div class="empty-state"><span class="material-icons-round">person_search</span><h3>Aucun professionnel</h3></div>`;
+      return;
+    }
+
+    list.innerHTML = pros.map(u => `
+      <div class="pro-row">
+        <div class="pro-row-top">
+          <div class="pro-row-avatar" style="overflow:hidden;">
+            ${u.selfie ? `<img src="${u.selfie}" style="width:100%;height:100%;border-radius:12px;object-fit:cover;border:2px solid var(--primary);" title="Selfie d'identité">` :
+              u.photos&&u.photos.length>0 ? `<img src="${u.photos[0]}" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">` :
+              `<span class="material-icons-round">engineering</span>`}
+          </div>
+          <div class="pro-row-info">
+            <div class="pro-row-name">${u.name}</div>
+            <div class="pro-row-job">${u.job} · ${u.commune||''} · ${oranData.dairas.find(d=>d.id===u.daira)?.name||'Oran'}</div>
+            <div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">${u.authMode==='email'?'📧':'📱'} ${u.mainContact||u.email||u.phone||'—'} · ${(u.emailBackup||u.email||'—').substring(0,20)}</div>
+            ${u.warningEmailSent ? `<div style="font-size:0.7rem;color:var(--accent3);font-weight:700;margin-top:2px;">⚠️ Avertissement envoyé</div>` : ''}
+          </div>
+          <div><span class="status-badge status-${u.status}">${{active:'Actif',pending:'En attente',suspended:'Suspendu',banned:'Banni'}[u.status]||u.status}</span></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:6px;font-size:0.72rem;color:var(--text2);flex-wrap:wrap;">
+          <span>⭐ ${getAvgRating(u)}</span>
+          <span>👁 ${u.views||0}</span>
+          <span>🚩 ${u.reports||0} signalement(s)</span>
+          <span>📵 ${u.noResponseReports||0} "Ne répond pas"</span>
+          <span>💬 ${(u.reviews||[]).length} avis</span>
+          <span>${u.available===false ? '🔴 Indispo' : '🟢 Dispo'}</span>
+        </div>
+        ${u.selfie ? `<div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-top:4px;">✅ Selfie d'identité fourni</div>` : `<div style="font-size:0.72rem;color:var(--accent2);font-weight:700;margin-top:4px;">⚠️ Pas de selfie</div>`}
+        <div class="pro-row-actions">
+          ${u.status !== 'active' ? `<button class="btn btn-primary btn-sm" onclick="app.adminAction(${u.id},'activate')">✅ Activer</button>` : ''}
+          ${u.status === 'active' ? `<button class="btn btn-ghost btn-sm" style="border:2px solid #F59E0B;color:#D97706;" onclick="app.adminAction(${u.id},'suspend')">⏸ Suspendre</button>` : ''}
+          <button class="btn btn-danger btn-sm" onclick="app.adminAction(${u.id},'ban')">🚫 Bannir</button>
+          <button class="btn btn-ghost btn-sm" style="border:2px solid #6366F1;color:#6366F1;" onclick="app.adminAction(${u.id},'blacklist')">⛔ Blacklist</button>
+          <button class="btn btn-ghost btn-sm" onclick="app.adminAction(${u.id},'delete')" style="border:2px solid #EF4444;color:#EF4444;">🗑 Supprimer</button>
+        </div>
+      </div>`).join('');
+  },
+
+  adminAction(id, action) {
+    const idx = db.users.findIndex(u => u.id === id);
+    if (idx === -1) return;
+    const u = db.users[idx];
+    if (action === 'activate') { u.status = 'active'; toast(`✅ ${u.name} activé`); addNotif(`✅ ${u.name} activé`); }
+    if (action === 'suspend')  { u.status = 'suspended'; toast(`⏸ ${u.name} suspendu`); addNotif(`⏸ ${u.name} suspendu`); }
+    if (action === 'ban')      { u.status = 'banned'; toast(`🚫 ${u.name} banni`); }
+    if (action === 'blacklist') {
+      u.status = 'banned';
+      const bl = JSON.parse(localStorage.getItem('matloub_blacklist') || '{"phones":[],"emails":[],"names":[]}');
+      if (u.phone && !bl.phones.includes(u.phone)) bl.phones.push(u.phone);
+      if (u.phoneBackup && !bl.phones.includes(u.phoneBackup)) bl.phones.push(u.phoneBackup);
+      if (u.email && !bl.emails.includes(u.email)) bl.emails.push(u.email.toLowerCase());
+      if (u.emailBackup && !bl.emails.includes(u.emailBackup)) bl.emails.push(u.emailBackup.toLowerCase());
+      if (u.emailMain && !bl.emails.includes(u.emailMain)) bl.emails.push(u.emailMain.toLowerCase());
+      if (u.name && !bl.names.includes(u.name.toLowerCase())) bl.names.push(u.name.toLowerCase());
+      localStorage.setItem('matloub_blacklist', JSON.stringify(bl));
+      // 🔥 Sync blacklist Firebase
+      saveBlacklistFirebase({ phone: u.phone, email: u.email, name: u.name.toLowerCase(), reason: 'banned_by_admin', date: new Date().toISOString() });
+      toast(`⛔ ${u.name} blacklisté définitivement`);
+      addNotif(`⛔ ${u.name} blacklisté`);
+    }
+    if (action === 'delete') {
+      if (!confirm(`Supprimer définitivement ${u.name} ?`)) return;
+      // 🔥 Supprimer de Firebase
+      if (USE_FIREBASE) deleteProFromFirebase(u.id);
+      db.users.splice(idx, 1);
+      toast('🗑 Profil supprimé');
+    } else {
+      // 🔥 Mettre à jour le statut sur Firebase
+      if (USE_FIREBASE) savePro(u);
+    }
+    saveDB();
+    app.renderAdmin();
+    app.updateAdminStats();
+    updateHeroCount();
+  }
+};
+
+// ────────────────────────────────────────────
+//  OTP TIMER
+// ────────────────────────────────────────────
+function startOTPTimer() {
+  clearOTPTimer();
+  let secs = 60;
+  const cd = document.getElementById('otp-countdown');
+  const rb = document.getElementById('resend-btn');
+  if (rb) rb.style.display = 'none';
+  otpTimer = setInterval(() => {
+    secs--;
+    if (cd) cd.textContent = secs;
+    if (secs <= 0) {
+      clearOTPTimer();
+      if (cd) cd.textContent = '0';
+      if (rb) rb.style.display = 'inline';
+    }
+  }, 1000);
+}
+function clearOTPTimer() {
+  if (otpTimer) { clearInterval(otpTimer); otpTimer = null; }
+}
+
+function moveOTP(el, nextId) {
+  if (el.value.length > 1) el.value = el.value.slice(-1);
+  if (el.value && nextId) document.getElementById(nextId)?.focus();
+  // Auto-validate when all 4 filled
+  const code = ['c1','c2','c3','c4'].map(id => document.getElementById(id).value).join('');
+  if (code.length === 4) setTimeout(() => {}, 200);
+}
+function backOTP(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId)?.focus();
+}
+
+// ────────────────────────────────────────────
+//  MODALS
+// ────────────────────────────────────────────
+function showModal(id) {
+  const m = document.getElementById(id);
+  if (m) { m.classList.add('active'); document.body.style.overflow='hidden'; }
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('active');
+  // Check if any other modal is open
+  if (!document.querySelector('.modal-overlay.active')) document.body.style.overflow='';
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => {
+    if (e.target === m) closeModal(m.id);
+  });
+});
+
+// ────────────────────────────────────────────
+//  TOAST
+// ────────────────────────────────────────────
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+// ────────────────────────────────────────────
+//  PRO TABS
+// ────────────────────────────────────────────
+function showProTab(tab, el) {
+  ['edit','stats','reviews'].forEach(t => {
+    document.getElementById(`pro-tab-${t}`).classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+// ────────────────────────────────────────────
+//  NOTIFICATIONS
+// ────────────────────────────────────────────
+function addNotif(msg) {
+  db.notifications = db.notifications || [];
+  db.notifications.unshift({msg, date: new Date().toLocaleString('fr-FR')});
+  const nl = document.getElementById('notif-list');
+  if (nl) {
+    nl.innerHTML = db.notifications.map(n =>
+      `<div style="padding:12px;background:var(--bg);border-radius:12px;margin-bottom:8px;font-size:0.85rem;">
+        <div style="font-weight:700;">${n.msg}</div>
+        <div style="font-size:0.72rem;color:var(--text3);margin-top:4px;">${n.date}</div>
+      </div>`).join('');
+  }
+  // Badge
+  document.getElementById('hdr-notif-btn').classList.add('notif');
+}
+
+// ────────────────────────────────────────────
+//  🔐 BOOT SÉCURISÉ + FIREBASE
+// ────────────────────────────────────────────
+(async () => {
+  // 1. Init crypto engine
+  await initCrypto();
+
+  // 2. Load theme
+  loadTheme();
+
+  // 3. Load local DB (démo data immédiatement visible)
+  loadDB();
+
+  // 4. Init UI
+  initUI();
+
+  // 5. Render home avec données locales en premier (rapide)
+  app.renderHomePros();
+
+  // 6. Pre-fill explore dairas
+  const expSel = document.getElementById('exp-daira');
+  if (expSel) {
+    expSel.innerHTML = '<option value="">📍 Toute Daïra</option>';
+    oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
+      expSel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+    });
+  }
+
+  // 7. RGPD
+  checkRGPD();
+
+  // 8. Password strength listener
+  document.getElementById('reg-pass')?.addEventListener('input', function() {
+    updatePasswordUI('reg-pass', 'reg-pass-bar', 'reg-pass-label');
+  });
+
+  // 9. Explore search suggestions
+  const expSearch = document.getElementById('explore-search');
+  if (expSearch) {
+    expSearch.addEventListener('input', () => showSuggestions(expSearch.value, 'exp-suggestions'));
+    expSearch.addEventListener('focus', () => showSuggestions(expSearch.value, 'exp-suggestions'));
+    expSearch.addEventListener('blur', () => setTimeout(() => hideSuggestions('exp-suggestions'), 200));
+  }
+
+  // 10. Session integrity check
+  if (db.currentUser) {
+    const stored = db.users.find(u => u.id === db.currentUser.id);
+    if (stored && stored.status !== 'active' && stored.role !== 'admin') {
+      db.currentUser = null;
+      sessionStorage.removeItem('matloub_session');
+    }
+  }
+
+  // 11. 🔥 Initialiser Firebase et synchroniser les données réelles
+  const fbOk = await initFirebase();
+  if (fbOk) {
+    await syncFromFirebase();
+  }
+
+  console.log(`%c🔐 MATLOUB v6 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256 + Rate Limiting`, 'color:#6C3CE1;font-weight:bold;font-size:13px;');
+})();
+
+</script>
+</body>
+</html>
