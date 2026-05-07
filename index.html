@@ -2347,13 +2347,29 @@ const app = {
         }
         await savePro(newUser);
 
-        // Activer après vérification email
-        db.currentUser = newUser;
-        saveSession();
-        updateHeroCount();
-        navTo('profile');
-        toast('📧 Email de vérification envoyé ! Vérifiez votre boîte mail pour activer votre compte.');
+        // ⛔ PAS d'accès immédiat — attendre vérification email
+        closeModal('register-pro-modal');
+        toast('📧 Un email de vérification a été envoyé à ' + emailMain + ' — vérifiez votre boîte mail pour activer votre compte.', 6000);
         addNotif(`🆕 Nouveau pro inscrit: ${name} (${job} - ${commune}) — en attente vérification email`);
+
+        // Vérifier toutes les 3 secondes si l'email est vérifié
+        const checkVerif = setInterval(async () => {
+          await userCredential.user.reload();
+          if (userCredential.user.emailVerified) {
+            clearInterval(checkVerif);
+            newUser.status = 'active';
+            newUser.emailVerified = true;
+            saveDB();
+            db.currentUser = newUser;
+            saveSession();
+            updateHeroCount();
+            navTo('profile');
+            toast('✅ Email vérifié ! Bienvenue sur MATLOUB 🎉');
+          }
+        }, 3000);
+
+        // Arrêter la vérification après 10 minutes
+        setTimeout(() => clearInterval(checkVerif), 600000);
         return;
       } catch(e) {
         if (e.code === 'auth/email-already-in-use') {
@@ -2464,13 +2480,29 @@ const app = {
         await updateProfile(userCredential.user, { displayName: name });
         await sendEmailVerification(userCredential.user);
         newClient.firebaseUid = userCredential.user.uid;
+        newClient.status = 'pending';
         db.users.push(newClient);
         saveDB();
-        db.currentUser = newClient;
-        saveSession();
         closeModal('register-client-modal');
-        toast('📧 Compte créé ! Vérifiez votre email pour activer votre compte.');
-        navTo('profile');
+        toast('📧 Un email de vérification a été envoyé à ' + email + ' — cliquez le lien pour activer votre compte.', 6000);
+
+        // Vérifier toutes les 3 secondes si l'email est vérifié
+        const checkVerif = setInterval(async () => {
+          await userCredential.user.reload();
+          if (userCredential.user.emailVerified) {
+            clearInterval(checkVerif);
+            newClient.status = 'active';
+            newClient.emailVerified = true;
+            saveDB();
+            db.currentUser = newClient;
+            saveSession();
+            navTo('profile');
+            toast('✅ Email vérifié ! Bienvenue sur MATLOUB 🎉');
+          }
+        }, 3000);
+
+        // Arrêter après 10 minutes
+        setTimeout(() => clearInterval(checkVerif), 600000);
         return;
       } catch(e) {
         if (e.code === 'auth/email-already-in-use') return toast('❌ Cet email est déjà utilisé');
