@@ -1,0 +1,35 @@
+{
+  "name": "MATLOUB — Professionnels Oran",
+  "short_name": "MATLOUB",
+  "description": "Trouvez les meilleurs professionnels à Oran, Algérie",
+  "start_url": "/matloub/",
+  "scope": "/matloub/",
+  "display": "standalone",
+  "background_color": "#F0F2FF",
+  "theme_color": "#6C3CE1",
+  "orientation": "portrait",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Explorer les pros",
+      "short_name": "Explorer",
+      "url": "/matloub/#explore",
+      "description": "Chercher un professionnel"
+    }
+  ]
+}
