@@ -2327,7 +2327,47 @@ const app = {
     saveDB();
     closeModal('register-pro-modal');
 
-    // ✅ ACTIVATION INSTANTANÉE — accès immédiat au compte
+    // 🔥 Créer compte Firebase Auth + envoyer email de vérification
+    if (USE_FIREBASE && authMode === 'email' && emailMain) {
+      try {
+        const { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } =
+          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+        const userCredential = await createUserWithEmailAndPassword(firebaseAuth, emailMain, pass);
+        await updateProfile(userCredential.user, { displayName: name });
+        await sendEmailVerification(userCredential.user);
+
+        // Sauvegarder sur Firestore en arrière-plan
+        newUser.status = 'pending';
+        newUser.firebaseUid = userCredential.user.uid;
+        saveDB();
+        if (selfie && selfie.startsWith('data:')) {
+          const selfieUrl = await uploadSelfie(newUser.id, selfie);
+          newUser.selfieUrl = selfieUrl;
+          newUser.selfie = selfieUrl;
+        }
+        await savePro(newUser);
+
+        // Activer après vérification email
+        db.currentUser = newUser;
+        saveSession();
+        updateHeroCount();
+        navTo('profile');
+        toast('📧 Email de vérification envoyé ! Vérifiez votre boîte mail pour activer votre compte.');
+        addNotif(`🆕 Nouveau pro inscrit: ${name} (${job} - ${commune}) — en attente vérification email`);
+        return;
+      } catch(e) {
+        if (e.code === 'auth/email-already-in-use') {
+          toast('❌ Cet email est déjà utilisé');
+          db.users = db.users.filter(u => u.id !== newUser.id);
+          saveDB();
+          return;
+        }
+        console.warn('Firebase Auth error:', e.message);
+        // Fallback mode local si Firebase échoue
+      }
+    }
+
+    // ✅ ACTIVATION INSTANTANÉE pour téléphone ou fallback
     newUser.status = 'active';
     saveDB();
     db.currentUser = newUser;
@@ -2336,7 +2376,7 @@ const app = {
     navTo('profile');
     toast('🎉 Compte créé ! Bienvenue sur MATLOUB');
 
-    // 🔥 Sauvegarder sur Firebase Storage + Firestore (en arrière-plan)
+    // 🔥 Sauvegarder sur Firestore (en arrière-plan)
     if (USE_FIREBASE) {
       (async () => {
         try {
@@ -2354,18 +2394,6 @@ const app = {
         } catch(e) { console.error('Firebase sync error:', e); }
       })();
     }
-
-    // Envoyer OTP en arrière-plan (vérification secondaire)
-    setTimeout(() => {
-      const icon = authMode === 'email' ? 'email' : 'sms';
-      document.getElementById('verify-icon').textContent = icon === 'email' ? 'mark_email_read' : 'sms';
-      document.getElementById('verify-title').textContent = '📧 Vérifiez votre compte';
-      document.getElementById('verify-contact-display').textContent = mainContact;
-      // Réinitialiser les champs OTP
-      ['c1','c2','c3','c4','c5','c6'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-      showModal('verify-modal');
-      startOTPTimer();
-    }, 1500);
 
     addNotif(`🆕 Nouveau pro inscrit: ${name} (${job} - ${commune})`);
   },
@@ -2418,13 +2446,39 @@ const app = {
   },
 
   // ── INSCRIPTION CLIENT ──
-  registerClient() {
+  async registerClient() {
     const name  = document.getElementById('cl-name').value.trim();
     const email = document.getElementById('cl-email').value.trim();
     const pass  = document.getElementById('cl-pass').value;
     if (!name || !email || !pass) return toast('Remplissez tous les champs');
-    if (pass.length < 6) return toast('Mot de passe trop court');
-    const newClient = {id: Date.now(), name, email, pass, role:'client', status:'active', photos:[]};
+    if (pass.length < 6) return toast('Mot de passe trop court (6 min)');
+
+    const newClient = {id: Date.now(), name, email, role:'client', status:'active', photos:[]};
+
+    // 🔥 Firebase Auth — créer compte + envoyer email vérification
+    if (USE_FIREBASE) {
+      try {
+        const { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } =
+          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+        const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, pass);
+        await updateProfile(userCredential.user, { displayName: name });
+        await sendEmailVerification(userCredential.user);
+        newClient.firebaseUid = userCredential.user.uid;
+        db.users.push(newClient);
+        saveDB();
+        db.currentUser = newClient;
+        saveSession();
+        closeModal('register-client-modal');
+        toast('📧 Compte créé ! Vérifiez votre email pour activer votre compte.');
+        navTo('profile');
+        return;
+      } catch(e) {
+        if (e.code === 'auth/email-already-in-use') return toast('❌ Cet email est déjà utilisé');
+        console.warn('Firebase Auth error:', e.message);
+      }
+    }
+
+    // Fallback mode local
     db.users.push(newClient);
     saveDB();
     db.currentUser = newClient;
