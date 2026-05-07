@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MATLOUB">
+<link rel="manifest" href="manifest.json">
 <meta property="og:title" content="MATLOUB — Professionnels Oran">
 <meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran">
 <meta property="og:type" content="website">
@@ -1329,15 +1330,15 @@ function copyToClipboard(text) {
 //  Remplace localStorage → données stockées sur matloub.com
 // ════════════════════════════════════════════════════════
 
-// ── CONFIG FIREBASE (remplacez par vos propres clés sur console.firebase.google.com) ──
+// ── CONFIG FIREBASE ──
 const FIREBASE_CONFIG = {
-  apiKey:            "VOTRE_API_KEY",
-  authDomain:        "matloub-oran.firebaseapp.com",
-  projectId:         "matloub-oran",
-  storageBucket:     "matloub-oran.appspot.com",
-  messagingSenderId: "VOTRE_SENDER_ID",
-  appId:             "VOTRE_APP_ID",
-  databaseURL:       "https://matloub-oran-default-rtdb.europe-west1.firebasedatabase.app"
+  apiKey:            "AIzaSyDtupIeXNO1hl6FnbMOorFozhX6L4yWDNk",
+  authDomain:        "matloub-7914f.firebaseapp.com",
+  projectId:         "matloub-7914f",
+  storageBucket:     "matloub-7914f.firebasestorage.app",
+  messagingSenderId: "760240149650",
+  appId:             "1:760240149650:web:23bae0fcfc5d1c84d0c24b",
+  measurementId:     "G-ZLYBE4R4H4"
 };
 
 // ── DÉTECTION MODE : Firebase ou localStorage (fallback demo) ──
@@ -2982,6 +2983,15 @@ function addNotif(msg) {
   console.log(`%c🔐 MATLOUB v6 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256 + Rate Limiting`, 'color:#6C3CE1;font-weight:bold;font-size:13px;');
 })();
 
+<!-- 📱 PWA Service Worker -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('✅ Service Worker enregistré'))
+      .catch(e => console.warn('SW non enregistré:', e));
+  });
+}
 </script>
 </body>
 </html>
