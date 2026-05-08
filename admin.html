@@ -322,11 +322,11 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
     <div id="sec-pros" class="section">
       <div class="table-card">
         <div class="table-header">
-          <div class="table-title">👷 Professionnels Firebase</div>
+          <div class="table-title">👷 Professionnels Firebase <span id="pros-count-badge" style="font-size:0.75rem;background:var(--primary);color:white;padding:2px 8px;border-radius:20px;margin-left:8px;">0</span></div>
           <div class="table-actions">
             <div class="search-wrap-admin">
               <span class="material-icons-round">search</span>
-              <input type="text" class="search-box" id="pros-search" placeholder="Nom, métier..." oninput="renderProsTable()">
+              <input type="text" class="search-box" id="pros-search" placeholder="Nom, métier, commune..." oninput="renderProsTable()">
             </div>
             <select class="form-input btn-sm" id="pros-status-filter" style="width:130px;" onchange="renderProsTable()">
               <option value="">Tous statuts</option>
@@ -334,6 +334,15 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
               <option value="pending">⏳ En attente</option>
               <option value="suspended">⏸ Suspendus</option>
               <option value="banned">🚫 Bannis</option>
+            </select>
+            <select class="form-input btn-sm" id="pros-commune-filter" style="width:140px;" onchange="renderProsTable()">
+              <option value="">Toutes communes</option>
+            </select>
+            <select class="form-input btn-sm" id="pros-sort-filter" style="width:140px;" onchange="renderProsTable()">
+              <option value="recent">Plus récents</option>
+              <option value="rating">Meilleure note</option>
+              <option value="views">Plus vus</option>
+              <option value="name">Nom A→Z</option>
             </select>
             <button class="btn btn-primary btn-sm" onclick="gotoSection('add-pro',null)">
               <span class="material-icons-round" style="font-size:15px;">add</span> Ajouter
@@ -636,12 +645,35 @@ function setFbStatus(state,text){
   if(chip){chip.className='fb-chip '+state;}if(t)t.textContent=text;
 }
 
+// Listener temps réel Firestore
+let unsubscribePros = null;
 async function loadAllPros(){
-  if(!fbReady){allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');return;}
+  if(!fbReady){allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');updateStats();renderPros();return;}
   try{
-    const snap=await db.collection('professionals').orderBy('createdAt','desc').get();
-    allPros=snap.docs.map(d=>({...d.data(),id:d.id,fbId:d.id}));
-  }catch(e){allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');}
+    // Annuler l'ancien listener s'il existe
+    if(unsubscribePros) unsubscribePros();
+    // 📊 Écoute en temps réel — mise à jour automatique dès qu'un pro s'inscrit
+    unsubscribePros = db.collection('professionals').onSnapshot(snap=>{
+      allPros=snap.docs.map(d=>({...d.data(),id:d.id,fbId:d.id}));
+      updateStats();
+      renderPros();
+      // Notification visuelle si nouveau pro
+      const newPros = snap.docChanges().filter(c=>c.type==='added');
+      if(newPros.length>0 && snap.docChanges().length < snap.docs.length){
+        newPros.forEach(c=>{
+          const p=c.doc.data();
+          showToast(`🆕 Nouveau pro : ${p.name} (${p.job})`);
+        });
+      }
+    }, e=>{
+      console.error('Firestore listener error:', e);
+      allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');
+      updateStats();renderPros();
+    });
+  }catch(e){
+    allPros=JSON.parse(localStorage.getItem('matloub_pros_v6')||'[]');
+    updateStats();renderPros();
+  }
 }
 
 async function updatePro(fbId,updates){
@@ -738,6 +770,11 @@ async function updateDashboard(){
   const reports=pros.filter(u=>(u.reports||0)>0).length;
   const now=Date.now();const weekAgo=now-7*24*3600*1000;
   const newWeek=pros.filter(u=>u.joinDate&&new Date(u.joinDate).getTime()>weekAgo).length;
+  const totalReviews=pros.reduce((s,u)=>s+(u.reviews||[]).length,0);
+  const avgRating=pros.filter(u=>u.reviews?.length).length
+    ? (pros.reduce((s,u)=>s+getAvg(u),0)/pros.filter(u=>u.reviews?.length).length).toFixed(1)
+    : '—';
+
   document.getElementById('s-total').textContent=pros.length;
   document.getElementById('s-active').textContent=active;
   document.getElementById('s-pending').textContent=pending;
@@ -746,11 +783,15 @@ async function updateDashboard(){
   document.getElementById('s-active-pct').textContent=pros.length?Math.round(active/pros.length*100)+'%':'0%';
   document.getElementById('nb-pending').textContent=pending;
   document.getElementById('nb-reports').textContent=reports;
-  document.getElementById('firebase-detail').textContent=fbReady?`🔥 Firebase · ${pros.length} pros · Temps réel`:`⚠️ Mode local · ${pros.length} pros`;
+  document.getElementById('firebase-detail').textContent=fbReady
+    ? `🔥 Temps réel · ${pros.length} pros · ${totalReviews} avis · Note moy: ★${avgRating}`
+    : `⚠️ Mode local · ${pros.length} pros`;
 
   // Traffic
   const traffic=await loadTraffic();
-  document.getElementById('t-today').textContent=traffic.today;document.getElementById('t-month').textContent=traffic.month;document.getElementById('t-year').textContent=traffic.year;
+  document.getElementById('t-today').textContent=traffic.today;
+  document.getElementById('t-month').textContent=traffic.month;
+  document.getElementById('t-year').textContent=traffic.year;
   const tc=document.getElementById('traffic-chart');
   if(traffic.days.length){
     const max=Math.max(...traffic.days.map(d=>d.visits||0),1);
@@ -762,19 +803,23 @@ async function updateDashboard(){
   }else{tc.innerHTML='<div style="text-align:center;color:var(--text3);padding:16px;">Aucune donnée de trafic (Firebase requis)</div>';}
 
   // Recent
-  const recent=[...pros].sort((a,b)=>new Date(b.joinDate||0)-new Date(a.joinDate||0)).slice(0,8);
+  const recent=[...pros].sort((a,b)=>new Date(b.joinDate||b.createdAt||0)-new Date(a.joinDate||a.createdAt||0)).slice(0,8);
   document.getElementById('recent-table').innerHTML=recent.map(u=>`
     <tr onclick="openProModal('${u.fbId||u.id}')" style="cursor:pointer;">
       <td><div class="pro-cell">
         <div class="pro-mini-avatar">${u.selfie?`<img src="${u.selfie}" style="width:100%;height:100%;object-fit:cover;">`:(u.photos&&u.photos.length?`<img src="${u.photos[0]}" style="width:100%;height:100%;object-fit:cover;">`:u.name?u.name[0].toUpperCase():'?')}</div>
-        <div><div class="pro-mini-name">${sanitize(u.name)}</div><div class="pro-mini-sub">${u.joinDate||''}</div></div>
+        <div><div class="pro-mini-name">${sanitize(u.name)}</div><div class="pro-mini-sub">${u.joinDate||u.createdAt||'—'}</div></div>
       </div></td>
       <td>${sanitize(u.job||'')}</td>
-      <td>${sanitize(u.commune||'—')}</td>
-      <td><span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:5px;background:${u.fbId?'#DCFCE7':'#FEF3C7'};color:${u.fbId?'#166534':'#92400E'};">${u.fbId?'🔥 FB':'💾 Local'}</span></td>
+      <td>${sanitize(u.commune||u.location||'—')}</td>
+      <td><span style="color:#F59E0B;font-weight:800;">★${getAvg(u)}</span> <span style="font-size:0.72rem;color:var(--text3);">(${(u.reviews||[]).length} avis)</span></td>
       <td><span class="badge badge-${u.status||'active'}">${{active:'✅ Actif',pending:'⏳ Attente',suspended:'⏸ Suspendu',banned:'🚫 Banni'}[u.status]||u.status||'—'}</span></td>
     </tr>`).join('');
 }
+
+// Alias pour le listener temps réel
+function updateStats(){ updateDashboard(); }
+function renderPros(){ renderProsTable(); renderReports(); }
 
 // ════════════════════════════════════════════
 // 👷 TABLE PROS
@@ -782,10 +827,39 @@ async function updateDashboard(){
 function renderProsTable(){
   const q=(document.getElementById('pros-search')?.value||'').toLowerCase();
   const sf=document.getElementById('pros-status-filter')?.value||'';
+  const cf=document.getElementById('pros-commune-filter')?.value||'';
+  const sort=document.getElementById('pros-sort-filter')?.value||'recent';
   let pros=allPros.filter(u=>!u.role||u.role==='pro');
-  if(q)pros=pros.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.job||'').toLowerCase().includes(q)||(u.email||u.emailMain||'').toLowerCase().includes(q));
+
+  // 🔍 Recherche avancée — nom, métier, commune, email
+  if(q)pros=pros.filter(u=>
+    (u.name||'').toLowerCase().includes(q)||
+    (u.job||'').toLowerCase().includes(q)||
+    (u.commune||u.location||'').toLowerCase().includes(q)||
+    (u.email||u.emailMain||'').toLowerCase().includes(q)||
+    (u.phone||'').includes(q)
+  );
   if(sf)pros=pros.filter(u=>u.status===sf);
-  pros.sort((a,b)=>new Date(b.joinDate||0)-new Date(a.joinDate||0));
+  if(cf)pros=pros.filter(u=>(u.commune||u.location||'')=== cf);
+
+  // 📊 Tri avancé
+  if(sort==='rating')pros.sort((a,b)=>getAvg(b)-getAvg(a));
+  else if(sort==='views')pros.sort((a,b)=>(b.views||0)-(a.views||0));
+  else if(sort==='name')pros.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else pros.sort((a,b)=>new Date(b.joinDate||b.createdAt||0)-new Date(a.joinDate||a.createdAt||0));
+
+  // Mettre à jour le filtre communes dynamiquement
+  const communeSelect=document.getElementById('pros-commune-filter');
+  if(communeSelect){
+    const communes=[...new Set(allPros.map(u=>u.commune||u.location||'').filter(Boolean))].sort();
+    const currentVal=communeSelect.value;
+    communeSelect.innerHTML='<option value="">Toutes communes</option>'+communes.map(c=>`<option value="${c}" ${c===currentVal?'selected':''}>${c}</option>`).join('');
+  }
+
+  // Badge compteur
+  const badge=document.getElementById('pros-count-badge');
+  if(badge) badge.textContent=pros.length;
+
   document.getElementById('pros-table').innerHTML=pros.map(u=>`
     <tr>
       <td><div class="pro-cell">
@@ -794,12 +868,12 @@ function renderProsTable(){
         </div>
         <div>
           <div class="pro-mini-name" onclick="openProModal('${u.fbId||u.id}')" style="cursor:pointer;">${sanitize(u.name)}${u.emailVerified?' ✅':''}</div>
-          <div class="pro-mini-sub">🚩${u.reports||0} · 📵${u.noResponseReports||0} · 💬${(u.reviews||[]).length}</div>
+          <div class="pro-mini-sub">🚩${u.reports||0} · 👁${u.views||0} · 💬${(u.reviews||[]).length} avis</div>
         </div>
       </div></td>
       <td>${sanitize(u.job||'')}</td>
       <td style="font-size:0.78rem;">${(u.mainContact||u.email||u.phone||'—').substring(0,16)}</td>
-      <td>${sanitize(u.commune||'—')}</td>
+      <td>${sanitize(u.commune||u.location||'—')}</td>
       <td><span style="color:#F59E0B;font-weight:800;">★${getAvg(u)}</span></td>
       <td><span class="badge badge-${u.status||'active'}">${{active:'✅',pending:'⏳',suspended:'⏸',banned:'🚫'}[u.status]||'?'}</span></td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
@@ -1034,11 +1108,10 @@ function initApp(){
   const jsel=document.getElementById('ap-job');allJobs.forEach(j=>jsel.innerHTML+=`<option value="${j}">${j}</option>`);
   // Fill dairas
   const dsel=document.getElementById('ap-daira');oranData.dairas.forEach(d=>dsel.innerHTML+=`<option value="${d.id}">${d.name}</option>`);
-  // Real-time listener si Firebase
-  if(fbReady){db.collection('professionals').onSnapshot(snap=>{allPros=snap.docs.map(d=>({...d.data(),id:d.id,fbId:d.id}));updateDashboard();renderProsTable();renderReports();},e=>console.warn('Realtime:',e));}
+  // loadAllPros gère déjà le listener temps réel Firestore
   updateDashboard();renderProsTable();renderBlacklist();
-  // Auto-refresh every 30s
-  setInterval(()=>{if(!fbReady){loadAllPros().then(()=>{updateDashboard();renderProsTable();});}},30000);
+  // Auto-refresh toutes les 30s en mode local seulement
+  setInterval(()=>{if(!fbReady){loadAllPros();}},30000);
 }
 
 // ════════════════════════════════════════════
