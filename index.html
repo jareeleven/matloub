@@ -16,6 +16,7 @@
 <meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran">
 <meta property="og:type" content="website">
 <title>MATLOUB — Professionnels à Oran</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1341,6 +1342,31 @@ const FIREBASE_CONFIG = {
   measurementId:     "G-ZLYBE4R4H4"
 };
 
+// ── CONFIG EMAILJS ──
+const EMAILJS_PUBLIC_KEY  = 'ThRYBRsTCHCEdseQm';
+const EMAILJS_SERVICE_ID  = 'service_q5s7pxh';
+const EMAILJS_TEMPLATE_ID = 'template_wceu4n3';
+
+// Initialiser EmailJS
+(()=>{ try{ emailjs.init(EMAILJS_PUBLIC_KEY); }catch(e){} })();
+
+// Envoyer notification admin quand nouveau pro inscrit
+async function notifyAdminNewPro(pro) {
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      pro_name:    pro.name,
+      pro_job:     pro.job,
+      pro_commune: pro.commune || pro.location || '',
+      pro_phone:   pro.phone,
+      pro_email:   pro.email,
+      date:        new Date().toLocaleString('fr-DZ')
+    });
+    console.log('📧 Notification admin envoyée');
+  } catch(e) {
+    console.warn('EmailJS error:', e);
+  }
+}
+
 // ── DÉTECTION MODE : Firebase ou localStorage (fallback demo) ──
 let USE_FIREBASE = false;
 let firebaseDB = null;
@@ -2351,6 +2377,7 @@ const app = {
         closeModal('register-pro-modal');
         toast('📧 Un email de vérification a été envoyé à ' + emailMain + ' — vérifiez votre boîte mail pour activer votre compte.', 6000);
         addNotif(`🆕 Nouveau pro inscrit: ${name} (${job} - ${commune}) — en attente vérification email`);
+        notifyAdminNewPro(newUser);
 
         // Vérifier toutes les 3 secondes si l'email est vérifié
         const checkVerif = setInterval(async () => {
