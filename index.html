@@ -1359,7 +1359,7 @@ async function notifyAdminNewPro(pro) {
       pro_name:    pro.name,
       pro_job:     pro.job,
       pro_commune: pro.commune || pro.location || '',
-      pro_phone:   pro.phone || '—',
+      pro_phone:   '📞 ' + String(pro.phone || pro.phoneMain || '—'),
       pro_email:   pro.emailMain || pro.email || '—',
       date:        new Date().toLocaleString('fr-DZ')
     });
@@ -2326,8 +2326,8 @@ const app = {
     const newUser = {
       id: Date.now(),
       name: sanitize(name), job: sanitize(job),
-      phone: authMode==='phone' ? phone : phoneRec,
-      phoneBackup: authMode==='phone' ? phoneRec : phone,
+      phone: String(authMode==='phone' ? phone : phoneRec),
+      phoneBackup: String(authMode==='phone' ? phoneRec : phone),
       email: authMode==='email' ? emailMain : emailRec,
       emailMain: authMode==='email' ? emailMain : emailRec,
       emailBackup: authMode==='phone' ? emailRec : emailMain,
