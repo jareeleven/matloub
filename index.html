@@ -1384,7 +1384,7 @@ async function initFirebase() {
                                          = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
     const { getStorage, ref, uploadString, getDownloadURL, deleteObject }
                                          = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js');
-    const { getAuth, signInAnonymously, onAuthStateChanged }
+    const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, updateProfile }
                                          = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
 
     if (FIREBASE_CONFIG.apiKey === 'VOTRE_API_KEY') {
@@ -1398,9 +1398,35 @@ async function initFirebase() {
     firebaseStorage = getStorage(app);
     firebaseAuth    = getAuth(app);
 
-    // Auth anonyme pour accès Firestore (règles de sécurité côté Firebase)
-    await signInAnonymously(firebaseAuth);
+    // ❌ SUPPRIMÉ: signInAnonymously qui écrasait les sessions email
+    // On laisse Firebase gérer l'auth automatiquement
     USE_FIREBASE = true;
+
+    // Stocker les fonctions Auth pour réutilisation
+    window.FB_AUTH = { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, updateProfile };
+
+    // Vérifier si un utilisateur est déjà connecté et a vérifié son email
+    onAuthStateChanged(firebaseAuth, async (user) => {
+      if (user && user.emailVerified) {
+        // Chercher cet utilisateur dans la DB locale et l'activer
+        const localUser = db?.users?.find(u => u.emailMain === user.email || u.email === user.email);
+        if (localUser && localUser.status === 'pending') {
+          localUser.status = 'active';
+          localUser.emailVerified = true;
+          saveDB();
+          // Mettre à jour Firestore
+          try { await savePro({...localUser, status:'active', emailVerified:true}); } catch(e){}
+          // Si c'est la page actuelle et pas encore connecté
+          if (!db.currentUser) {
+            db.currentUser = localUser;
+            saveSession();
+            updateHeroCount();
+            navTo('profile');
+            toast('✅ Email vérifié ! Bienvenue sur MATLOUB 🎉');
+          }
+        }
+      }
+    });
 
     // ─ Attacher les fonctions Firestore à l'objet global FB ─
     window.FB = {
@@ -2358,7 +2384,7 @@ const app = {
     // 🔥 Créer compte Firebase Auth + envoyer email de vérification
     if (USE_FIREBASE && authMode === 'email' && emailMain) {
       try {
-        const { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } =
+        const { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } = window.FB_AUTH || 
           await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
         const userCredential = await createUserWithEmailAndPassword(firebaseAuth, emailMain, pass);
         await updateProfile(userCredential.user, { displayName: name });
