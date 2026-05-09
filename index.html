@@ -589,6 +589,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <button class="tab-btn active" onclick="showProTab('edit',this)">Mon Profil</button>
       <button class="tab-btn" onclick="showProTab('stats',this)">Statistiques</button>
       <button class="tab-btn" onclick="showProTab('reviews',this)">Avis</button>
+      <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 Abonnement</button>
     </div>
 
     <!-- Tab: Edition -->
@@ -668,6 +669,52 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <!-- Tab: Avis -->
     <div id="pro-tab-reviews" class="hidden">
       <div id="pro-reviews-list"><div class="empty-state"><span class="material-icons-round">rate_review</span><h3>Pas encore d'avis</h3></div></div>
+    </div>
+
+    <!-- Tab: Abonnement -->
+    <div id="pro-tab-abonnement" class="hidden">
+
+      <!-- Bannière statut abonnement -->
+      <div id="sub-status-banner" class="card" style="margin-bottom:12px;"></div>
+
+      <!-- Plans -->
+      <div id="sub-plans-section">
+        <!-- Plan Essai -->
+        <div class="card" style="margin-bottom:12px;border:2px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:800;font-size:1rem;">🆓 Période d'essai</div>
+            <span style="background:#DCFCE7;color:#166534;padding:4px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;">Gratuit</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text2);line-height:1.6;">
+            ✅ Profil complet visible<br>
+            ✅ Visible sur la carte<br>
+            ✅ Reçoit des avis<br>
+            ⏳ Durée : 30 jours<br>
+            ❌ Pas de badge vérifié<br>
+            ❌ Pas de priorité recherche
+          </div>
+        </div>
+
+        <!-- Plan Pro à Vie -->
+        <div class="card" style="margin-bottom:12px;border:2px solid var(--primary);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:12px;right:-20px;background:var(--primary);color:white;padding:4px 32px;font-size:0.72rem;font-weight:800;transform:rotate(45deg);">RECOMMANDÉ</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:800;font-size:1rem;">💎 Pro à Vie</div>
+            <span style="background:var(--primary);color:white;padding:4px 12px;border-radius:20px;font-size:0.9rem;font-weight:900;">1000 DA</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:12px;">
+            ✅ Tout ce qui est dans l'essai<br>
+            ✅ Badge vérifié ✅ sur le profil<br>
+            ✅ Priorité dans les résultats<br>
+            ✅ Statistiques complètes<br>
+            ✅ Support prioritaire<br>
+            ✅ <strong>Paiement unique — à vie !</strong>
+          </div>
+          <button onclick="app.showPaymentModal()" class="btn btn-primary" style="width:100%;padding:14px;font-size:1rem;font-weight:800;">
+            💎 S'abonner maintenant — 1000 DA
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1023,6 +1070,48 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       </div>
     </div>
     <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('notif-modal')">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal Paiement Abonnement -->
+<div id="payment-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:2rem;">💎</div>
+      <div style="font-size:1.2rem;font-weight:900;color:var(--primary);">Abonnement Pro à Vie</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--primary);margin:8px 0;">1000 DA</div>
+      <div style="font-size:0.82rem;color:var(--text3);">Paiement unique — accès à vie garanti</div>
+    </div>
+
+    <!-- Méthode 1: Edahabia/CIB -->
+    <div class="card" style="margin-bottom:12px;border:2px solid #10B981;">
+      <div style="font-weight:800;color:#065F46;margin-bottom:8px;">💳 Méthode 1 — Edahabia / CIB</div>
+      <div style="font-size:0.82rem;color:var(--text2);line-height:1.8;">
+        1️⃣ Envoyez <strong>1000 DA</strong> sur :<br>
+        📱 Edahabia : <strong id="payment-edahabia">VOTRE_NUMERO_EDAHABIA</strong><br>
+        👤 Nom : <strong>VOTRE_NOM</strong><br><br>
+        2️⃣ Envoyez la capture d'écran sur WhatsApp :<br>
+        📱 <strong id="payment-whatsapp">VOTRE_NUMERO_WA</strong>
+      </div>
+    </div>
+
+    <!-- Méthode 2: Code -->
+    <div class="card" style="margin-bottom:16px;border:2px solid var(--primary);">
+      <div style="font-weight:800;color:var(--primary);margin-bottom:8px;">🔑 Méthode 2 — Code d'activation</div>
+      <div style="font-size:0.82rem;color:var(--text2);margin-bottom:12px;">
+        Payez en espèces → l'admin vous envoie un code → entrez-le ici :
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="activation-code-input" class="input-field" placeholder="Ex: MATLOUB-XXXX" style="flex:1;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+        <button onclick="app.activateWithCode()" class="btn btn-primary" style="padding:12px 16px;">Activer</button>
+      </div>
+    </div>
+
+    <div style="font-size:0.75rem;color:var(--text3);text-align:center;margin-bottom:12px;">
+      ⏳ Après vérification du paiement, votre compte sera activé sous 24h maximum
+    </div>
+    <button class="btn btn-ghost" onclick="closeModal('payment-modal')">Fermer</button>
   </div>
 </div>
 
@@ -1441,7 +1530,12 @@ async function sendPushNotification(token, title, body, data = {}) {
   }
 }
 
-// ── CONFIG EMAILJS ──
+// ── CONFIG PAIEMENT ──
+const PAYMENT_INFO = {
+  edahabia: '6280703146616583', // ← Remplacez par votre numéro Edahabia
+  whatsapp:  '+213771062122',       // ← Remplacez par votre numéro WhatsApp
+  nom:       'Gafsi Abdeldjalil'              // ← Remplacez par votre nom
+};
 const EMAILJS_PUBLIC_KEY  = 'ThRYBRsTCHCEdseQm';
 const EMAILJS_SERVICE_ID  = 'service_q5s7pxh';
 const EMAILJS_TEMPLATE_ID = 'template_wceu4n3';
@@ -2353,7 +2447,127 @@ const app = {
     showModal('detail-modal');
   },
 
-  // 🔔 NOTIFICATIONS
+  // 💎 ABONNEMENT
+  showPaymentModal() {
+    // Remplir les infos de paiement
+    document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
+    document.getElementById('payment-whatsapp').textContent = PAYMENT_INFO.whatsapp;
+    showModal('payment-modal');
+  },
+
+  async activateWithCode() {
+    const code = document.getElementById('activation-code-input').value.trim().toUpperCase();
+    if (!code) return toast('Entrez un code d\'activation');
+    if (!db.currentUser) return toast('Vous devez être connecté');
+
+    // Vérifier le code dans Firestore
+    if (USE_FIREBASE) {
+      try {
+        const { collection, query, where, getDocs, deleteDoc, doc } =
+          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const q = query(collection(firebaseDB, 'activation_codes'), where('code', '==', code), where('used', '==', false));
+        const snap = await getDocs(q);
+        if (snap.empty) return toast('❌ Code invalide ou déjà utilisé');
+
+        // Marquer le code comme utilisé
+        await deleteDoc(doc(firebaseDB, 'activation_codes', snap.docs[0].id));
+
+        // Activer l'abonnement
+        await this.activateSubscription('code');
+        closeModal('payment-modal');
+        return;
+      } catch(e) { console.warn('Code activation error:', e); }
+    }
+    toast('❌ Code invalide');
+  },
+
+  async activateSubscription(method = 'manual') {
+    const u = db.currentUser;
+    if (!u) return;
+    u.subscription = {
+      plan: 'pro_lifetime',
+      activatedAt: Date.now(),
+      method,
+      active: true
+    };
+    u.verified = true;
+    saveDB();
+
+    // Mettre à jour Firestore
+    if (USE_FIREBASE) {
+      try { await savePro({...u}); } catch(e) {}
+    }
+
+    toast('🎉 Abonnement Pro à Vie activé ! Bienvenue dans la famille MATLOUB 💎');
+    this.renderSubscriptionStatus();
+    this.updateProHero();
+  },
+
+  renderSubscriptionStatus() {
+    const u = db.currentUser;
+    if (!u) return;
+    const banner = document.getElementById('sub-status-banner');
+    if (!banner) return;
+
+    const sub = u.subscription;
+    const joinDate = new Date(u.joinDate || u.createdAt || Date.now());
+    const trialEnd = new Date(joinDate.getTime() + 30 * 24 * 3600 * 1000);
+    const now = new Date();
+    const daysLeft = Math.max(0, Math.ceil((trialEnd - now) / (24 * 3600 * 1000)));
+
+    if (sub?.plan === 'pro_lifetime' && sub?.active) {
+      banner.innerHTML = `
+        <div style="background:linear-gradient(135deg,#6C3CE1,#A855F7);color:white;border-radius:14px;padding:16px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:4px;">💎</div>
+          <div style="font-weight:900;font-size:1rem;">Abonnement Pro à Vie Actif</div>
+          <div style="font-size:0.8rem;opacity:0.85;margin-top:4px;">Activé le ${new Date(sub.activatedAt).toLocaleDateString('fr-FR')}</div>
+          <div style="margin-top:8px;background:rgba(255,255,255,0.2);border-radius:8px;padding:6px;font-size:0.78rem;">✅ Badge vérifié · ✅ Priorité recherche · ✅ Stats complètes</div>
+        </div>`;
+    } else if (daysLeft > 0) {
+      banner.innerHTML = `
+        <div style="background:linear-gradient(135deg,#F59E0B,#EF4444);color:white;border-radius:14px;padding:16px;">
+          <div style="font-weight:900;font-size:1rem;">⏳ Période d'essai gratuite</div>
+          <div style="font-size:0.85rem;margin-top:6px;">Il vous reste <strong>${daysLeft} jour(s)</strong> d'essai</div>
+          <div style="font-size:0.78rem;opacity:0.9;margin:6px 0;">Passez à Pro à Vie pour continuer après l'essai</div>
+          <button onclick="app.showPaymentModal()" style="background:white;color:#F59E0B;border:none;padding:8px 16px;border-radius:10px;font-weight:800;cursor:pointer;width:100%;margin-top:4px;">
+            💎 S'abonner — 1000 DA à vie
+          </button>
+        </div>`;
+    } else {
+      // Essai expiré
+      banner.innerHTML = `
+        <div style="background:linear-gradient(135deg,#EF4444,#991B1B);color:white;border-radius:14px;padding:16px;">
+          <div style="font-weight:900;font-size:1rem;">⛔ Période d'essai expirée</div>
+          <div style="font-size:0.82rem;margin-top:6px;">Votre profil est <strong>masqué</strong> des résultats de recherche</div>
+          <button onclick="app.showPaymentModal()" style="background:white;color:#EF4444;border:none;padding:8px 16px;border-radius:10px;font-weight:800;cursor:pointer;width:100%;margin-top:8px;">
+            💎 S'abonner maintenant — 1000 DA à vie
+          </button>
+        </div>`;
+
+      // Désactiver le profil auto
+      if (u.status === 'active') {
+        u.status = 'suspended';
+        u.suspendedReason = 'trial_expired';
+        saveDB();
+        if (USE_FIREBASE) { try { await savePro({...u}); } catch(e) {} }
+      }
+    }
+  },
+
+  checkTrialExpiry() {
+    const u = db.currentUser;
+    if (!u || u.role !== 'pro') return;
+    if (u.subscription?.plan === 'pro_lifetime') return;
+    const joinDate = new Date(u.joinDate || u.createdAt || Date.now());
+    const trialEnd = joinDate.getTime() + 30 * 24 * 3600 * 1000;
+    if (Date.now() > trialEnd && u.status === 'active') {
+      u.status = 'suspended';
+      u.suspendedReason = 'trial_expired';
+      saveDB();
+      if (USE_FIREBASE) { try { savePro({...u}); } catch(e) {} }
+      toast('⚠️ Votre période d\'essai est expirée. Abonnez-vous pour continuer.');
+    }
+  },
   toggleNotifPanel() {
     const panel = document.getElementById('notif-panel');
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -3054,6 +3268,11 @@ const app = {
           app.updateNotifBadge();
         }
       });
+      // 💎 Vérifier expiry essai
+      if (u.role === 'pro') {
+        app.checkTrialExpiry();
+        app.renderSubscriptionStatus();
+      }
     }, 2000);
   },
 
