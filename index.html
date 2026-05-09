@@ -2369,9 +2369,10 @@ const app = {
 
   async submitRating() {
     if (!ratingSelected) return toast('Choisissez une note ⭐');
-    const id = +document.getElementById('rate-target-id').value;
-    const u = db.users.find(us => us.id === id || us.id === String(id));
-    if (!u) return;
+    const rawId = document.getElementById('rate-target-id').value;
+    const id = isNaN(rawId) ? rawId : +rawId;
+    const u = db.users.find(us => us.id == id || us.id === rawId || us.fbId === rawId);
+    if (!u) { console.warn('Pro non trouvé:', rawId); return toast('Erreur — pro introuvable'); }
     const commentRaw = document.getElementById('rate-comment').value.trim();
     const authorRaw  = document.getElementById('rate-author').value.trim();
     if (!authorRaw) return toast('Entrez votre prénom');
@@ -2416,7 +2417,7 @@ const app = {
       );
     }
 
-    app.showDetail(id);
+    app.showDetail(rawId);
   },
 
   // ── SIGNALEMENT ──
