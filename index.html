@@ -16,6 +16,8 @@
 <meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran">
 <meta property="og:type" content="website">
 <title>MATLOUB — Professionnels à Oran</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -466,19 +468,25 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     </select>
   </div>
 
+  <!-- Toggle Vue Liste / Carte -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button id="btn-view-list" onclick="app.switchView('list')" style="flex:1;padding:8px;border-radius:10px;border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span class="material-icons-round" style="font-size:16px;">view_list</span> Liste
+    </button>
+    <button id="btn-view-map" onclick="app.switchView('map')" style="flex:1;padding:8px;border-radius:10px;border:2px solid var(--primary);background:white;color:var(--primary);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span class="material-icons-round" style="font-size:16px;">map</span> Carte
+    </button>
+  </div>
+
   <!-- Chips catégories avec scroll horizontal amélioré -->
   <div style="position:relative;margin-bottom:16px;">
-    <!-- Flèche gauche -->
     <button id="chips-arrow-left" onclick="scrollChips(-1)" style="position:absolute;left:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(108,60,225,0.2);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--primary);">
       <span class="material-icons-round" style="font-size:16px;">chevron_left</span>
     </button>
-    <!-- Flèche droite -->
     <button id="chips-arrow-right" onclick="scrollChips(1)" style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(108,60,225,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--primary);">
       <span class="material-icons-round" style="font-size:16px;">chevron_right</span>
     </button>
-    <!-- Gradient fade left -->
     <div id="chips-fade-left" style="position:absolute;left:0;top:0;bottom:8px;width:28px;background:linear-gradient(to right,var(--bg),transparent);z-index:5;pointer-events:none;display:none;border-radius:50px 0 0 50px;"></div>
-    <!-- Gradient fade right -->
     <div id="chips-fade-right" style="position:absolute;right:0;top:0;bottom:8px;width:28px;background:linear-gradient(to left,var(--bg),transparent);z-index:5;pointer-events:none;border-radius:0 50px 50px 0;"></div>
     <div class="chips-scroll" id="explore-cat-chips" onscroll="updateChipsArrows()">
       <div class="chip active" onclick="app.selectExploreCat('', this)">Tous</div>
@@ -493,7 +501,16 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     </select>
   </div>
 
+  <!-- Vue Liste -->
   <div id="explore-pros-list"></div>
+
+  <!-- Vue Carte -->
+  <div id="explore-map-view" style="display:none;">
+    <div id="map-oran" style="height:480px;border-radius:16px;overflow:hidden;border:2px solid var(--border);"></div>
+    <div style="margin-top:8px;font-size:0.78rem;color:var(--text3);text-align:center;">
+      📍 Cliquez sur un marqueur pour voir le profil du professionnel
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════ PAGE FAVORIS ══════════════════════ -->
@@ -2061,7 +2078,94 @@ function saveFavs(f) {
 // ────────────────────────────────────────────
 //  APP OBJECT
 // ────────────────────────────────────────────
+// ── COORDONNÉES COMMUNES ORAN ──
+const COMMUNE_COORDS = {
+  'Oran':            [35.6976, -0.6337],
+  'Bir El Djir':     [35.7281, -0.5611],
+  'Es Sénia':        [35.6489, -0.6025],
+  'Gdyel':           [35.7736, -0.5342],
+  'Arzew':           [35.8317, -0.3167],
+  'Béthioua':        [35.8167, -0.2833],
+  'Aïn El Turk':     [35.7417, -0.7731],
+  'Boutlélis':       [35.5667, -0.8167],
+  'Oued Tlelat':     [35.5333, -0.4667],
+  'El Hamri':        [35.7100, -0.6500],
+  'Sidi El Houari':  [35.7050, -0.6400],
+  'Médioni':         [35.7200, -0.6200],
+  'El Othmania':     [35.6800, -0.6100],
+  'Hassi Ben Okba':  [35.6500, -0.5800],
+  'Sidi Chami':      [35.6200, -0.5500],
+  'Mers El Kébir':   [35.7333, -0.7167],
+  'Messerghin':      [35.6000, -0.7500],
+};
+let mapInstance = null, mapMarkers = [];
+
 const app = {
+  currentView: 'list',
+
+  switchView(view) {
+    this.currentView = view;
+    const listEl  = document.getElementById('explore-pros-list');
+    const mapEl   = document.getElementById('explore-map-view');
+    const btnList = document.getElementById('btn-view-list');
+    const btnMap  = document.getElementById('btn-view-map');
+    if (view === 'map') {
+      listEl.style.display = 'none'; mapEl.style.display = 'block';
+      btnList.style.background = 'white'; btnList.style.color = 'var(--primary)';
+      btnMap.style.background = 'var(--primary)'; btnMap.style.color = 'white';
+      setTimeout(() => this.renderMap(), 150);
+    } else {
+      listEl.style.display = 'block'; mapEl.style.display = 'none';
+      btnList.style.background = 'var(--primary)'; btnList.style.color = 'white';
+      btnMap.style.background = 'white'; btnMap.style.color = 'var(--primary)';
+    }
+  },
+
+  renderMap() {
+    const q       = (document.getElementById('explore-search')?.value || '').toLowerCase();
+    const commune = document.getElementById('exp-commune')?.value || '';
+    const catChip = document.querySelector('#explore-cat-chips .chip.active')?.dataset?.cat || '';
+    let pros = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+    if (q)       pros = pros.filter(u => (u.name+' '+u.job+' '+(u.commune||u.location||'')).toLowerCase().includes(q));
+    if (commune) pros = pros.filter(u => (u.commune||u.location||'') === commune);
+    if (catChip) pros = pros.filter(u => getJobCategory(u.job)?.id === catChip);
+
+    if (!mapInstance) {
+      mapInstance = L.map('map-oran').setView([35.6976, -0.6337], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+      }).addTo(mapInstance);
+    } else {
+      mapMarkers.forEach(m => m.remove());
+      mapMarkers = [];
+    }
+
+    pros.forEach(u => {
+      const loc    = u.commune || u.location || '';
+      const coords = COMMUNE_COORDS[loc];
+      if (!coords) return;
+      const lat = coords[0] + (Math.random() - 0.5) * 0.006;
+      const lng = coords[1] + (Math.random() - 0.5) * 0.006;
+      const cat = getJobCategory(u.job) || { color: '#6C3CE1', icon: '👷' };
+      const avg = getAvg(u);
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="background:${cat.color};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.icon||'👷'}</div>`,
+        iconSize: [38, 38], iconAnchor: [19, 19]
+      });
+      const marker = L.marker([lat, lng], { icon }).addTo(mapInstance)
+        .bindPopup(`<div style="min-width:190px;font-family:system-ui,sans-serif;">
+          <div style="font-weight:800;font-size:0.95rem;margin-bottom:4px;">${sanitize(u.name)}</div>
+          <div style="color:${cat.color};font-weight:700;font-size:0.82rem;">${sanitize(u.job)}</div>
+          <div style="font-size:0.78rem;color:#888;margin:3px 0;">📍 ${sanitize(loc)}</div>
+          <div style="font-size:0.78rem;color:#F59E0B;margin-bottom:8px;">★ ${avg} · ${(u.reviews||[]).length} avis</div>
+          <button onclick="app.showDetail('${u.id}')" style="background:#6C3CE1;color:white;border:none;padding:7px 0;border-radius:8px;cursor:pointer;font-weight:700;width:100%;font-size:0.85rem;">👤 Voir le profil</button>
+        </div>`);
+      mapMarkers.push(marker);
+    });
+
+    setTimeout(() => mapInstance?.invalidateSize(), 250);
+  },
 
   onSearch(val) { /* live search sur accueil */ app.renderHomePros(val); },
   doSearch() {
