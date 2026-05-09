@@ -2169,25 +2169,30 @@ const app = {
 
   // ── TRACKING CONTACT ──
   trackContact(id, type) {
+    // Toujours sauvegarder en string pour cohérence
+    const sid = String(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
-    if (!contacted.includes(id)) {
-      contacted.push(id);
+    if (!contacted.includes(sid)) {
+      contacted.push(sid);
       localStorage.setItem('matloub_contacted', JSON.stringify(contacted));
     }
     // Incrémenter vues
-    const u = db.users.find(us => us.id === id || us.id === String(id));
+    const u = db.users.find(us => String(us.id) === sid || us.fbId === sid);
     if (u) {
       u.views = (u.views || 0) + 1;
       saveDB();
       if (USE_FIREBASE && u.fbId) {
-        try { db && savePro({...u}); } catch(e) {}
+        try { savePro({...u}); } catch(e) {}
       }
     }
+    // Recharger le modal après 1 seconde pour activer le bouton avis
+    setTimeout(() => { app.showDetail(id); }, 1000);
   },
 
   hasContacted(id) {
+    const sid = String(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
-    return contacted.includes(id) || contacted.includes(String(id));
+    return contacted.includes(sid) || contacted.includes(id);
   },
 
   // ── NOTATION ──
