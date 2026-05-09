@@ -544,10 +544,29 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   <!-- Connecté – Pro -->
   <div id="pro-dashboard" class="hidden">
     <div class="pro-hero">
-      <div class="pro-hero-avatar" id="pro-avatar-hero"><span class="material-icons-round" style="font-size:32px;">engineering</span></div>
-      <div style="font-size:1.1rem;font-weight:900;" id="pro-name-hero">Professionnel</div>
-      <div style="opacity:0.8;font-size:0.82rem;" id="pro-job-hero">Métier</div>
-      <div id="pro-status-hero" class="status-badge status-active" style="margin-top:8px;display:inline-block;">Actif</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="pro-hero-avatar" id="pro-avatar-hero"><span class="material-icons-round" style="font-size:32px;">engineering</span></div>
+          <div style="font-size:1.1rem;font-weight:900;" id="pro-name-hero">Professionnel</div>
+          <div style="opacity:0.8;font-size:0.82rem;" id="pro-job-hero">Métier</div>
+          <div id="pro-status-hero" class="status-badge status-active" style="margin-top:8px;display:inline-block;">Actif</div>
+        </div>
+        <div style="position:relative;">
+          <button onclick="app.toggleNotifPanel()" style="background:rgba(255,255,255,0.2);border:none;border-radius:12px;padding:10px;cursor:pointer;color:white;">
+            <span class="material-icons-round" style="font-size:24px;">notifications</span>
+            <span id="notif-badge" style="display:none;position:absolute;top:6px;right:6px;background:#EF4444;color:white;border-radius:50%;width:16px;height:16px;font-size:0.65rem;font-weight:900;display:flex;align-items:center;justify-content:center;">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel notifications -->
+    <div id="notif-panel" style="display:none;background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:800;">🔔 Notifications</div>
+        <button onclick="app.clearNotifs()" style="font-size:0.75rem;color:var(--text3);background:none;border:none;cursor:pointer;">Tout effacer</button>
+      </div>
+      <div id="notif-list" style="font-size:0.85rem;color:var(--text2);">Aucune notification</div>
     </div>
     <div class="tabs">
       <button class="tab-btn active" onclick="showProTab('edit',this)">Mon Profil</button>
@@ -1341,6 +1360,69 @@ const FIREBASE_CONFIG = {
   appId:             "1:760240149650:web:23bae0fcfc5d1c84d0c24b",
   measurementId:     "G-ZLYBE4R4H4"
 };
+
+// ── CONFIG NOTIFICATIONS PUSH ──
+const VAPID_KEY = 'BLOLpR2640tdB__GXFt0wF1_q3UhUsw7AQLjRmNkJF_jiqFxHLf3JMnCioSdaIlIOUxIT3_8hlTHgt065oghQdA';
+let fcmToken = null;
+
+// Demander permission notifications
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) return null;
+  if (Notification.permission === 'granted') return await getFCMToken();
+  if (Notification.permission === 'denied') return null;
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') return await getFCMToken();
+  return null;
+}
+
+// Obtenir le token FCM
+async function getFCMToken() {
+  try {
+    const { getMessaging, getToken } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
+    const messaging = getMessaging();
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+    if (token) {
+      fcmToken = token;
+      localStorage.setItem('matloub_fcm_token', token);
+      return token;
+    }
+  } catch(e) { console.warn('FCM token error:', e); }
+  return null;
+}
+
+// Sauvegarder token FCM du pro dans Firestore
+async function saveFCMToken(proId, token) {
+  if (!USE_FIREBASE || !token) return;
+  try {
+    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    await updateDoc(doc(firebaseDB, 'professionals', String(proId)), { fcmToken: token });
+  } catch(e) { console.warn('Save FCM token error:', e); }
+}
+
+// Envoyer notification push via Firebase (côté client — simulation locale)
+async function sendPushNotification(token, title, body, data = {}) {
+  if (!token) return;
+  // Notification locale si même appareil
+  if (Notification.permission === 'granted') {
+    new Notification(title, {
+      body,
+      icon: '/matloub/icon-192.png',
+      badge: '/matloub/icon-192.png',
+      data
+    });
+  }
+  // Sauvegarder dans Firestore pour que le destinataire la reçoive
+  if (USE_FIREBASE) {
+    try {
+      const { collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      await addDoc(collection(firebaseDB, 'notifications'), {
+        token, title, body, data,
+        read: false,
+        createdAt: Date.now()
+      });
+    } catch(e) { console.warn('Notification save error:', e); }
+  }
+}
 
 // ── CONFIG EMAILJS ──
 const EMAILJS_PUBLIC_KEY  = 'ThRYBRsTCHCEdseQm';
@@ -2167,7 +2249,79 @@ const app = {
     showModal('detail-modal');
   },
 
-  // ── TRACKING CONTACT ──
+  // 🔔 NOTIFICATIONS
+  toggleNotifPanel() {
+    const panel = document.getElementById('notif-panel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    if (panel.style.display === 'block') {
+      // Marquer comme lues
+      const notifs = JSON.parse(localStorage.getItem('matloub_notifs') || '[]');
+      notifs.forEach(n => n.read = true);
+      localStorage.setItem('matloub_notifs', JSON.stringify(notifs));
+      document.getElementById('notif-badge').style.display = 'none';
+      this.renderNotifList();
+    }
+  },
+
+  renderNotifList() {
+    const notifs = JSON.parse(localStorage.getItem('matloub_notifs') || '[]');
+    const list = document.getElementById('notif-list');
+    if (!list) return;
+    if (!notifs.length) { list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">Aucune notification</div>'; return; }
+    list.innerHTML = [...notifs].reverse().slice(0, 20).map(n => `
+      <div style="padding:10px;border-bottom:1px solid var(--border);${n.read?'':'background:var(--primary-soft);border-radius:10px;margin-bottom:6px;'}">
+        <div style="font-weight:700;">${n.title}</div>
+        <div style="color:var(--text3);font-size:0.78rem;">${n.body}</div>
+        <div style="color:var(--text3);font-size:0.72rem;margin-top:4px;">${new Date(n.createdAt).toLocaleString('fr-FR')}</div>
+      </div>`).join('');
+  },
+
+  addLocalNotif(title, body) {
+    const notifs = JSON.parse(localStorage.getItem('matloub_notifs') || '[]');
+    notifs.push({ title, body, read: false, createdAt: Date.now() });
+    localStorage.setItem('matloub_notifs', JSON.stringify(notifs));
+    // Mettre à jour le badge
+    const unread = notifs.filter(n => !n.read).length;
+    const badge = document.getElementById('notif-badge');
+    if (badge && unread > 0) {
+      badge.textContent = unread > 9 ? '9+' : unread;
+      badge.style.display = 'flex';
+    }
+  },
+
+  clearNotifs() {
+    localStorage.removeItem('matloub_notifs');
+    this.renderNotifList();
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+  },
+
+  // Écouter les nouvelles notifications Firestore pour ce pro
+  async listenNotifications(proId) {
+    if (!USE_FIREBASE) return;
+    try {
+      const { collection, query, where, onSnapshot, orderBy } =
+        await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const q = query(
+        collection(firebaseDB, 'notifications'),
+        where('data.proId', '==', String(proId)),
+        where('read', '==', false)
+      );
+      onSnapshot(q, snap => {
+        snap.docChanges().filter(c => c.type === 'added').forEach(c => {
+          const n = c.doc.data();
+          this.addLocalNotif(n.title, n.body);
+          // Notification système si permission accordée
+          if (Notification.permission === 'granted') {
+            new Notification(n.title, {
+              body: n.body,
+              icon: '/matloub/icon-192.png'
+            });
+          }
+        });
+      });
+    } catch(e) { console.warn('Notification listener error:', e); }
+  },
   trackContact(id, type) {
     const nid = isNaN(id) ? id : Number(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
@@ -2186,6 +2340,15 @@ const app = {
     }
     // Recharger le modal après 1 seconde pour activer le bouton avis
     setTimeout(() => { app.showDetail(id); }, 1000);
+
+    // 🔔 Notifier le pro qu'il a été contacté
+    if (u && u.fcmToken) {
+      sendPushNotification(u.fcmToken,
+        `📞 Nouveau contact sur MATLOUB !`,
+        `Quelqu'un vient de vous contacter via ${type === 'whatsapp' ? 'WhatsApp' : 'Appel'}`,
+        { type: 'contact', proId: String(u.id) }
+      );
+    }
   },
 
   hasContacted(id) {
@@ -2243,6 +2406,16 @@ const app = {
 
     closeModal('rate-modal');
     toast('Merci pour votre avis ! ⭐');
+
+    // 🔔 Notifier le pro par push
+    if (u.fcmToken) {
+      sendPushNotification(u.fcmToken,
+        `⭐ Nouvel avis sur votre profil !`,
+        `${newReview.author} vous a donné ${newReview.stars} étoile(s) : "${newReview.text.substring(0,60)}..."`,
+        { type: 'review', proId: String(u.id) }
+      );
+    }
+
     app.showDetail(id);
   },
 
@@ -2737,6 +2910,17 @@ const app = {
     closeModal('login-modal');
     navTo('profile');
     toast(`👋 Bienvenue ${sanitize(u.name)} !`);
+
+    // 🔔 Demander permission notifications
+    setTimeout(() => {
+      requestNotificationPermission().then(token => {
+        if (token && u.role === 'pro') {
+          saveFCMToken(u.id, token);
+          app.listenNotifications(u.id);
+          app.renderNotifList();
+        }
+      });
+    }, 2000);
   },
 
   logout() {
