@@ -1299,7 +1299,7 @@ function showSuggestions(val, containerId) {
   if (proMatches.length) {
     html += `<div style="padding:6px 16px;font-size:0.7rem;font-weight:800;color:var(--text3);text-transform:uppercase;">Professionnels</div>`;
     proMatches.forEach(u => {
-      html += `<div class="suggestion-item" onclick="app.showDetail(${u.id});hideSuggestions('${containerId}')">
+      html += `<div class="suggestion-item" onclick="app.showDetail('${u.id}');hideSuggestions('${containerId}')">
         <span class="material-icons-round suggestion-icon">person</span>
         <div><div style="font-weight:700;font-size:0.85rem;">${sanitize(u.name)}</div><div style="font-size:0.72rem;color:var(--text3);">${sanitize(u.job)} · ${sanitize(u.commune||'')}</div></div>
       </div>`;
@@ -2021,7 +2021,7 @@ function createProCard(u, showFavBtn=true) {
   const isNew = u.joinDate && (Date.now() - new Date(u.joinDate).getTime()) < 60*24*3600*1000;
   const isTop = avgRating >= 4.8 && u.reviews && u.reviews.length >= 2;
 
-  return `<div class="pro-card" onclick="app.showDetail(${u.id})" style="border-left:4px solid ${cat.color};">
+  return `<div class="pro-card" onclick="app.showDetail('${u.id}')" style="border-left:4px solid ${cat.color};">
     ${avatar}
     <div class="pro-info">
       <div class="pro-name">${u.name}${u.emailVerified ? ' ✅' : ''}</div>
@@ -2039,7 +2039,7 @@ function createProCard(u, showFavBtn=true) {
         }
       </div>
     </div>
-    ${showFavBtn ? `<button class="fav-btn-card ${isFav?'active':''}" onclick="event.stopPropagation();app.toggleFav(${u.id})">
+    ${showFavBtn ? `<button class="fav-btn-card ${isFav?'active':''}" onclick="event.stopPropagation();app.toggleFav('${u.id}')">
       <span class="material-icons-round" style="font-size:20px;">${isFav?'favorite':'favorite_border'}</span>
     </button>` : ''}
   </div>`;
@@ -2214,30 +2214,30 @@ const app = {
       ${photosHtml ? `<div class="detail-photos">${photosHtml}</div>` : ''}
       ${u.bio ? `<div style="background:var(--bg);border-radius:14px;padding:12px;margin-bottom:14px;font-size:0.85rem;color:var(--text2);">${sanitize(u.bio)}</div>` : ''}
       <div class="action-row">
-        <a href="tel:${sanitize(u.phone||'')}" class="action-btn btn-call" onclick="app.trackContact(${u.id},'call')"><span class="material-icons-round">call</span>Appeler</a>
-        <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer" onclick="app.trackContact(${u.id},'whatsapp')"><span class="material-icons-round">chat</span>WhatsApp</a>
+        <a href="tel:${sanitize(u.phone||'')}" class="action-btn btn-call" onclick="app.trackContact('${u.id}','call')"><span class="material-icons-round">call</span>Appeler</a>
+        <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer" onclick="app.trackContact('${u.id}','whatsapp')"><span class="material-icons-round">chat</span>WhatsApp</a>
       </div>
       <div class="action-row" style="margin-top:8px;">
-        <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav(${u.id})">
+        <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav('${u.id}')">
           <span class="material-icons-round">${isFav?'favorite':'favorite_border'}</span>${isFav?'Favori':'Ajouter'}
         </button>
-        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="app.openMessage(${u.id})">
+        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="app.openMessage('${u.id}')">
           <span class="material-icons-round">chat_bubble_outline</span>Message
         </button>
-        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="sharePro(${u.id})">
+        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="sharePro('${u.id}')">
           <span class="material-icons-round">share</span>Partager
         </button>
       </div>
       <div class="action-row" style="margin-top:8px;">
         ${app.hasContacted(u.id)
-          ? `<button class="action-btn btn-primary" style="flex:2;" onclick="app.openRate(${u.id})">
+          ? `<button class="action-btn btn-primary" style="flex:2;" onclick="app.openRate('${u.id}')">
                <span class="material-icons-round">star</span>Laisser un avis
              </button>`
           : `<button class="action-btn btn-ghost" style="border:2px solid var(--border);flex:2;opacity:0.6;" title="Contactez d'abord ce pro via WhatsApp ou Appel" disabled>
                <span class="material-icons-round">star_border</span>Avis (après contact)
              </button>`
         }
-        <button class="action-btn btn-ghost" style="border:2px solid #FEE2E2;color:#EF4444;" onclick="app.openReport(${u.id})">
+        <button class="action-btn btn-ghost" style="border:2px solid #FEE2E2;color:#EF4444;" onclick="app.openReport('${u.id}')">
           <span class="material-icons-round">flag</span>Signaler
         </button>
       </div>
