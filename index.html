@@ -1405,29 +1405,6 @@ async function initFirebase() {
     // Stocker les fonctions Auth pour réutilisation
     window.FB_AUTH = { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, updateProfile };
 
-    // Vérifier si un utilisateur est déjà connecté et a vérifié son email
-    onAuthStateChanged(firebaseAuth, async (user) => {
-      if (user && user.emailVerified) {
-        // Chercher cet utilisateur dans la DB locale et l'activer
-        const localUser = db?.users?.find(u => u.emailMain === user.email || u.email === user.email);
-        if (localUser && localUser.status === 'pending') {
-          localUser.status = 'active';
-          localUser.emailVerified = true;
-          saveDB();
-          // Mettre à jour Firestore
-          try { await savePro({...localUser, status:'active', emailVerified:true}); } catch(e){}
-          // Si c'est la page actuelle et pas encore connecté
-          if (!db.currentUser) {
-            db.currentUser = localUser;
-            saveSession();
-            updateHeroCount();
-            navTo('profile');
-            toast('✅ Email vérifié ! Bienvenue sur MATLOUB 🎉');
-          }
-        }
-      }
-    });
-
     // ─ Attacher les fonctions Firestore à l'objet global FB ─
     window.FB = {
       collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
@@ -1435,6 +1412,27 @@ async function initFirebase() {
       ref, uploadString, getDownloadURL, deleteObject,
       db: firebaseDB, storage: firebaseStorage, auth: firebaseAuth
     };
+
+    // Vérifier si un utilisateur a vérifié son email (après click lien)
+    // Attendre que db soit prêt avant d'agir
+    onAuthStateChanged(firebaseAuth, async (user) => {
+      if (!user || !user.emailVerified) return;
+      if (!db || !db.users) return;
+      const localUser = db.users.find(u => u.emailMain === user.email || u.email === user.email);
+      if (localUser && localUser.status === 'pending') {
+        localUser.status = 'active';
+        localUser.emailVerified = true;
+        saveDB();
+        try { await savePro({...localUser, status:'active', emailVerified:true}); } catch(e){}
+        if (!db.currentUser) {
+          db.currentUser = localUser;
+          saveSession();
+          updateHeroCount();
+          navTo('profile');
+          toast('✅ Email vérifié ! Bienvenue sur MATLOUB 🎉');
+        }
+      }
+    });
 
     console.log('🔥 Firebase connecté — données stockées en ligne sur matloub.com');
     return true;
