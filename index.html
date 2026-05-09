@@ -2082,8 +2082,8 @@ const app = {
 
   // ── DÉTAIL PRO ──
   showDetail(id) {
-    const u = db.users.find(us => us.id === id);
-    if (!u) return;
+    const u = db.users.find(us => us.id == id || us.id === String(id) || us.fbId === String(id));
+    if (!u) { console.warn('Pro non trouvé:', id); return; }
     // Incrémenter vues
     u.views = (u.views || 0) + 1;
     saveDB();
@@ -3226,8 +3226,38 @@ function addNotif(msg) {
 })();
 </script>
 
-<!-- 📱 PWA Service Worker -->
+<!-- 📱 PWA Install Banner -->
+<div id="pwa-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--primary);color:white;padding:12px 20px;border-radius:16px;box-shadow:0 4px 20px rgba(108,60,225,0.4);display:none;align-items:center;gap:12px;font-weight:700;font-size:0.9rem;max-width:340px;width:90%;">
+  <span class="material-icons-round">install_mobile</span>
+  <span>Installer MATLOUB sur votre téléphone</span>
+  <button id="pwa-install-btn" style="background:white;color:var(--primary);border:none;padding:6px 14px;border-radius:10px;font-weight:800;cursor:pointer;">Installer</button>
+  <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:none;border:none;color:white;cursor:pointer;font-size:1.2rem;">✕</button>
+</div>
 <script>
+// 📱 PWA Install Prompt
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('pwa-banner');
+  if (banner) { banner.style.display = 'flex'; }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('pwa-banner').style.display = 'none';
+    if (outcome === 'accepted') toast('✅ MATLOUB installé sur votre téléphone !');
+  });
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwa-banner').style.display = 'none';
+});
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js')
