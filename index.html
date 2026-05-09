@@ -1678,7 +1678,35 @@ async function syncFromFirebase() {
 }
 
 function saveDB() {
-  localStorage.setItem('matloub_v3_users', JSON.stringify(db.users));
+  try {
+    // Supprimer les selfies/photos base64 avant de sauvegarder en localStorage
+    // (ils sont déjà sur Firebase Storage)
+    const usersLight = db.users.map(u => {
+      const copy = {...u};
+      if (copy.selfie && copy.selfie.startsWith('data:')) copy.selfie = copy.selfieUrl || '';
+      if (copy.photos) copy.photos = copy.photos.map(p => p.startsWith('data:') ? '' : p).filter(Boolean);
+      return copy;
+    });
+    localStorage.setItem('matloub_v3_users', JSON.stringify(usersLight));
+  } catch(e) {
+    // Si toujours plein — vider les anciennes données et réessayer
+    console.warn('localStorage plein — nettoyage...');
+    try {
+      localStorage.removeItem('matloub_v3_users');
+      localStorage.removeItem('matloub_pros_v6');
+      const usersMin = db.users.map(u => ({
+        id: u.id, name: u.name, job: u.job, phone: u.phone,
+        email: u.email, emailMain: u.emailMain, role: u.role,
+        status: u.status, commune: u.commune, daira: u.daira,
+        passHash: u.passHash, authMode: u.authMode, mainContact: u.mainContact,
+        firebaseUid: u.firebaseUid, emailVerified: u.emailVerified,
+        joinDate: u.joinDate
+      }));
+      localStorage.setItem('matloub_v3_users', JSON.stringify(usersMin));
+    } catch(e2) {
+      console.error('localStorage inaccessible:', e2);
+    }
+  }
 }
 
 // ── Wrapper saveDB qui sync aussi Firebase ──
