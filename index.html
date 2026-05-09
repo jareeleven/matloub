@@ -2134,8 +2134,8 @@ const app = {
       ${photosHtml ? `<div class="detail-photos">${photosHtml}</div>` : ''}
       ${u.bio ? `<div style="background:var(--bg);border-radius:14px;padding:12px;margin-bottom:14px;font-size:0.85rem;color:var(--text2);">${sanitize(u.bio)}</div>` : ''}
       <div class="action-row">
-        <a href="tel:${sanitize(u.phone||'')}" class="action-btn btn-call"><span class="material-icons-round">call</span>Appeler</a>
-        <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer"><span class="material-icons-round">chat</span>WhatsApp</a>
+        <a href="tel:${sanitize(u.phone||'')}" class="action-btn btn-call" onclick="app.trackContact(${u.id},'call')"><span class="material-icons-round">call</span>Appeler</a>
+        <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer" onclick="app.trackContact(${u.id},'whatsapp')"><span class="material-icons-round">chat</span>WhatsApp</a>
       </div>
       <div class="action-row" style="margin-top:8px;">
         <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav(${u.id})">
@@ -2149,10 +2149,15 @@ const app = {
         </button>
       </div>
       <div class="action-row" style="margin-top:8px;">
-        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="app.openRate(${u.id})">
-          <span class="material-icons-round">star_rate</span>Noter
-        </button>
-        <button class="action-btn btn-ghost" style="border:2px solid #FEE2E2;color:#EF4444;flex:2;" onclick="app.openReport(${u.id})">
+        ${app.hasContacted(${u.id})
+          ? `<button class="action-btn btn-primary" style="flex:2;" onclick="app.openRate(${u.id})">
+               <span class="material-icons-round">star</span>Laisser un avis
+             </button>`
+          : `<button class="action-btn btn-ghost" style="border:2px solid var(--border);flex:2;opacity:0.6;" title="Contactez d'abord ce pro via WhatsApp ou Appel" disabled>
+               <span class="material-icons-round">star_border</span>Avis (après contact)
+             </button>`
+        }
+        <button class="action-btn btn-ghost" style="border:2px solid #FEE2E2;color:#EF4444;" onclick="app.openReport(${u.id})">
           <span class="material-icons-round">flag</span>Signaler
         </button>
       </div>
@@ -2162,6 +2167,29 @@ const app = {
       </div>`;
 
     showModal('detail-modal');
+  },
+
+  // ── TRACKING CONTACT ──
+  trackContact(id, type) {
+    const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
+    if (!contacted.includes(id)) {
+      contacted.push(id);
+      localStorage.setItem('matloub_contacted', JSON.stringify(contacted));
+    }
+    // Incrémenter vues
+    const u = db.users.find(us => us.id === id || us.id === String(id));
+    if (u) {
+      u.views = (u.views || 0) + 1;
+      saveDB();
+      if (USE_FIREBASE && u.fbId) {
+        try { db && savePro({...u}); } catch(e) {}
+      }
+    }
+  },
+
+  hasContacted(id) {
+    const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
+    return contacted.includes(id) || contacted.includes(String(id));
   },
 
   // ── NOTATION ──
@@ -2175,23 +2203,43 @@ const app = {
     showModal('rate-modal');
   },
 
-  submitRating() {
+  async submitRating() {
     if (!ratingSelected) return toast('Choisissez une note ⭐');
     const id = +document.getElementById('rate-target-id').value;
-    const u = db.users.find(us => us.id === id);
+    const u = db.users.find(us => us.id === id || us.id === String(id));
     if (!u) return;
     const commentRaw = document.getElementById('rate-comment').value.trim();
     const authorRaw  = document.getElementById('rate-author').value.trim();
+    if (!authorRaw) return toast('Entrez votre prénom');
     if (commentRaw.length > 400) return toast('Commentaire trop long (400 car. max)');
-    if (!validateInput(commentRaw, 'Commentaire')) return;
     if (!u.reviews) u.reviews = [];
-    u.reviews.push({
+
+    const newReview = {
       author: sanitize(authorRaw) || 'Anonyme',
-      stars: ratingSelected,
-      text: sanitize(commentRaw),
-      date: new Date().toLocaleDateString('fr-FR')
-    });
+      stars:  ratingSelected,
+      text:   sanitize(commentRaw),
+      date:   new Date().toLocaleDateString('fr-FR'),
+      timestamp: Date.now()
+    };
+
+    u.reviews.push(newReview);
     saveDB();
+
+    // 🔥 Sauvegarder sur Firestore
+    if (USE_FIREBASE) {
+      try {
+        await savePro({...u});
+        const { collection: col, addDoc } =
+          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        await addDoc(col(firebaseDB, 'reviews'), {
+          proId:   u.fbId || String(u.id),
+          proName: u.name,
+          proJob:  u.job,
+          ...newReview
+        });
+      } catch(e) { console.warn('Firestore review error:', e); }
+    }
+
     closeModal('rate-modal');
     toast('Merci pour votre avis ! ⭐');
     app.showDetail(id);
