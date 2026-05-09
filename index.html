@@ -2128,7 +2128,7 @@ const app = {
     let pros = db.users.filter(u => u.role === 'pro' && u.status === 'active');
     if (q)       pros = pros.filter(u => (u.name+' '+u.job+' '+(u.commune||u.location||'')).toLowerCase().includes(q));
     if (commune) pros = pros.filter(u => (u.commune||u.location||'') === commune);
-    if (catChip) pros = pros.filter(u => getJobCategory(u.job)?.id === catChip);
+    if (catChip) pros = pros.filter(u => (categories.find(c => c.id === u.category)||categories[0])?.id === catChip);
 
     if (!mapInstance) {
       mapInstance = L.map('map-oran').setView([35.6976, -0.6337], 12);
@@ -2146,17 +2146,17 @@ const app = {
       if (!coords) return;
       const lat = coords[0] + (Math.random() - 0.5) * 0.006;
       const lng = coords[1] + (Math.random() - 0.5) * 0.006;
-      const cat = getJobCategory(u.job) || { color: '#6C3CE1', icon: '👷' };
+      const cat = categories.find(c => c.id === u.category) || categories[0];
       const avg = getAvg(u);
       const icon = L.divIcon({
         className: '',
-        html: `<div style="background:${cat.color};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.icon||'👷'}</div>`,
+        html: `<div style="background:${cat.color||'#6C3CE1'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.icon||'👷'}</div>`,
         iconSize: [38, 38], iconAnchor: [19, 19]
       });
       const marker = L.marker([lat, lng], { icon }).addTo(mapInstance)
         .bindPopup(`<div style="min-width:190px;font-family:system-ui,sans-serif;">
           <div style="font-weight:800;font-size:0.95rem;margin-bottom:4px;">${sanitize(u.name)}</div>
-          <div style="color:${cat.color};font-weight:700;font-size:0.82rem;">${sanitize(u.job)}</div>
+          <div style="color:${cat.color||'#6C3CE1'};font-weight:700;font-size:0.82rem;">${sanitize(u.job)}</div>
           <div style="font-size:0.78rem;color:#888;margin:3px 0;">📍 ${sanitize(loc)}</div>
           <div style="font-size:0.78rem;color:#F59E0B;margin-bottom:8px;">★ ${avg} · ${(u.reviews||[]).length} avis</div>
           <button onclick="app.showDetail('${u.id}')" style="background:#6C3CE1;color:white;border:none;padding:7px 0;border-radius:8px;cursor:pointer;font-weight:700;width:100%;font-size:0.85rem;">👤 Voir le profil</button>
