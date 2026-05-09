@@ -2169,11 +2169,10 @@ const app = {
 
   // ── TRACKING CONTACT ──
   trackContact(id, type) {
-    // Toujours sauvegarder en string pour cohérence
-    const sid = String(id);
+    const nid = isNaN(id) ? id : Number(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
-    if (!contacted.includes(sid)) {
-      contacted.push(sid);
+    if (!contacted.some(c => String(c) === String(id))) {
+      contacted.push(nid);
       localStorage.setItem('matloub_contacted', JSON.stringify(contacted));
     }
     // Incrémenter vues
@@ -2190,9 +2189,8 @@ const app = {
   },
 
   hasContacted(id) {
-    const sid = String(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
-    return contacted.includes(sid) || contacted.includes(id);
+    return contacted.some(c => String(c) === String(id) || Number(c) === Number(id));
   },
 
   // ── NOTATION ──
