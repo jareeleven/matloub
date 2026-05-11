@@ -1320,26 +1320,26 @@ const oranData = {
 //  CATÉGORIES (20 catégories)
 // ────────────────────────────────────────────
 const categories = [
-  {id:"plombier",   name:"Plombier",       icon:"plumbing",         color:"#F59E0B"},
-  {id:"elec",       name:"Électricien",    icon:"electric_bolt",    color:"#3B82F6"},
-  {id:"med",        name:"Médecin",        icon:"medical_services", color:"#EF4444"},
-  {id:"menuisier",  name:"Menuisier",      icon:"carpenter",        color:"#D97706"},
-  {id:"dev",        name:"Informatique",   icon:"computer",         color:"#8B5CF6"},
-  {id:"coiffure",   name:"Coiffure",       icon:"content_cut",      color:"#EC4899"},
-  {id:"mecano",     name:"Mécanicien",     icon:"car_repair",       color:"#6366F1"},
-  {id:"clim",       name:"Climatisation",  icon:"ac_unit",          color:"#0EA5E9"},
-  {id:"mason",      name:"Maçon",          icon:"handyman",         color:"#92400E"},
-  {id:"peintre",    name:"Peintre",        icon:"format_paint",     color:"#10B981"},
-  {id:"serrurier",  name:"Serrurier",      icon:"lock",             color:"#64748B"},
-  {id:"vitrier",    name:"Vitrier",        icon:"window",           color:"#06B6D4"},
-  {id:"deco",       name:"Décoration",     icon:"design_services",  color:"#F472B6"},
-  {id:"jardin",     name:"Jardinage",      icon:"yard",             color:"#22C55E"},
-  {id:"photo",      name:"Photographe",    icon:"photo_camera",     color:"#A855F7"},
-  {id:"avocat",     name:"Avocat",         icon:"gavel",            color:"#DC2626"},
-  {id:"transport",  name:"Transport",      icon:"local_shipping",   color:"#EA580C"},
-  {id:"nettoyage",  name:"Nettoyage",      icon:"cleaning_services",color:"#14B8A6"},
-  {id:"cuisine",    name:"Cuisinier",      icon:"restaurant",       color:"#F97316"},
-  {id:"sante",      name:"Santé",          icon:"health_and_safety",color:"#BE185D"}
+  {id:"plombier",   name:"Plombier",       icon:"🔧",  color:"#F59E0B"},
+  {id:"elec",       name:"Électricien",    icon:"⚡",  color:"#3B82F6"},
+  {id:"med",        name:"Médecin",        icon:"🏥",  color:"#EF4444"},
+  {id:"menuisier",  name:"Menuisier",      icon:"🪵",  color:"#D97706"},
+  {id:"dev",        name:"Informatique",   icon:"💻",  color:"#8B5CF6"},
+  {id:"coiffure",   name:"Coiffure",       icon:"✂️",  color:"#EC4899"},
+  {id:"mecano",     name:"Mécanicien",     icon:"🚗",  color:"#6366F1"},
+  {id:"clim",       name:"Climatisation",  icon:"❄️",  color:"#0EA5E9"},
+  {id:"mason",      name:"Maçon",          icon:"🧱",  color:"#92400E"},
+  {id:"peintre",    name:"Peintre",        icon:"🎨",  color:"#10B981"},
+  {id:"serrurier",  name:"Serrurier",      icon:"🔐",  color:"#64748B"},
+  {id:"vitrier",    name:"Vitrier",        icon:"🪟",  color:"#06B6D4"},
+  {id:"deco",       name:"Décoration",     icon:"🛋️",  color:"#F472B6"},
+  {id:"jardin",     name:"Jardinage",      icon:"🌿",  color:"#22C55E"},
+  {id:"photo",      name:"Photographe",    icon:"📸",  color:"#A855F7"},
+  {id:"avocat",     name:"Avocat",         icon:"⚖️",  color:"#DC2626"},
+  {id:"transport",  name:"Transport",      icon:"🚚",  color:"#EA580C"},
+  {id:"nettoyage",  name:"Nettoyage",      icon:"🧹",  color:"#14B8A6"},
+  {id:"cuisine",    name:"Cuisinier",      icon:"👨‍🍳",  color:"#F97316"},
+  {id:"sante",      name:"Santé",          icon:"💊",  color:"#BE185D"}
 ];
 
 // ────────────────────────────────────────────
@@ -2257,11 +2257,11 @@ function buildExploreChips() {
   const chips = document.getElementById('explore-cat-chips');
   chips.innerHTML = `<div class="chip ${exploreCatFilter==='' ? 'active':''}" onclick="app.selectExploreCat('',this)">🔍 Tous</div>`;
   categories.forEach(c => {
-    chips.innerHTML += `<div class="chip ${exploreCatFilter===c.id ? 'active':''}" onclick="app.selectExploreCat('${c.id}',this)" style="${exploreCatFilter===c.id ? '' : 'border-color:'+c.color+'22;'}">
-      <span class="chip-icon" style="color:${c.color};">${getCatEmoji(c.id)}</span>${c.name}
+    chips.innerHTML += `<div class="chip ${exploreCatFilter===c.id ? 'active':''}" onclick="app.selectExploreCat('${c.id}',this)" data-cat="${c.id}" style="${exploreCatFilter===c.id ? '' : 'border-color:'+c.color+'22;'}">
+      <span style="color:${c.color};">${c.icon}</span> ${c.name}
     </div>`;
   });
-  setTimeout(updateChipsArrows, 50);
+  setTimeout(updateChipsArrows, 100);
 }
 
 function getCatEmoji(id) {
@@ -2425,35 +2425,45 @@ const app = {
   buildMapCatFilter() {
     const container = document.getElementById('map-cat-filter');
     if (!container) return;
-    // Trouver les catégories présentes parmi les pros actifs
     const activePros = db.users.filter(u => u.role === 'pro' && u.status === 'active');
     const usedCatIds = [...new Set(activePros.map(u => u.category).filter(Boolean))];
     const usedCats   = categories.filter(c => usedCatIds.includes(c.id));
 
     container.innerHTML = `
-      <button onclick="app.filterMap('')" class="map-cat-btn active" data-cat="" 
-        style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;
+      <button onclick="app.filterMap('')" class="map-cat-btn active" data-cat=""
+        style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:20px;
         border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;
-        font-size:0.78rem;cursor:pointer;margin-right:6px;white-space:nowrap;">
-        🗺️ Tous
+        font-size:0.82rem;cursor:pointer;margin-right:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(108,60,225,0.3);">
+        🗺️ Tous (${activePros.length})
       </button>
-      ${usedCats.map(c => `
-        <button onclick="app.filterMap('${c.id}')" class="map-cat-btn" data-cat="${c.id}"
-          style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;
-          border:2px solid var(--border);background:var(--surface);color:var(--text2);font-weight:700;
-          font-size:0.78rem;cursor:pointer;margin-right:6px;white-space:nowrap;">
-          ${c.icon} ${c.name}
-        </button>`).join('')}`;
+      ${usedCats.map(c => {
+        const count = activePros.filter(u => u.category === c.id).length;
+        return `<button onclick="app.filterMap('${c.id}')" class="map-cat-btn" data-cat="${c.id}"
+          style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:20px;
+          border:2px solid ${c.color}33;background:${c.color}11;color:${c.color};font-weight:700;
+          font-size:0.82rem;cursor:pointer;margin-right:8px;white-space:nowrap;">
+          ${c.icon} ${c.name} (${count})
+        </button>`;
+      }).join('')}`;
   },
 
   filterMap(catId) {
-    // Mettre à jour les boutons actifs
     document.querySelectorAll('.map-cat-btn').forEach(btn => {
       const isActive = btn.dataset.cat === catId;
+      const cat = categories.find(c => c.id === btn.dataset.cat);
       btn.classList.toggle('active', isActive);
-      btn.style.background = isActive ? 'var(--primary)' : 'var(--surface)';
-      btn.style.color = isActive ? 'white' : 'var(--text2)';
-      btn.style.borderColor = isActive ? 'var(--primary)' : 'var(--border)';
+      if (isActive) {
+        btn.style.background = cat ? cat.color : 'var(--primary)';
+        btn.style.color = 'white';
+        btn.style.borderColor = cat ? cat.color : 'var(--primary)';
+        btn.style.boxShadow = `0 2px 8px ${cat ? cat.color+'55' : 'rgba(108,60,225,0.3)'}`;
+      } else {
+        const c = categories.find(c => c.id === btn.dataset.cat);
+        btn.style.background = c ? c.color+'11' : 'var(--surface)';
+        btn.style.color = c ? c.color : 'var(--text2)';
+        btn.style.borderColor = c ? c.color+'33' : 'var(--border)';
+        btn.style.boxShadow = 'none';
+      }
     });
     this.currentMapCat = catId;
     this.renderMap(catId);
