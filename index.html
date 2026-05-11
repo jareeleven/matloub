@@ -45,30 +45,44 @@
 
 /* ── DARK MODE ── */
 [data-theme="dark"] {
-  --bg: #0F0A1E;
-  --bg2: #1A1040;
-  --surface: #1E1535;
-  --text: #F0EEFF;
-  --text2: #A89ECC;
-  --text3: #6A5F90;
-  --border: rgba(139,92,246,0.15);
-  --shadow: 0 8px 32px rgba(0,0,0,0.4);
-  --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+  --bg: #0F0F0F;
+  --bg2: #181818;
+  --surface: #212121;
+  --text: #FFFFFF;
+  --text2: #AAAAAA;
+  --text3: #717171;
+  --border: rgba(255,255,255,0.1);
+  --shadow: 0 8px 32px rgba(0,0,0,0.6);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.4);
 }
-[data-theme="dark"] body { background: var(--bg); }
-[data-theme="dark"] header { background: rgba(30,21,53,0.97); }
-[data-theme="dark"] .bottom-nav { background: #1E1535; border: 1px solid rgba(139,92,246,0.2); }
-[data-theme="dark"] .search-input { background: #1E1535; color: var(--text); }
-[data-theme="dark"] .input-field { background: #1A1040; border-color: rgba(139,92,246,0.2); color: var(--text); }
-[data-theme="dark"] .input-field::placeholder { color: var(--text3); }
-[data-theme="dark"] .modal-sheet { background: #1E1535; }
-[data-theme="dark"] .card, [data-theme="dark"] .card-sm { background: #1E1535; }
-[data-theme="dark"] .pro-card { background: #1E1535; }
-[data-theme="dark"] .chip { background: #1A1040; color: var(--text2); }
-[data-theme="dark"] .btn-ghost { background: #1A1040; color: var(--text2); }
-[data-theme="dark"] select.input-field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A89ECC' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); }
-[data-theme="dark"] .hero-banner { background: linear-gradient(135deg,#2D1B69,#4C1D95,#6C3CE1); }
-[data-theme="dark"] .review-item { background: #1A1040; }
+[data-theme="dark"] body { background: #0F0F0F; }
+[data-theme="dark"] header { background: rgba(15,15,15,0.97); border-bottom: 1px solid rgba(255,255,255,0.08); }
+[data-theme="dark"] .bottom-nav { background: #212121; border-top: 1px solid rgba(255,255,255,0.08); }
+[data-theme="dark"] .search-input { background: #272727; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+[data-theme="dark"] .input-field { background: #272727; border-color: rgba(255,255,255,0.12); color: #fff; }
+[data-theme="dark"] .input-field::placeholder { color: #717171; }
+[data-theme="dark"] .modal-sheet { background: #212121; }
+[data-theme="dark"] .modal-handle { background: #444; }
+[data-theme="dark"] .card, [data-theme="dark"] .card-sm { background: #212121; border-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .pro-card { background: #212121; border-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .chip { background: #272727; color: #AAAAAA; border: 1px solid rgba(255,255,255,0.1); }
+[data-theme="dark"] .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+[data-theme="dark"] .btn-ghost { background: #272727; color: #AAAAAA; }
+[data-theme="dark"] select.input-field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23AAAAAA' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-color: #272727; }
+[data-theme="dark"] select.input-field option { background: #272727; color: #fff; }
+[data-theme="dark"] .hero-banner { background: linear-gradient(135deg,#1a1a1a,#212121,#2d1b69); }
+[data-theme="dark"] .review-item { background: #272727; }
+[data-theme="dark"] .suggestions-box { background: #212121; border-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .suggestion-item:hover { background: #272727; }
+[data-theme="dark"] .filter-select { background: #272727; color: #fff; border-color: rgba(255,255,255,0.12); }
+[data-theme="dark"] .nav-item { color: #AAAAAA; }
+[data-theme="dark"] .nav-item.active { color: var(--primary); }
+[data-theme="dark"] .location-dropdowns select { background: #272727; color: #fff; border-color: rgba(255,255,255,0.12); }
+/* Fix select options blanc dans les deux bars */
+[data-theme="dark"] #exp-daira option,
+[data-theme="dark"] #exp-commune option,
+[data-theme="dark"] #home-daira option,
+[data-theme="dark"] #home-commune option { background: #272727 !important; color: #fff !important; }
 
 /* ── XSS SAFE OUTPUT ── */
 .safe-text { /* text rendered via textContent only */ }
@@ -124,7 +138,10 @@
 .pass-strong { color:#10B981; }
 
 /* ── COOKIE / RGPD BANNER ── */
-#rgpd-banner { position:fixed;bottom:calc(var(--nav-h)+16px);left:12px;right:12px;background:rgba(26,16,64,0.97);color:white;border-radius:16px;padding:14px 16px;z-index:400;font-size:0.78rem;backdrop-filter:blur(10px);display:none; }
+#map-cat-filter::-webkit-scrollbar { display:none; }
+.map-cat-btn { transition: all 0.2s; }
+.map-cat-btn:not(.active) { background: var(--surface) !important; color: var(--text2) !important; border-color: var(--border) !important; }
+[data-theme="dark"] .map-cat-btn:not(.active) { background: #272727 !important; }bottom:calc(var(--nav-h)+16px);left:12px;right:12px;background:rgba(26,16,64,0.97);color:white;border-radius:16px;padding:14px 16px;z-index:400;font-size:0.78rem;backdrop-filter:blur(10px);display:none; }
 
 /* ── VERIFIED SELFIE BADGE ── */
 .id-verified { background:linear-gradient(135deg,#059669,#10B981);color:white;font-size:0.6rem;font-weight:900;padding:2px 6px;border-radius:4px;letter-spacing:0.5px; }
@@ -506,7 +523,13 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
   <!-- Vue Carte -->
   <div id="explore-map-view" style="display:none;">
-    <div id="map-oran" style="height:480px;border-radius:16px;overflow:hidden;border:2px solid var(--border);"></div>
+    <!-- Filtre catégories sur la carte -->
+    <div id="map-cat-filter" style="overflow-x:auto;white-space:nowrap;padding-bottom:8px;margin-bottom:10px;scrollbar-width:none;">
+      <button onclick="app.filterMap('')" class="map-cat-btn active" data-cat="" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;font-size:0.78rem;cursor:pointer;margin-right:6px;white-space:nowrap;">
+        🗺️ Tous
+      </button>
+    </div>
+    <div id="map-oran" style="height:440px;border-radius:16px;overflow:hidden;border:2px solid var(--border);"></div>
     <div style="margin-top:8px;font-size:0.78rem;color:var(--text3);text-align:center;">
       📍 Cliquez sur un marqueur pour voir le profil du professionnel
     </div>
@@ -533,6 +556,45 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     </div>
     <button class="btn btn-primary" style="margin-bottom:12px;" onclick="showModal('login-modal')">Se connecter</button>
     <button class="btn btn-outline" onclick="showModal('register-type-modal')">Inscription Professionnel</button>
+
+    <!-- Conditions d'abonnement -->
+    <div class="card" style="margin-top:20px;background:linear-gradient(135deg,rgba(108,60,225,0.08),rgba(168,85,247,0.05));border:1px solid rgba(108,60,225,0.2);">
+      <div style="font-weight:900;font-size:1rem;margin-bottom:12px;text-align:center;">💎 Conditions d'abonnement Pro</div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;">
+        <!-- Plan Essai -->
+        <div style="flex:1;background:var(--surface);border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:1.3rem;margin-bottom:4px;">🆓</div>
+          <div style="font-weight:800;font-size:0.85rem;">Essai Gratuit</div>
+          <div style="font-size:1.2rem;font-weight:900;color:#10B981;margin:4px 0;">0 DA</div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-bottom:8px;">30 jours</div>
+          <div style="font-size:0.72rem;color:var(--text2);text-align:left;line-height:1.7;">
+            ✅ Profil complet<br>
+            ✅ Visible sur carte<br>
+            ✅ Reçoit des avis<br>
+            ❌ Badge vérifié<br>
+            ❌ Priorité recherche
+          </div>
+        </div>
+        <!-- Plan Pro -->
+        <div style="flex:1;background:var(--primary);border-radius:12px;padding:12px;text-align:center;position:relative;">
+          <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F59E0B;color:white;padding:2px 10px;border-radius:20px;font-size:0.65rem;font-weight:800;white-space:nowrap;">⭐ RECOMMANDÉ</div>
+          <div style="font-size:1.3rem;margin-bottom:4px;margin-top:8px;">💎</div>
+          <div style="font-weight:800;font-size:0.85rem;color:white;">Pro à Vie</div>
+          <div style="font-size:1.2rem;font-weight:900;color:white;margin:4px 0;">1000 DA</div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.8);margin-bottom:8px;">Paiement unique</div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.9);text-align:left;line-height:1.7;">
+            ✅ Profil complet<br>
+            ✅ Badge vérifié ✅<br>
+            ✅ Priorité recherche<br>
+            ✅ Stats complètes<br>
+            ✅ <strong>À vie !</strong>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text3);text-align:center;">
+        🔒 Après 30 jours d'essai → abonnement requis · Paiement via Edahabia
+      </div>
+    </div>
   </div>
 
   <!-- Connecté – Client -->
@@ -807,6 +869,11 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 </div>
 
 <!-- ══ BOTTOM NAV ══ -->
+<!-- Crédit développeur -->
+<div style="text-align:center;padding:8px 0 70px;font-size:0.68rem;color:var(--text3);">
+  Créé avec ❤️ par <strong style="color:var(--primary);">Eleven Design</strong> · MATLOUB © 2026
+</div>
+
 <nav class="bottom-nav">
   <button class="nav-item active" id="nav-home" onclick="navTo('home',this)">
     <span class="material-icons-round">home_filled</span>Accueil
@@ -948,8 +1015,20 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <div style="font-size:0.78rem;color:#7F1D1D;margin-top:4px;" id="blacklist-msg"></div>
     </div>
 
+    <!-- Acceptation Charte -->
+    <div style="background:rgba(108,60,225,0.06);border:1px solid rgba(108,60,225,0.2);border-radius:12px;padding:12px;margin-bottom:12px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="terms-accept" style="margin-top:3px;width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
+        <span style="font-size:0.8rem;color:var(--text2);line-height:1.5;">
+          J'ai lu et j'accepte la 
+          <span onclick="showModal('terms-modal')" style="color:var(--primary);font-weight:700;text-decoration:underline;cursor:pointer;">Charte d'utilisation MATLOUB</span>
+          , notamment les règles de conduite professionnelle et les conditions de bannissement.
+        </span>
+      </label>
+    </div>
+
     <button class="btn btn-accent" onclick="app.registerPro()" id="reg-submit-btn">Créer mon compte Pro 🎉</button>
-    <p style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:8px;">Un code de 6 chiffres sera envoyé pour valider votre compte</p>
+    <p style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:8px;">Un email de vérification sera envoyé pour valider votre compte</p>
     <button class="btn btn-ghost" style="margin-top:6px;" onclick="closeModal('register-pro-modal');showModal('register-type-modal')">← Retour</button>
   </div>
 </div>
@@ -1073,7 +1152,83 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   </div>
 </div>
 
-<!-- Modal Paiement Abonnement -->
+<!-- Modal Charte d'utilisation -->
+<div id="terms-modal" class="modal-overlay">
+  <div class="modal-sheet" style="max-height:88vh;">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:4px;text-align:center;">📋 Charte d'utilisation MATLOUB</div>
+    <div style="font-size:0.72rem;color:var(--text3);text-align:center;margin-bottom:16px;">Plateforme de mise en relation — Oran, Algérie</div>
+
+    <div style="font-size:0.82rem;color:var(--text2);line-height:1.8;overflow-y:auto;max-height:60vh;padding-right:4px;">
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">👤 1. Engagement du Professionnel</div>
+      <p>En s'inscrivant sur MATLOUB, le professionnel s'engage à :</p>
+      <ul style="padding-left:16px;margin-bottom:12px;">
+        <li>Fournir des informations véridiques et à jour</li>
+        <li>Répondre aux clients dans des délais raisonnables</li>
+        <li>Mettre son statut en <strong>"Indisponible"</strong> s'il ne peut pas répondre temporairement</li>
+        <li>Adopter un comportement respectueux et professionnel</li>
+        <li>Fixer des prix justes et transparents</li>
+        <li>Honorer les engagements pris avec les clients</li>
+      </ul>
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">🚫 2. Comportements interdits</div>
+      <ul style="padding-left:16px;margin-bottom:12px;">
+        <li>Escroquerie, arnaque ou surfacturation abusive</li>
+        <li>Faux profil ou usurpation d'identité</li>
+        <li>Harcèlement ou mauvais comportement envers les clients</li>
+        <li>Ne pas répondre aux clients alors que le statut est <strong>"Disponible"</strong></li>
+        <li>Service non rendu après accord et paiement</li>
+        <li>Contenu offensant ou illégal</li>
+      </ul>
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">⚠️ 3. Système de signalement</div>
+      <p style="margin-bottom:8px;">Tout client peut signaler un professionnel. En cas de <strong>3 signalements ou plus</strong> pour le même motif :</p>
+      <ul style="padding-left:16px;margin-bottom:12px;">
+        <li>⏸ Le profil est suspendu automatiquement pour examen</li>
+        <li>📧 Le professionnel est notifié par email</li>
+        <li>🔍 L'équipe MATLOUB examine les signalements</li>
+      </ul>
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">🚨 4. Conditions de bannissement</div>
+      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px;margin-bottom:12px;">
+        <p>Un professionnel sera <strong>banni définitivement</strong> en cas de :</p>
+        <ul style="padding-left:16px;margin-top:6px;">
+          <li>🔴 Escroquerie avérée ou arnaque confirmée</li>
+          <li>🔴 Signalements répétés (5+) non justifiés</li>
+          <li>🔴 Faux profil ou usurpation d'identité</li>
+          <li>🔴 Comportement violent ou harcelant</li>
+          <li>🔴 Violation grave des présentes règles</li>
+        </ul>
+        <p style="margin-top:8px;font-size:0.78rem;">Un profil banni ne peut plus s'inscrire sur MATLOUB avec les mêmes informations.</p>
+      </div>
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">📵 5. Gestion de la disponibilité</div>
+      <p style="margin-bottom:12px;">Chaque professionnel a la responsabilité de maintenir son statut à jour. Si vous n'êtes pas disponible temporairement, utilisez le bouton <strong>"Indisponible"</strong> dans votre profil pour éviter toute confusion avec les clients.</p>
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">⚖️ 6. Responsabilité</div>
+      <div style="background:rgba(108,60,225,0.08);border:1px solid rgba(108,60,225,0.2);border-radius:10px;padding:10px;margin-bottom:12px;">
+        <p><strong>MATLOUB est une plateforme de mise en relation uniquement.</strong></p>
+        <p style="margin-top:6px;">MATLOUB n'est en aucun cas responsable des agissements inappropriés des professionnels ou des clients, des litiges commerciaux, de la qualité des services rendus, ou des dommages résultant d'une mise en relation.</p>
+        <p style="margin-top:6px;">Toute transaction, accord ou contrat se fait directement entre le client et le professionnel, sous leur entière responsabilité.</p>
+      </div>
+
+      <div style="font-weight:800;color:var(--text);margin-bottom:6px;">💎 7. Abonnement</div>
+      <p style="margin-bottom:16px;">La plateforme offre une période d'essai gratuite de <strong>30 jours</strong>. Après cette période, un abonnement unique de <strong>1000 DA à vie</strong> est requis pour maintenir le profil actif.</p>
+
+      <div style="text-align:center;font-size:0.72rem;color:var(--text3);border-top:1px solid var(--border);padding-top:12px;">
+        MATLOUB — Oran, Algérie<br>
+        Créé par <strong>Eleven Design</strong><br>
+        Version 2026 · Tous droits réservés
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="document.getElementById('terms-accept').checked=true;closeModal('terms-modal')">
+      ✅ J'accepte la charte
+    </button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('terms-modal')">Fermer</button>
+  </div>
+</div>
 <div id="payment-modal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -1532,9 +1687,9 @@ async function sendPushNotification(token, title, body, data = {}) {
 
 // ── CONFIG PAIEMENT ──
 const PAYMENT_INFO = {
-  edahabia: '6280703146616583', // ← Remplacez par votre numéro Edahabia
-  whatsapp:  '+213771062122',       // ← Remplacez par votre numéro WhatsApp
-  nom:       'Gafsi Abdeljalil'              // ← Remplacez par votre nom
+  edahabia: 'VOTRE_NUMERO_EDAHABIA', // ← Remplacez par votre numéro Edahabia
+  whatsapp:  'VOTRE_NUMERO_WA',       // ← Remplacez par votre numéro WhatsApp
+  nom:       'VOTRE_NOM'              // ← Remplacez par votre nom
 };
 const EMAILJS_PUBLIC_KEY  = 'ThRYBRsTCHCEdseQm';
 const EMAILJS_SERVICE_ID  = 'service_q5s7pxh';
@@ -1706,23 +1861,70 @@ async function saveReviewFirebase(proId, review) {
 }
 
 // ── SAUVEGARDER SIGNALEMENT ──
-async function saveReportFirebase(proId, reportDetail) {
+async function saveReportFirebase(proId, reportDetail, proData) {
   if (!USE_FIREBASE) { saveDB(); return; }
   try {
-    const id  = String(proId);
-    const pro = await FB.getDoc(FB.doc(FB.db, 'professionals', id));
-    if (!pro.exists()) return;
-    const data = pro.data();
-    const reports       = (data.reports || 0) + 1;
-    const reportDetails = data.reportDetails || [];
-    reportDetails.push(reportDetail);
-    let status = data.status;
-    if (reports >= 5 && status === 'active') status = 'suspended';
-    await FB.updateDoc(FB.doc(FB.db, 'professionals', id), { reports, reportDetails, status });
-  } catch(e) { console.error('Erreur signalement:', e); }
+    const id = String(proId);
+    await FB.updateDoc(FB.doc(FB.db, 'professionals', id), {
+      reports:       proData.reports,
+      reportDetails: proData.reportDetails,
+      status:        proData.status,
+      suspendedAt:   proData.suspendedAt    || null,
+      suspendedUntil:proData.suspendedUntil || null,
+      suspendedReason:proData.suspendedReason || null,
+      bannedAt:      proData.bannedAt       || null,
+      bannedReason:  proData.bannedReason   || null,
+      warningAt:     proData.warningAt      || null
+    });
+  } catch(e) { console.error('Erreur signalement Firebase:', e); }
 }
 
-// ── BLACKLIST FIREBASE ──
+// ── AUTO-RESTORE SUSPENSIONS EXPIRÉES ──
+async function checkAndRestoreSuspensions() {
+  const now = Date.now();
+  let changed = false;
+  db.users.forEach(u => {
+    if (u.status === 'suspended' && u.suspendedUntil && now > u.suspendedUntil
+        && u.suspendedReason !== 'trial_expired') {
+      u.status = 'active';
+      u.suspendedAt = null;
+      u.suspendedUntil = null;
+      u.suspendedReason = null;
+      changed = true;
+      console.log(`✅ ${u.name} — suspension levée automatiquement`);
+      // Mettre à jour Firestore
+      if (USE_FIREBASE && u.fbId) {
+        savePro({...u}).catch(()=>{});
+      }
+    }
+  });
+  if (changed) saveDB();
+
+  // Vérifier aussi dans Firestore
+  if (USE_FIREBASE) {
+    try {
+      const { collection, query, where, getDocs, updateDoc, doc } =
+        await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const q = query(
+        collection(firebaseDB, 'professionals'),
+        where('status', '==', 'suspended'),
+        where('suspendedUntil', '<=', now)
+      );
+      const snap = await getDocs(q);
+      snap.docs.forEach(async d => {
+        const data = d.data();
+        if (data.suspendedReason !== 'trial_expired') {
+          await updateDoc(doc(firebaseDB, 'professionals', d.id), {
+            status: 'active',
+            suspendedAt: null,
+            suspendedUntil: null,
+            suspendedReason: null
+          });
+        }
+      });
+    } catch(e) { console.warn('Auto-restore error:', e); }
+  }
+}
 async function saveBlacklistFirebase(entry) {
   if (!USE_FIREBASE) {
     const bl = JSON.parse(localStorage.getItem('matloub_blacklist') || '{"phones":[],"emails":[],"names":[]}');
@@ -2069,7 +2271,7 @@ function getCatEmoji(id) {
 
 function scrollChips(dir) {
   const el = document.getElementById('explore-cat-chips');
-  el.scrollBy({ left: dir * 160, behavior: 'smooth' });
+  if (el) el.scrollBy({ left: dir * 160, behavior: 'smooth' });
 }
 
 function updateChipsArrows() {
@@ -2077,15 +2279,19 @@ function updateChipsArrows() {
   if (!el) return;
   const atStart = el.scrollLeft <= 4;
   const atEnd   = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+  const hasOverflow = el.scrollWidth > el.clientWidth + 4;
   const arrowL  = document.getElementById('chips-arrow-left');
   const arrowR  = document.getElementById('chips-arrow-right');
   const fadeL   = document.getElementById('chips-fade-left');
   const fadeR   = document.getElementById('chips-fade-right');
-  if (arrowL) arrowL.style.display = atStart ? 'none' : 'flex';
-  if (arrowR) arrowR.style.display = atEnd   ? 'none' : 'flex';
-  if (fadeL)  fadeL.style.display  = atStart ? 'none' : '';
-  if (fadeR)  fadeR.style.display  = atEnd   ? 'none' : '';
+  if (arrowL) arrowL.style.display = (!atStart) ? 'flex' : 'none';
+  if (arrowR) arrowR.style.display = (hasOverflow && !atEnd) ? 'flex' : 'none';
+  if (fadeL)  fadeL.style.display  = (!atStart) ? 'block' : 'none';
+  if (fadeR)  fadeR.style.display  = (hasOverflow && !atEnd) ? 'block' : 'none';
 }
+
+// Appeler après chargement des chips
+setTimeout(updateChipsArrows, 300);
 
 function buildStarInput() {
   const si = document.getElementById('star-input');
@@ -2207,6 +2413,7 @@ const app = {
       listEl.style.display = 'none'; mapEl.style.display = 'block';
       btnList.style.background = 'white'; btnList.style.color = 'var(--primary)';
       btnMap.style.background = 'var(--primary)'; btnMap.style.color = 'white';
+      this.buildMapCatFilter();
       setTimeout(() => this.renderMap(), 150);
     } else {
       listEl.style.display = 'block'; mapEl.style.display = 'none';
@@ -2215,19 +2422,62 @@ const app = {
     }
   },
 
-  renderMap() {
+  buildMapCatFilter() {
+    const container = document.getElementById('map-cat-filter');
+    if (!container) return;
+    // Trouver les catégories présentes parmi les pros actifs
+    const activePros = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+    const usedCatIds = [...new Set(activePros.map(u => u.category).filter(Boolean))];
+    const usedCats   = categories.filter(c => usedCatIds.includes(c.id));
+
+    container.innerHTML = `
+      <button onclick="app.filterMap('')" class="map-cat-btn active" data-cat="" 
+        style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;
+        border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;
+        font-size:0.78rem;cursor:pointer;margin-right:6px;white-space:nowrap;">
+        🗺️ Tous
+      </button>
+      ${usedCats.map(c => `
+        <button onclick="app.filterMap('${c.id}')" class="map-cat-btn" data-cat="${c.id}"
+          style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;
+          border:2px solid var(--border);background:var(--surface);color:var(--text2);font-weight:700;
+          font-size:0.78rem;cursor:pointer;margin-right:6px;white-space:nowrap;">
+          ${c.icon} ${c.name}
+        </button>`).join('')}`;
+  },
+
+  filterMap(catId) {
+    // Mettre à jour les boutons actifs
+    document.querySelectorAll('.map-cat-btn').forEach(btn => {
+      const isActive = btn.dataset.cat === catId;
+      btn.classList.toggle('active', isActive);
+      btn.style.background = isActive ? 'var(--primary)' : 'var(--surface)';
+      btn.style.color = isActive ? 'white' : 'var(--text2)';
+      btn.style.borderColor = isActive ? 'var(--primary)' : 'var(--border)';
+    });
+    this.currentMapCat = catId;
+    this.renderMap(catId);
+  },
+
+  renderMap(filterCat = this.currentMapCat || '') {
     const q       = (document.getElementById('explore-search')?.value || '').toLowerCase();
     const commune = document.getElementById('exp-commune')?.value || '';
-    const catChip = document.querySelector('#explore-cat-chips .chip.active')?.dataset?.cat || '';
     let pros = db.users.filter(u => u.role === 'pro' && u.status === 'active');
-    if (q)       pros = pros.filter(u => (u.name+' '+u.job+' '+(u.commune||u.location||'')).toLowerCase().includes(q));
-    if (commune) pros = pros.filter(u => (u.commune||u.location||'') === commune);
-    if (catChip) pros = pros.filter(u => (categories.find(c => c.id === u.category)||categories[0])?.id === catChip);
+    if (q)         pros = pros.filter(u => (u.name+' '+u.job+' '+(u.commune||u.location||'')).toLowerCase().includes(q));
+    if (commune)   pros = pros.filter(u => (u.commune||u.location||'') === commune);
+    if (filterCat) pros = pros.filter(u => u.category === filterCat);
 
     if (!mapInstance) {
-      mapInstance = L.map('map-oran').setView([35.6976, -0.6337], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+      mapInstance = L.map('map-oran', {
+        zoomControl: true,
+        attributionControl: true
+      }).setView([35.6976, -0.6337], 12);
+
+      // Tuiles claires — toujours visibles même en mode sombre
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OSM</a> © <a href="https://carto.com">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
       }).addTo(mapInstance);
     } else {
       mapMarkers.forEach(m => m.remove());
@@ -2775,44 +3025,78 @@ const app = {
     showModal('report-modal');
   },
 
-  submitReport() {
+  async submitReport() {
     const reasonEl = document.querySelector('[name="report-r"]:checked');
     if (!reasonEl) return toast('Choisissez une raison de signalement');
     const reason = reasonEl.value;
-    const id = +document.getElementById('report-target-id').value;
-    const u  = db.users.find(us => us.id === id);
-    if (u) {
-      if (!u.reportDetails) u.reportDetails = [];
-      u.reportDetails.push({
-        reason,
-        desc: document.getElementById('report-desc').value,
-        date: new Date().toLocaleDateString('fr-FR')
-      });
-      u.reports = (u.reports || 0) + 1;
+    const rawId  = document.getElementById('report-target-id').value;
+    const id     = isNaN(rawId) ? rawId : +rawId;
+    const u      = db.users.find(us => us.id == id || us.id === rawId || us.fbId === rawId);
+    if (!u) return toast('Professionnel introuvable');
 
-      // Compteur "Ne répond pas"
-      if (reason === 'Ne répond pas') {
-        u.noResponseReports = (u.noResponseReports || 0) + 1;
-        if (u.noResponseReports >= 10) {
-          // Avertissement simulé (en prod → envoi email réel)
-          u.status = 'suspended';
-          addNotif(`⚠️ ${u.name} suspendu : 10 signalements "Ne répond pas".`);
-          toast('Ce professionnel a été suspendu automatiquement.');
-        } else if (u.noResponseReports >= 5) {
-          // Avertissement par email simulé
-          u.warningEmailSent = true;
-          addNotif(`📧 Avertissement envoyé à ${u.name} (${u.noResponseReports} signalements "Ne répond pas")`);
-        }
+    if (!u.reportDetails) u.reportDetails = [];
+    u.reportDetails.push({
+      reason,
+      desc: document.getElementById('report-desc').value,
+      date: new Date().toLocaleDateString('fr-FR'),
+      timestamp: Date.now()
+    });
+    u.reports = (u.reports || 0) + 1;
+
+    const now = Date.now();
+    const reports = u.reports;
+    let actionMsg = '';
+
+    if (reports >= 5) {
+      // 🚫 BANNISSEMENT DÉFINITIF après 5+ signalements
+      u.status = 'banned';
+      u.bannedAt = now;
+      u.bannedReason = `Bannissement automatique après ${reports} signalements`;
+      actionMsg = `🚫 ${u.name} banni définitivement après ${reports} signalements.`;
+      toast('Ce professionnel a été banni définitivement.');
+
+      // Ajouter à la blacklist
+      if (USE_FIREBASE) {
+        saveBlacklistFirebase({
+          name: u.name, phone: u.phone,
+          email: u.emailMain || u.email,
+          reason: 'Ban automatique — signalements répétés',
+          date: new Date().toLocaleDateString('fr-FR')
+        });
       }
 
-      // Suspension après 5 signalements toutes raisons
-      if (u.reports >= 5 && u.status === 'active') {
-        u.status = 'suspended';
-        addNotif(`🚫 ${u.name} suspendu après ${u.reports} signalements.`);
-      }
+    } else if (reports === 4) {
+      // ⏸ SUSPENSION 7 JOURS après 4 signalements
+      u.status = 'suspended';
+      u.suspendedAt = now;
+      u.suspendedUntil = now + 7 * 24 * 3600 * 1000; // 7 jours
+      u.suspendedReason = `Suspension 7 jours — ${reports} signalements`;
+      actionMsg = `⚠️ ${u.name} suspendu 7 jours (${reports} signalements).`;
+      toast('Ce professionnel a été suspendu 7 jours.');
 
-      saveDB();
+    } else if (reports === 3) {
+      // ⏸ SUSPENSION 48H après 3 signalements
+      u.status = 'suspended';
+      u.suspendedAt = now;
+      u.suspendedUntil = now + 48 * 3600 * 1000; // 48 heures
+      u.suspendedReason = `Suspension 48h — ${reports} signalements`;
+      actionMsg = `⚠️ ${u.name} suspendu 48h (${reports} signalements).`;
+      toast('Ce professionnel a été suspendu 48h automatiquement.');
+
+    } else if (reports === 2) {
+      // ⚠️ AVERTISSEMENT après 2 signalements
+      u.warningAt = now;
+      actionMsg = `⚠️ Avertissement envoyé à ${u.name} (${reports} signalements).`;
     }
+
+    if (actionMsg) addNotif(actionMsg);
+    saveDB();
+
+    // Sauvegarder sur Firestore
+    if (USE_FIREBASE) {
+      await saveReportFirebase(u.fbId || String(u.id), u.reportDetails[u.reportDetails.length-1], u);
+    }
+
     closeModal('report-modal');
     toast('✅ Signalement envoyé. Merci pour votre vigilance !');
   },
@@ -2888,6 +3172,10 @@ const app = {
 
   // ── INSCRIPTION PRO ──
   async registerPro() {
+    // Vérifier acceptation charte
+    if (!document.getElementById('terms-accept')?.checked) {
+      return toast('⚠️ Veuillez accepter la Charte d\'utilisation MATLOUB');
+    }
     const name     = document.getElementById('reg-name').value.trim();
     const jobSel   = document.getElementById('reg-job-select').value;
     const jobCust  = document.getElementById('reg-job-custom').value.trim();
@@ -3651,9 +3939,60 @@ function showModal(id) {
 function closeModal(id) {
   const m = document.getElementById(id);
   if (m) m.classList.remove('active');
-  // Check if any other modal is open
   if (!document.querySelector('.modal-overlay.active')) document.body.style.overflow='';
 }
+
+// ── SWIPE DOWN TO CLOSE MODAL ──
+(function() {
+  let startY = 0, startX = 0, isDragging = false, activeSheet = null;
+
+  document.addEventListener('touchstart', e => {
+    const sheet = e.target.closest('.modal-sheet');
+    if (!sheet) return;
+    // Seulement si on est en haut du sheet (zone handle)
+    const rect = sheet.getBoundingClientRect();
+    const touchY = e.touches[0].clientY;
+    if (touchY - rect.top > 60) return; // Seulement les 60px du haut
+    startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
+    isDragging = true;
+    activeSheet = sheet;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!isDragging || !activeSheet) return;
+    const dy = e.touches[0].clientY - startY;
+    const dx = Math.abs(e.touches[0].clientX - startX);
+    if (dy > 0 && dy > dx) {
+      activeSheet.style.transform = `translateY(${Math.min(dy, 300)}px)`;
+      activeSheet.style.opacity = `${1 - dy / 400}`;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!isDragging || !activeSheet) return;
+    isDragging = false;
+    const dy = e.changedTouches[0].clientY - startY;
+    activeSheet.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    if (dy > 100) {
+      activeSheet.style.transform = 'translateY(100%)';
+      activeSheet.style.opacity = '0';
+      setTimeout(() => {
+        const overlay = activeSheet.closest('.modal-overlay');
+        if (overlay) closeModal(overlay.id);
+        activeSheet.style.transform = '';
+        activeSheet.style.opacity = '';
+        activeSheet.style.transition = '';
+        activeSheet = null;
+      }, 300);
+    } else {
+      activeSheet.style.transform = '';
+      activeSheet.style.opacity = '';
+      activeSheet = null;
+    }
+  }, { passive: true });
+})();
 
 // Close modal on overlay click
 document.querySelectorAll('.modal-overlay').forEach(m => {
@@ -3760,6 +4099,11 @@ function addNotif(msg) {
   const fbOk = await initFirebase();
   if (fbOk) {
     await syncFromFirebase();
+    // ✅ Rétablir automatiquement les suspensions expirées
+    checkAndRestoreSuspensions();
+  } else {
+    // Mode local — vérifier quand même
+    checkAndRestoreSuspensions();
   }
 
   console.log(`%c🔐 MATLOUB v6 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256 + Rate Limiting`, 'color:#6C3CE1;font-weight:bold;font-size:13px;');
