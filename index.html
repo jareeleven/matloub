@@ -3727,7 +3727,9 @@ const app = {
     const u = db.users.find(us => String(us.id) === rawId || us.fbId === rawId);
     if (!u) return;
 
-    document.getElementById('msg-target-id').value = rawId;
+    // Toujours utiliser fbId si disponible
+    const proId = u.fbId || rawId;
+    document.getElementById('msg-target-id').value = proId;
     document.getElementById('msg-pro-name').textContent = sanitize(u.name);
     document.getElementById('msg-pro-job').textContent  = sanitize(u.job || '');
     document.getElementById('msg-pro-avatar').textContent = u.name?.[0]?.toUpperCase() || '?';
@@ -3742,12 +3744,12 @@ const app = {
     }
 
     // Charger messages depuis Firestore
-    await this.loadMessages(rawId);
+    await this.loadMessages(proId);
     closeModal('detail-modal');
     showModal('msg-modal');
 
     // Écouter nouveaux messages en temps réel
-    this.listenMessages(rawId);
+    this.listenMessages(proId);
   },
 
   async loadMessages(proId) {
