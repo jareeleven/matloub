@@ -2758,6 +2758,8 @@ const app = {
       }
     } catch(e) {}
   },
+
+  async loadProMessages() {
     const u = db.currentUser;
     if (!u) return;
     const proId = u.fbId || String(u.id);
