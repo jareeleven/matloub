@@ -2766,15 +2766,21 @@ const app = {
     try {
       const { collection, query, where, getDocs } =
         await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-      const snap = await getDocs(query(collection(firebaseDB, 'messages'), where('proId', '==', proId)));
-      // Compter seulement les nouveaux messages depuis la dernière visite
+      const snap = await getDocs(query(
+        collection(firebaseDB, 'messages'),
+        where('proId', '==', proId)
+      ));
       const newCount = snap.docs.filter(d => (d.data().timestamp || 0) > lastSeen).length;
       const badge = document.getElementById('msg-tab-badge');
-      if (badge && newCount > 0) {
-        badge.textContent = newCount;
-        badge.style.display = 'inline';
+      if (badge) {
+        if (newCount > 0) {
+          badge.textContent = newCount;
+          badge.style.display = 'inline';
+        } else {
+          badge.style.display = 'none';
+        }
       }
-    } catch(e) {}
+    } catch(e) { console.warn('Badge error:', e); }
   },
 
   async loadProMessages() {
@@ -3721,6 +3727,11 @@ const app = {
       if (u.role === 'pro') {
         app.checkTrialExpiry();
         app.renderSubscriptionStatus();
+        // Si première fois — marquer tous messages existants comme lus
+        const seenKey = `matloub_msgs_seen_${u.fbId||u.id}`;
+        if (!localStorage.getItem(seenKey)) {
+          localStorage.setItem(seenKey, Date.now());
+        }
         // Charger badge messages
         app.loadProMessagesBadge();
       }
@@ -3780,8 +3791,8 @@ const app = {
     let msgs = [];
 
     // Charger depuis Firestore
-    const clientId = db.currentUser?.role === 'pro' 
-      ? null  // Pro voit tous les messages
+    const clientId = db.currentUser?.role === 'pro'
+      ? null
       : (db.currentUser?.id ? `user_${db.currentUser.id}` : getClientId());
 
     if (USE_FIREBASE) {
@@ -3789,24 +3800,20 @@ const app = {
         const { collection, query, where, getDocs } =
           await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
 
-        let q;
-        if (clientId) {
-          // Client — voit seulement SES messages avec ce pro
-          q = query(
-            collection(firebaseDB, 'messages'),
-            where('proId', '==', proId),
-            where('clientId', '==', clientId)
-          );
-        } else {
-          // Pro — voit tous les messages
-          q = query(
-            collection(firebaseDB, 'messages'),
-            where('proId', '==', proId)
-          );
-        }
+        // Charger tous les messages du pro
+        const snap = await getDocs(query(
+          collection(firebaseDB, 'messages'),
+          where('proId', '==', proId)
+        ));
+        const allMsgs = snap.docs.map(d => d.data());
 
-        const snap = await getDocs(q);
-        msgs = snap.docs.map(d => d.data());
+        if (clientId) {
+          // Client — voit seulement SES messages (filtre côté client)
+          msgs = allMsgs.filter(m => !m.clientId || m.clientId === clientId);
+        } else {
+          // Pro — voit tous
+          msgs = allMsgs;
+        }
         msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
       } catch(e) {
         const u = db.users.find(us => String(us.id) === proId || us.fbId === proId);
