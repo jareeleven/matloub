@@ -4292,8 +4292,9 @@ function toast(msg) {
 //  PRO TABS
 // ────────────────────────────────────────────
 function showProTab(tab, el) {
-  ['edit','stats','reviews'].forEach(t => {
-    document.getElementById(`pro-tab-${t}`).classList.toggle('hidden', t !== tab);
+  ['edit','stats','reviews','messages','abonnement'].forEach(t => {
+    const el = document.getElementById(`pro-tab-${t}`);
+    if (el) el.classList.toggle('hidden', t !== tab);
   });
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
