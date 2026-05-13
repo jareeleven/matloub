@@ -698,8 +698,15 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
           </div>
         </div>
         <div class="input-group">
-          <label>Photos (Max 8)</label>
+          <label style="font-weight:800;font-size:0.95rem;">📸 Galerie de réalisations</label>
+          <div style="font-size:0.78rem;color:var(--text3);margin-bottom:10px;">Ajoutez jusqu'à 8 photos de vos travaux pour convaincre les clients</div>
           <div class="photo-grid" id="pro-photo-grid"></div>
+          <label style="display:flex;align-items:center;gap:8px;background:var(--primary);color:white;padding:12px 16px;border-radius:14px;cursor:pointer;margin-top:10px;font-weight:700;justify-content:center;">
+            <span class="material-icons-round">add_photo_alternate</span>
+            Ajouter une photo
+            <input type="file" accept="image/*" multiple style="display:none;" onchange="app.addPhotos(this)">
+          </label>
+          <div style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:6px;">📱 Appuyez sur une photo pour la supprimer</div>
         </div>
         <button class="btn btn-primary" onclick="app.saveProChanges()" style="margin-top:4px;">💾 Enregistrer</button>
         <button class="btn btn-ghost" style="margin-top:8px;" onclick="app.logout()">Déconnexion</button>
@@ -1138,6 +1145,17 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 </div>
 
 <!-- Modal Charte d'utilisation -->
+<!-- Modal Lightbox Photos -->
+<div id="lightbox-modal" class="modal-overlay" style="background:rgba(0,0,0,0.95);z-index:9999;" onclick="closeModal('lightbox-modal')">
+  <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+    <button onclick="closeModal('lightbox-modal')" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);border:none;color:white;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
+    <button id="lb-prev" onclick="event.stopPropagation();lightboxNav(-1)" style="position:absolute;left:16px;background:rgba(255,255,255,0.2);border:none;color:white;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.4rem;display:flex;align-items:center;justify-content:center;">‹</button>
+    <img id="lightbox-img" src="" style="max-width:100%;max-height:80vh;border-radius:12px;object-fit:contain;" onclick="event.stopPropagation()">
+    <div id="lightbox-counter" style="color:rgba(255,255,255,0.7);margin-top:12px;font-size:0.85rem;"></div>
+    <button id="lb-next" onclick="event.stopPropagation();lightboxNav(1)" style="position:absolute;right:16px;background:rgba(255,255,255,0.2);border:none;color:white;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.4rem;display:flex;align-items:center;justify-content:center;">›</button>
+  </div>
+</div>
+
 <div id="terms-modal" class="modal-overlay">
   <div class="modal-sheet" style="max-height:88vh;">
     <div class="modal-handle"></div>
@@ -1909,6 +1927,54 @@ async function checkAndRestoreSuspensions() {
     } catch(e) { console.warn('Auto-restore error:', e); }
   }
 }
+// ── COMPRESSION IMAGE ──
+function compressImage(file, maxSize = 800, quality = 0.75) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > height && width > maxSize) { height = height * maxSize / width; width = maxSize; }
+        else if (height > maxSize) { width = width * maxSize / height; height = maxSize; }
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── LIGHTBOX ──
+let lightboxPhotos = [], lightboxIndex = 0;
+
+function openLightbox(index, photos) {
+  if (!photos || !photos.length) return;
+  lightboxPhotos = Array.isArray(photos) ? photos : [photos];
+  lightboxIndex = index;
+  updateLightbox();
+  showModal('lightbox-modal');
+}
+
+function updateLightbox() {
+  const img = document.getElementById('lightbox-img');
+  const counter = document.getElementById('lightbox-counter');
+  const prev = document.getElementById('lb-prev');
+  const next = document.getElementById('lb-next');
+  if (img) img.src = lightboxPhotos[lightboxIndex] || '';
+  if (counter) counter.textContent = `${lightboxIndex + 1} / ${lightboxPhotos.length}`;
+  if (prev) prev.style.display = lightboxPhotos.length > 1 ? 'flex' : 'none';
+  if (next) next.style.display = lightboxPhotos.length > 1 ? 'flex' : 'none';
+}
+
+function lightboxNav(dir) {
+  lightboxIndex = (lightboxIndex + dir + lightboxPhotos.length) % lightboxPhotos.length;
+  updateLightbox();
+}
+
 async function saveBlacklistFirebase(entry) {
   if (!USE_FIREBASE) {
     const bl = JSON.parse(localStorage.getItem('matloub_blacklist') || '{"phones":[],"emails":[],"names":[]}');
@@ -2616,8 +2682,20 @@ const app = {
     const isFav = favs.includes(id);
     const avgRating = getAvgRating(u);
     const cat = categories.find(c => c.id === u.category) || categories[0];
-    const photosHtml = u.photos && u.photos.length > 0
-      ? u.photos.map(p => `<img src="${p}" class="detail-photo" alt="photo">`).join('')
+    // Store photos for lightbox
+    const uPhotos = u.photos || [];
+    const photosHtml = uPhotos.length > 0
+      ? `<div style="margin-bottom:16px;">
+          <div style="font-weight:800;font-size:0.9rem;margin-bottom:10px;">📸 Réalisations (${uPhotos.length})</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            ${uPhotos.map((p,i) => `
+              <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;"
+                   onclick="lightboxPhotos=${JSON.stringify(uPhotos).replace(/`/g,'\\`')};lightboxIndex=${i};updateLightbox();showModal('lightbox-modal')">
+                <img src="${p}" style="width:100%;height:100%;object-fit:cover;">
+              </div>`).join('')}
+          </div>
+          <div style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:6px;">👆 Appuyez pour agrandir</div>
+        </div>`
       : '';
     const reviewsHtml = u.reviews && u.reviews.length > 0
       ? u.reviews.map(r => `<div class="review-item">
@@ -2653,7 +2731,7 @@ const app = {
           <div class="detail-stat"><div class="detail-stat-val">${u.views||0}</div><div class="detail-stat-lbl">Vues</div></div>
         </div>
       </div>
-      ${photosHtml ? `<div class="detail-photos">${photosHtml}</div>` : ''}
+      ${photosHtml}
       ${u.bio ? `<div style="background:var(--bg);border-radius:14px;padding:12px;margin-bottom:14px;font-size:0.85rem;color:var(--text2);">${sanitize(u.bio)}</div>` : ''}
       <div class="action-row">
         <a href="tel:${sanitize(u.phone||'')}" class="action-btn btn-call" onclick="app.trackContact('${u.id}','call')"><span class="material-icons-round">call</span>Appeler</a>
@@ -3651,43 +3729,66 @@ const app = {
 
   renderPhotoGrid() {
     const grid = document.getElementById('pro-photo-grid');
-    const photos = db.currentUser.photos || [];
-    let html = photos.map((p,i) => `
-      <div class="photo-slot filled">
-        <img src="${p}" alt="photo">
-        <button class="photo-del" onclick="app.removePhoto(${i})">&times;</button>
+    if (!grid) return;
+    const photos = db.currentUser?.photos || [];
+    grid.innerHTML = photos.map((p, i) => `
+      <div class="photo-slot filled" style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;cursor:pointer;">
+        <img src="${p}" alt="réalisation ${i+1}" style="width:100%;height:100%;object-fit:cover;" onclick="openLightbox(${i}, db.currentUser?.photos||[])">
+        <button onclick="event.stopPropagation();app.removePhoto(${i})" 
+          style="position:absolute;top:4px;right:4px;background:rgba(239,68,68,0.9);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:900;">✕</button>
+        <div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:white;font-size:0.65rem;padding:2px 6px;border-radius:6px;">${i+1}</div>
       </div>`).join('');
-    if (photos.length < 8) {
-      html += `<div class="photo-slot">
-        <span class="material-icons-round add-icon">add_photo_alternate</span>
-        <input type="file" accept="image/*" onchange="app.addPhoto(this)">
+    if (!photos.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);border:2px dashed var(--border);border-radius:14px;">
+        <span class="material-icons-round" style="font-size:40px;display:block;margin-bottom:8px;opacity:0.4;">photo_library</span>
+        <div style="font-size:0.82rem;">Aucune photo — ajoutez vos réalisations !</div>
       </div>`;
     }
-    grid.innerHTML = html;
   },
 
-  addPhoto(input) {
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = async e => {
-        const base64 = e.target.result;
-        let photoUrl = base64;
-        // 🔥 Upload vers Firebase Storage si disponible
+  async addPhotos(input) {
+    if (!input.files || !input.files.length) return;
+    const u = db.currentUser;
+    if (!u) return;
+    if (!u.photos) u.photos = [];
+    const remaining = 8 - u.photos.length;
+    if (remaining <= 0) return toast('Maximum 8 photos atteint');
+
+    const files = Array.from(input.files).slice(0, remaining);
+    toast(`⏳ Upload de ${files.length} photo(s)...`);
+
+    for (const file of files) {
+      try {
+        // Compresser l'image avant upload
+        const compressed = await compressImage(file, 800, 0.75);
+        let photoUrl = compressed;
+
+        // Upload Firebase Storage
         if (USE_FIREBASE) {
-          const photoIndex = db.currentUser.photos.length;
-          photoUrl = await uploadProPhoto(db.currentUser.id, photoIndex, base64);
+          const idx = u.photos.length;
+          photoUrl = await uploadProPhoto(u.id, idx, compressed) || compressed;
         }
-        db.currentUser.photos.push(photoUrl);
-        const idx = db.users.findIndex(u => u.id === db.currentUser.id);
-        if (idx !== -1) db.users[idx].photos = db.currentUser.photos;
-        saveDB();
-        if (USE_FIREBASE) savePro(db.users[idx]);
-        app.renderPhotoGrid();
-        toast('📸 Photo ajoutée');
-      };
-      reader.readAsDataURL(input.files[0]);
+
+        u.photos.push(photoUrl);
+        const dbIdx = db.users.findIndex(us => us.id === u.id);
+        if (dbIdx !== -1) db.users[dbIdx].photos = u.photos;
+      } catch(e) {
+        console.warn('Photo upload error:', e);
+      }
     }
+
+    saveDB();
+    if (USE_FIREBASE) {
+      const dbIdx = db.users.findIndex(us => us.id === u.id);
+      if (dbIdx !== -1) savePro(db.users[dbIdx]);
+    }
+    app.renderPhotoGrid();
+    toast(`✅ ${files.length} photo(s) ajoutée(s) !`);
+    input.value = '';
   },
+
+  // Garder addPhoto pour compatibilité
+  addPhoto(input) { this.addPhotos(input); },
 
   removePhoto(idx) {
     db.currentUser.photos.splice(idx, 1);
