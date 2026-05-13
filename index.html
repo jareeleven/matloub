@@ -651,9 +651,6 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <button class="tab-btn active" onclick="showProTab('edit',this)">Mon Profil</button>
       <button class="tab-btn" onclick="showProTab('stats',this)">Statistiques</button>
       <button class="tab-btn" onclick="showProTab('reviews',this)">Avis</button>
-      <button class="tab-btn" onclick="showProTab('messages',this);app.loadProMessages();app.resetMsgBadge()">
-        💬 Messages <span id="msg-tab-badge" style="display:none;background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;font-weight:900;margin-left:3px;">0</span>
-      </button>
       <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 Abonnement</button>
     </div>
 
@@ -734,14 +731,6 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <!-- Tab: Avis -->
     <div id="pro-tab-reviews" class="hidden">
       <div id="pro-reviews-list"><div class="empty-state"><span class="material-icons-round">rate_review</span><h3>Pas encore d'avis</h3></div></div>
-    </div>
-
-    <!-- Tab: Messages -->
-    <div id="pro-tab-messages" class="hidden">
-      <div style="font-weight:800;margin-bottom:12px;">📬 Messages reçus</div>
-      <div id="pro-messages-list">
-        <div class="empty-state"><span class="material-icons-round">chat_bubble_outline</span><h3>Aucun message</h3></div>
-      </div>
     </div>
 
     <!-- Tab: Abonnement -->
@@ -864,43 +853,6 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 </div>
 
 <!-- Modal Message Pro -->
-<div id="msg-modal" class="modal-overlay">
-  <div class="modal-sheet" style="height:92vh;display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:24px 24px 0 0;">
-    <!-- Header -->
-    <div style="padding:14px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;">
-      <div id="msg-pro-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:1rem;flex-shrink:0;">?</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:900;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="msg-pro-name">Pro</div>
-        <div style="font-size:0.7rem;color:var(--text3);" id="msg-pro-job">Professionnel</div>
-      </div>
-      <button onclick="closeModal('msg-modal')" style="background:var(--surface);border:none;cursor:pointer;color:var(--text2);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-        <span class="material-icons-round" style="font-size:18px;">close</span>
-      </button>
-    </div>
-
-    <!-- Zone messages -->
-    <div id="msg-history" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;"></div>
-
-    <!-- Champ prénom si non connecté -->
-    <div id="msg-sender-row" style="padding:8px 16px 4px;flex-shrink:0;">
-      <input type="text" id="msg-sender-name" class="input-field" placeholder="Votre prénom..." 
-        style="width:100%;box-sizing:border-box;padding:10px 14px;font-size:0.88rem;">
-    </div>
-
-    <!-- Zone saisie message -->
-    <div style="padding:8px 16px 24px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;border-top:1px solid var(--border);">
-      <textarea id="msg-input" class="input-field" placeholder="Votre message..." rows="2"
-        style="flex:1;min-width:0;resize:none;padding:12px 14px;font-size:0.9rem;line-height:1.4;font-family:inherit;border-radius:16px;"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();app.sendMessage();}"></textarea>
-      <button class="btn btn-primary" onclick="app.sendMessage()" 
-        style="padding:12px;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <span class="material-icons-round" style="font-size:20px;">send</span>
-      </button>
-    </div>
-    <input type="hidden" id="msg-target-id">
-  </div>
-</div>
-
 <!-- ══ BOTTOM NAV ══ -->
 <!-- Crédit développeur -->
 <div style="text-align:center;padding:8px 0 70px;font-size:0.68rem;color:var(--text3);">
@@ -1718,15 +1670,6 @@ async function sendPushNotification(token, title, body, data = {}) {
   }
 }
 
-// ── ID UNIQUE PAR APPAREIL ──
-function getClientId() {
-  let id = localStorage.getItem('matloub_client_id');
-  if (!id) {
-    id = 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('matloub_client_id', id);
-  }
-  return id;
-}
 const PAYMENT_INFO = {
   edahabia: 'VOTRE_NUMERO_EDAHABIA', // ← Remplacez par votre numéro Edahabia
   whatsapp:  'VOTRE_NUMERO_WA',       // ← Remplacez par votre numéro WhatsApp
@@ -2720,9 +2663,6 @@ const app = {
         <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav('${u.id}')">
           <span class="material-icons-round">${isFav?'favorite':'favorite_border'}</span>${isFav?'Favori':'Ajouter'}
         </button>
-        <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="app.openMessage('${u.id}')">
-          <span class="material-icons-round">chat_bubble_outline</span>Message
-        </button>
         <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="sharePro('${u.id}')">
           <span class="material-icons-round">share</span>Partager
         </button>
@@ -2748,123 +2688,6 @@ const app = {
     showModal('detail-modal');
   },
 
-  // ── MESSAGES PRO (Boîte de réception) ──
-  resetMsgBadge() {
-    const badge = document.getElementById('msg-tab-badge');
-    if (badge) badge.style.display = 'none';
-    // Sauvegarder le nombre de messages vus
-    const u = db.currentUser;
-    if (u) localStorage.setItem(`matloub_msgs_seen_${u.fbId||u.id}`, Date.now());
-  },
-
-  async loadProMessagesBadge() {
-    const u = db.currentUser;
-    if (!u || u.role !== 'pro') return;
-    const proId = u.fbId || String(u.id);
-    const lastSeen = parseInt(localStorage.getItem(`matloub_msgs_seen_${proId}`) || '0');
-    if (!USE_FIREBASE) return;
-    try {
-      const { collection, query, where, getDocs } =
-        await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-      const snap = await getDocs(query(
-        collection(firebaseDB, 'messages'),
-        where('proId', '==', proId)
-      ));
-      const newCount = snap.docs.filter(d => (d.data().timestamp || 0) > lastSeen).length;
-      const badge = document.getElementById('msg-tab-badge');
-      if (badge) {
-        if (newCount > 0) {
-          badge.textContent = newCount;
-          badge.style.display = 'inline';
-        } else {
-          badge.style.display = 'none';
-        }
-      }
-    } catch(e) { console.warn('Badge error:', e); }
-  },
-
-  async loadProMessages() {
-    const u = db.currentUser;
-    if (!u) return;
-    const proId = u.fbId || String(u.id);
-    const list  = document.getElementById('pro-messages-list');
-    if (!list) return;
-
-    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);">
-      <span class="material-icons-round" style="font-size:32px;display:block;margin-bottom:8px;">hourglass_empty</span>Chargement...</div>`;
-
-    let msgs = [];
-    if (USE_FIREBASE) {
-      try {
-        const { collection, query, where, getDocs, orderBy } =
-          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-        // Sans orderBy pour éviter l'index composite
-        const q = query(
-          collection(firebaseDB, 'messages'),
-          where('proId', '==', proId)
-        );
-        const snap = await getDocs(q);
-        msgs = snap.docs.map(d => ({...d.data(), docId: d.id}));
-        // Trier côté client
-        msgs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        console.log(`📬 ${msgs.length} messages trouvés pour ${proId}`);
-      } catch(e) {
-        console.error('loadProMessages error:', e);
-        msgs = u.messages || [];
-      }
-    } else {
-      msgs = u.messages || [];
-    }
-
-    if (!msgs.length) {
-      list.innerHTML = `<div class="empty-state"><span class="material-icons-round">chat_bubble_outline</span><h3>Aucun message reçu</h3><p>Les messages des clients apparaîtront ici</p></div>`;
-      return;
-    }
-
-    // Grouper par expéditeur
-    const bySender = {};
-    msgs.forEach(m => {
-      const key = m.sender || 'Anonyme';
-      if (!bySender[key]) bySender[key] = [];
-      bySender[key].push(m);
-    });
-
-    list.innerHTML = Object.entries(bySender).map(([sender, smsgs]) => {
-      const last = smsgs[0];
-      return `
-        <div class="card" style="margin-bottom:10px;cursor:pointer;" onclick="app.openConversation('${proId}','${sanitize(sender)}')">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:1.1rem;flex-shrink:0;">
-              ${sender[0]?.toUpperCase() || '?'}
-            </div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-weight:800;">${sanitize(sender)}</div>
-              <div style="font-size:0.78rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sanitize(last.text?.substring(0,50))}...</div>
-              <div style="font-size:0.7rem;color:var(--text3);margin-top:2px;">${last.date || ''}</div>
-            </div>
-            <div style="font-size:0.75rem;color:var(--primary);font-weight:700;">${smsgs.length} msg</div>
-          </div>
-        </div>`;
-    }).join('');
-
-    // Mettre à jour badge
-    const badge = document.getElementById('msg-tab-badge');
-    if (badge) { badge.textContent = msgs.length; badge.style.display = 'inline'; }
-  },
-
-  async openConversation(proId, sender) {
-    // Ouvre le chat filtré par expéditeur pour répondre
-    const u = db.users.find(us => (us.fbId || String(us.id)) === proId);
-    if (!u) return;
-    document.getElementById('msg-target-id').value = proId;
-    document.getElementById('msg-pro-name').textContent = `Conversation avec ${sanitize(sender)}`;
-    document.getElementById('msg-pro-job').textContent = 'Répondre au client';
-    document.getElementById('msg-pro-avatar').textContent = sender[0]?.toUpperCase() || '?';
-    document.getElementById('msg-sender-row').style.display = 'none';
-    document.getElementById('msg-input').value = '';
-    await this.loadMessages(proId);
-    showModal('msg-modal');
-  },
   showPaymentModal() {
     // Remplir les infos de paiement
     document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
@@ -3732,15 +3555,12 @@ const app = {
         if (!localStorage.getItem(seenKey)) {
           localStorage.setItem(seenKey, Date.now());
         }
-        // Charger badge messages
-        app.loadProMessagesBadge();
       }
     }, 2000);
   },
 
   logout() {
     if (db.currentUser) {
-      // Invalider le token
       const idx = db.users.findIndex(u => u.id === db.currentUser.id);
       if (idx !== -1) { db.users[idx].sessionToken = null; saveDB(); }
     }
@@ -3748,205 +3568,6 @@ const app = {
     sessionStorage.removeItem('matloub_session');
     navTo('home');
     toast('Déconnecté avec succès');
-  },
-
-  // ── MESSAGERIE COMPLÈTE ──
-  async openMessage(id) {
-    const rawId = String(id);
-    const u = db.users.find(us => String(us.id) === rawId || us.fbId === rawId);
-    if (!u) return;
-
-    // Toujours utiliser fbId si disponible
-    const proId = u.fbId || rawId;
-    document.getElementById('msg-target-id').value = proId;
-    document.getElementById('msg-pro-name').textContent = sanitize(u.name);
-    document.getElementById('msg-pro-job').textContent  = sanitize(u.job || '');
-    document.getElementById('msg-pro-avatar').textContent = u.name?.[0]?.toUpperCase() || '?';
-    document.getElementById('msg-input').value = '';
-
-    // Afficher/cacher champ nom selon si connecté
-    const senderRow = document.getElementById('msg-sender-row');
-    if (db.currentUser) {
-      senderRow.style.display = 'none';
-    } else {
-      senderRow.style.display = 'block';
-    }
-
-    // Charger messages depuis Firestore
-    await this.loadMessages(proId);
-    closeModal('detail-modal');
-    showModal('msg-modal');
-
-    // Écouter nouveaux messages en temps réel
-    this.listenMessages(proId);
-  },
-
-  async loadMessages(proId) {
-    const hist = document.getElementById('msg-history');
-    hist.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);">
-      <span class="material-icons-round" style="font-size:32px;display:block;margin-bottom:8px;">chat</span>
-      Chargement...
-    </div>`;
-
-    let msgs = [];
-
-    // Charger depuis Firestore
-    const clientId = db.currentUser?.role === 'pro'
-      ? null
-      : (db.currentUser?.id ? `user_${db.currentUser.id}` : getClientId());
-
-    if (USE_FIREBASE) {
-      try {
-        const { collection, query, where, getDocs } =
-          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-
-        // Charger tous les messages du pro
-        const snap = await getDocs(query(
-          collection(firebaseDB, 'messages'),
-          where('proId', '==', proId)
-        ));
-        const allMsgs = snap.docs.map(d => d.data());
-
-        if (clientId) {
-          // Client — voit seulement SES messages (filtre côté client)
-          msgs = allMsgs.filter(m => !m.clientId || m.clientId === clientId);
-        } else {
-          // Pro — voit tous
-          msgs = allMsgs;
-        }
-        msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-      } catch(e) {
-        const u = db.users.find(us => String(us.id) === proId || us.fbId === proId);
-        msgs = u?.messages?.filter(m => !clientId || m.clientId === clientId) || [];
-      }
-    } else {
-      const u = db.users.find(us => String(us.id) === proId || us.fbId === proId);
-      msgs = (u?.messages || []).filter(m => !clientId || m.clientId === clientId);
-      msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-    }
-
-    this.renderMessages(msgs);
-  },
-
-  renderMessages(msgs) {
-    const hist = document.getElementById('msg-history');
-    const currentName = db.currentUser?.name || '';
-
-    if (!msgs.length) {
-      hist.innerHTML = `
-        <div style="text-align:center;padding:30px 20px;color:var(--text3);">
-          <span class="material-icons-round" style="font-size:48px;display:block;margin-bottom:12px;opacity:0.4;">chat_bubble_outline</span>
-          <div style="font-weight:700;margin-bottom:4px;">Aucun message</div>
-          <div style="font-size:0.78rem;">Soyez le premier à contacter ce professionnel !</div>
-        </div>`;
-      return;
-    }
-
-    hist.innerHTML = `
-      <div style="text-align:center;font-size:0.72rem;color:var(--text3);padding:8px;">
-        🔒 Messages privés
-      </div>
-      ${msgs.map(m => {
-        const isMe = m.fromClient && (m.sender === currentName || m.fromCurrentUser);
-        return `
-          <div style="display:flex;flex-direction:column;align-items:${isMe ? 'flex-end' : 'flex-start'};margin-bottom:10px;">
-            ${!isMe ? `<div style="font-size:0.7rem;color:var(--text3);margin-bottom:3px;padding-left:4px;">${sanitize(m.sender||'Client')}</div>` : ''}
-            <div style="max-width:80%;padding:10px 14px;border-radius:${isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
-              background:${isMe ? 'var(--primary)' : 'var(--surface)'};
-              color:${isMe ? 'white' : 'var(--text)'};
-              font-size:0.88rem;line-height:1.4;
-              box-shadow:0 1px 4px rgba(0,0,0,0.1);">
-              ${sanitize(m.text)}
-            </div>
-            <div style="font-size:0.65rem;color:var(--text3);margin-top:3px;padding:0 4px;">
-              ${m.date || ''}
-            </div>
-          </div>`;
-      }).join('')}`;
-
-    hist.scrollTop = hist.scrollHeight;
-  },
-
-  msgListener: null,
-  listenMessages(proId) {
-    // Annuler l'ancien listener
-    if (this.msgListener) { this.msgListener(); this.msgListener = null; }
-    if (!USE_FIREBASE) return;
-
-    import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ collection, query, where, orderBy, onSnapshot }) => {
-      const q = query(
-        collection(firebaseDB, 'messages'),
-        where('proId', '==', proId),
-        orderBy('timestamp', 'asc')
-      );
-      this.msgListener = onSnapshot(q, snap => {
-        const msgs = snap.docs.map(d => d.data());
-        this.renderMessages(msgs);
-      });
-    }).catch(() => {});
-  },
-
-  async sendMessage() {
-    const rawId  = document.getElementById('msg-target-id').value;
-    const text   = sanitize(document.getElementById('msg-input').value.trim());
-    if (!text) return toast('Écrivez un message');
-    if (text.length > 500) return toast('Message trop long (500 max)');
-
-    // Nom de l'expéditeur
-    let senderName = db.currentUser?.name || document.getElementById('msg-sender-name')?.value.trim();
-    if (!senderName) return toast('Entrez votre prénom');
-
-    const u = db.users.find(us => String(us.id) === rawId || us.fbId === rawId);
-    if (!u) return toast('Pro introuvable');
-
-    // Toujours utiliser fbId si disponible
-    const proId = u.fbId || String(u.id);
-
-    const clientId = db.currentUser?.id ? `user_${db.currentUser.id}` : getClientId();
-
-    const msg = {
-      proId,
-      clientId,
-      text,
-      sender:    sanitize(senderName),
-      fromClient: true,
-      date:      new Date().toLocaleString('fr-FR'),
-      timestamp: Date.now()
-    };
-
-    document.getElementById('msg-input').value = '';
-
-    // Sauvegarder Firestore
-    if (USE_FIREBASE) {
-      try {
-        const { collection, addDoc } =
-          await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-        await addDoc(collection(firebaseDB, 'messages'), msg);
-        toast('✅ Message envoyé !');
-        // Recharger messages
-        await this.loadMessages(proId);
-      } catch(e) {
-        console.error('sendMessage error:', e.code, e.message);
-        toast('❌ Erreur: ' + (e.code || e.message));
-        // Fallback local
-        if (!u.messages) u.messages = [];
-        u.messages.push(msg);
-        saveDB();
-        this.renderMessages(u.messages);
-      }
-    } else {
-      if (!u.messages) u.messages = [];
-      u.messages.push(msg);
-      saveDB();
-      this.renderMessages(u.messages);
-      toast('✅ Message envoyé !');
-    }
-
-    // Notification locale pour le pro
-    const notifKey = `matloub_notifs_${proId}`;
-    const notifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
-    notifs.push({ title: `💬 Message de ${senderName}`, body: text.substring(0,60), read: false, createdAt: Date.now() });
-    localStorage.setItem(notifKey, JSON.stringify(notifs));
   },
 
   // ── PROFIL ──
