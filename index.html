@@ -3926,13 +3926,13 @@ const app = {
         // Recharger messages
         await this.loadMessages(proId);
       } catch(e) {
-        console.error('sendMessage error:', e);
+        console.error('sendMessage error:', e.code, e.message);
+        toast('❌ Erreur: ' + (e.code || e.message));
         // Fallback local
         if (!u.messages) u.messages = [];
         u.messages.push(msg);
         saveDB();
         this.renderMessages(u.messages);
-        toast('✅ Message envoyé (local)');
       }
     } else {
       if (!u.messages) u.messages = [];
