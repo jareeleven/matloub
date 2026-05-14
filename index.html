@@ -1830,11 +1830,18 @@ async function loadProsFromFirebase() {
 async function savePro(user) {
   if (!USE_FIREBASE) { saveDB(); return; }
   try {
-    const id = String(user.id);
-    // Ne jamais stocker le mot de passe en clair — seulement le hash
+    const id = user.fbId || String(user.id);
     const data = { ...user };
-    delete data.pass;          // supprimer mot de passe clair
-    delete data.selfie;        // selfie uploadé séparément via Storage
+    // Supprimer les champs sensibles et non supportés
+    delete data.pass;
+    delete data.passHash;
+    delete data.selfie;
+    delete data.sessionToken;
+    // Supprimer les champs undefined (Firestore ne les accepte pas)
+    Object.keys(data).forEach(k => {
+      if (data[k] === undefined) delete data[k];
+      if (data[k] === '') data[k] = null; // Remplacer chaînes vides par null
+    });
     data.updatedAt = FB.serverTimestamp();
     await FB.setDoc(FB.doc(FB.db, 'professionals', id), data, { merge: true });
   } catch(e) { console.error('Erreur sauvegarde pro:', e); saveDB(); }
