@@ -2122,28 +2122,25 @@ async function syncFromFirebase() {
 
 function saveDB() {
   try {
-    // Supprimer les selfies/photos base64 avant de sauvegarder en localStorage
-    // (ils sont déjà sur Firebase Storage)
+    // Sauvegarder sans supprimer les photos base64
     const usersLight = db.users.map(u => {
       const copy = {...u};
-      if (copy.selfie && copy.selfie.startsWith('data:')) copy.selfie = copy.selfieUrl || '';
-      if (copy.photos) copy.photos = copy.photos.map(p => p.startsWith('data:') ? '' : p).filter(Boolean);
+      // Garder les photos base64 — Firebase Storage non disponible
       return copy;
     });
     localStorage.setItem('matloub_v3_users', JSON.stringify(usersLight));
   } catch(e) {
-    // Si toujours plein — vider les anciennes données et réessayer
     console.warn('localStorage plein — nettoyage...');
     try {
       localStorage.removeItem('matloub_v3_users');
-      localStorage.removeItem('matloub_pros_v6');
+      // En cas de quota, supprimer les photos base64
       const usersMin = db.users.map(u => ({
         id: u.id, name: u.name, job: u.job, phone: u.phone,
         email: u.email, emailMain: u.emailMain, role: u.role,
         status: u.status, commune: u.commune, daira: u.daira,
         passHash: u.passHash, authMode: u.authMode, mainContact: u.mainContact,
         firebaseUid: u.firebaseUid, emailVerified: u.emailVerified,
-        joinDate: u.joinDate
+        joinDate: u.joinDate, photos: u.photos?.filter(p => !p.startsWith('data:')) || []
       }));
       localStorage.setItem('matloub_v3_users', JSON.stringify(usersMin));
     } catch(e2) {
@@ -3759,28 +3756,14 @@ const app = {
 
     for (const file of files) {
       try {
-        // Compresser l'image
         const compressed = await compressImage(file, 800, 0.75);
-        let photoUrl = compressed; // Base64 par défaut
-
-        // Tenter upload Firebase Storage (optionnel)
-        if (USE_FIREBASE && firebaseStorage) {
-          try {
-            const idx = u.photos.length;
-            const fbUrl = await uploadProPhoto(u.id, idx, compressed);
-            if (fbUrl && fbUrl.startsWith('http')) photoUrl = fbUrl;
-          } catch(storageErr) {
-            console.warn('Firebase Storage non disponible, utilisation base64:', storageErr.message);
-            // On garde le base64 — ça marche quand même
-          }
-        }
-
-        u.photos.push(photoUrl);
+        // Utiliser base64 directement — Firebase Storage a des problèmes CORS
+        u.photos.push(compressed);
         const dbIdx = db.users.findIndex(us => us.id === u.id);
         if (dbIdx !== -1) db.users[dbIdx].photos = [...u.photos];
       } catch(e) {
         console.warn('Photo error:', e);
-        toast('❌ Erreur photo: ' + e.message);
+        toast('❌ Erreur: ' + e.message);
       }
     }
 
