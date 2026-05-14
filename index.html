@@ -3759,21 +3759,28 @@ const app = {
 
     for (const file of files) {
       try {
-        // Compresser l'image avant upload
+        // Compresser l'image
         const compressed = await compressImage(file, 800, 0.75);
-        let photoUrl = compressed;
+        let photoUrl = compressed; // Base64 par défaut
 
-        // Upload Firebase Storage
-        if (USE_FIREBASE) {
-          const idx = u.photos.length;
-          photoUrl = await uploadProPhoto(u.id, idx, compressed) || compressed;
+        // Tenter upload Firebase Storage (optionnel)
+        if (USE_FIREBASE && firebaseStorage) {
+          try {
+            const idx = u.photos.length;
+            const fbUrl = await uploadProPhoto(u.id, idx, compressed);
+            if (fbUrl && fbUrl.startsWith('http')) photoUrl = fbUrl;
+          } catch(storageErr) {
+            console.warn('Firebase Storage non disponible, utilisation base64:', storageErr.message);
+            // On garde le base64 — ça marche quand même
+          }
         }
 
         u.photos.push(photoUrl);
         const dbIdx = db.users.findIndex(us => us.id === u.id);
-        if (dbIdx !== -1) db.users[dbIdx].photos = u.photos;
+        if (dbIdx !== -1) db.users[dbIdx].photos = [...u.photos];
       } catch(e) {
-        console.warn('Photo upload error:', e);
+        console.warn('Photo error:', e);
+        toast('❌ Erreur photo: ' + e.message);
       }
     }
 
