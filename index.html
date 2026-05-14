@@ -1688,6 +1688,25 @@ async function sendPushNotification(token, title, body, data = {}) {
   }
 }
 
+// ── CONFIG IMGBB — Stockage photos gratuit ──
+const IMGBB_API_KEY = 'b86a4dbd79ac58db4e3d4c733844f44c';
+
+async function uploadToImgBB(base64Data) {
+  try {
+    const base64 = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
+    const formData = new FormData();
+    formData.append('key', IMGBB_API_KEY);
+    formData.append('image', base64);
+    const res = await fetch('https://api.imgbb.com/1/upload', { method:'POST', body:formData });
+    const data = await res.json();
+    if (data.success) return data.data.url;
+    throw new Error(data.error?.message || 'Upload failed');
+  } catch(e) {
+    console.warn('ImgBB error:', e.message);
+    return null;
+  }
+}
+
 const PAYMENT_INFO = {
   edahabia: 'VOTRE_NUMERO_EDAHABIA', // ← Remplacez par votre numéro Edahabia
   whatsapp:  'VOTRE_NUMERO_WA',       // ← Remplacez par votre numéro WhatsApp
@@ -3756,22 +3775,33 @@ const app = {
 
     for (const file of files) {
       try {
-        const compressed = await compressImage(file, 800, 0.75);
-        // Utiliser base64 directement — Firebase Storage a des problèmes CORS
-        u.photos.push(compressed);
+        const compressed = await compressImage(file, 900, 0.8);
+
+        // 🖼️ Upload vers ImgBB (gratuit, public, permanent)
+        toast(`⏳ Upload photo ${u.photos.length + 1}...`);
+        const imgbbUrl = await uploadToImgBB(compressed);
+        const photoUrl = imgbbUrl || compressed; // Fallback base64 si ImgBB échoue
+
+        u.photos.push(photoUrl);
         const dbIdx = db.users.findIndex(us => us.id === u.id);
         if (dbIdx !== -1) db.users[dbIdx].photos = [...u.photos];
       } catch(e) {
         console.warn('Photo error:', e);
-        toast('❌ Erreur: ' + e.message);
+        toast('❌ Erreur photo');
       }
     }
 
     saveDB();
+
+    // 🔥 Sauvegarder URLs dans Firestore
     if (USE_FIREBASE) {
-      const dbIdx = db.users.findIndex(us => us.id === u.id);
-      if (dbIdx !== -1) savePro(db.users[dbIdx]);
+      try {
+        const proId = u.fbId || String(u.id);
+        const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        await updateDoc(doc(firebaseDB, 'professionals', proId), { photos: u.photos });
+      } catch(e) { console.warn('Firestore photos error:', e.message); }
     }
+
     app.renderPhotoGrid();
     toast(`✅ ${files.length} photo(s) ajoutée(s) !`);
     input.value = '';
@@ -3780,13 +3810,23 @@ const app = {
   // Garder addPhoto pour compatibilité
   addPhoto(input) { this.addPhotos(input); },
 
-  removePhoto(idx) {
-    db.currentUser.photos.splice(idx, 1);
-    const i = db.users.findIndex(u => u.id === db.currentUser.id);
-    if (i !== -1) db.users[i].photos = db.currentUser.photos;
+  async removePhoto(idx) {
+    const u = db.currentUser;
+    if (!u) return;
+    u.photos.splice(idx, 1);
+    const i = db.users.findIndex(us => us.id === u.id);
+    if (i !== -1) db.users[i].photos = [...u.photos];
     saveDB();
-    if (USE_FIREBASE) savePro(db.users[i]);
+    // Sync Firestore
+    if (USE_FIREBASE) {
+      try {
+        const proId = u.fbId || String(u.id);
+        const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        await updateDoc(doc(firebaseDB, 'professionals', proId), { photos: u.photos });
+      } catch(e) { console.warn('Remove photo sync error:', e.message); }
+    }
     app.renderPhotoGrid();
+    toast('🗑️ Photo supprimée');
   },
 
   saveProChanges() {
