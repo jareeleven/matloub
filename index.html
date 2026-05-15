@@ -1831,15 +1831,18 @@ async function savePro(user) {
   if (!USE_FIREBASE) { saveDB(); return; }
   try {
     const id = user.fbId || String(user.id);
-    const data = { ...user };
-    // Supprimer champs sensibles
-    ['pass','passHash','selfie','sessionToken'].forEach(k => delete data[k]);
-    // Supprimer TOUS les champs undefined ou invalides
+    // Vérifier que l'utilisateur est authentifié
+    const currentUser = firebaseAuth?.currentUser;
+    if (!currentUser) {
+      console.warn('savePro: utilisateur non authentifié — sauvegarde locale uniquement');
+      saveDB();
+      return;
+    }
     const cleanData = {};
-    for (const [k, v] of Object.entries(data)) {
+    for (const [k, v] of Object.entries(user)) {
+      if (['pass','passHash','selfie','sessionToken'].includes(k)) continue;
       if (v === undefined) continue;
-      if (typeof v === 'object' && v !== null && !Array.isArray(v) && !(v instanceof Date)) {
-        // Nettoyer les objets imbriqués aussi
+      if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
         const cleaned = {};
         for (const [k2, v2] of Object.entries(v)) {
           if (v2 !== undefined) cleaned[k2] = v2 ?? null;
@@ -1851,7 +1854,10 @@ async function savePro(user) {
     }
     cleanData.updatedAt = FB.serverTimestamp();
     await FB.setDoc(FB.doc(FB.db, 'professionals', id), cleanData, { merge: true });
-  } catch(e) { console.error('Erreur sauvegarde pro:', e); saveDB(); }
+  } catch(e) {
+    console.error('Erreur sauvegarde pro:', e.message);
+    saveDB();
+  }
 }
 
 // ── UPLOADER PHOTO (Storage Firebase) ──
@@ -3807,13 +3813,10 @@ const app = {
 
     saveDB();
 
-    // 🔥 Sauvegarder URLs dans Firestore
+    // 🔥 Sauvegarder via savePro (gère l'auth correctement)
     if (USE_FIREBASE) {
-      try {
-        const proId = u.fbId || String(u.id);
-        const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-        await updateDoc(doc(firebaseDB, 'professionals', proId), { photos: u.photos });
-      } catch(e) { console.warn('Firestore photos error:', e.message); }
+      const dbIdx = db.users.findIndex(us => us.id === u.id);
+      if (dbIdx !== -1) await savePro(db.users[dbIdx]);
     }
 
     app.renderPhotoGrid();
@@ -3831,14 +3834,7 @@ const app = {
     const i = db.users.findIndex(us => us.id === u.id);
     if (i !== -1) db.users[i].photos = [...u.photos];
     saveDB();
-    // Sync Firestore
-    if (USE_FIREBASE) {
-      try {
-        const proId = u.fbId || String(u.id);
-        const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-        await updateDoc(doc(firebaseDB, 'professionals', proId), { photos: u.photos });
-      } catch(e) { console.warn('Remove photo sync error:', e.message); }
-    }
+    if (USE_FIREBASE) await savePro(db.users[i]);
     app.renderPhotoGrid();
     toast('🗑️ Photo supprimée');
   },
