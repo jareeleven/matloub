@@ -2720,17 +2720,19 @@ const app = {
     const cat = categories.find(c => c.id === u.category) || categories[0];
     // Store photos for lightbox
     const uPhotos = u.photos || [];
+    // Stocker les photos dans une variable globale pour le lightbox
+    window._currentProPhotos = uPhotos;
     const photosHtml = uPhotos.length > 0
       ? `<div style="margin-bottom:16px;">
           <div style="font-weight:800;font-size:0.9rem;margin-bottom:10px;">📸 Réalisations (${uPhotos.length})</div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
             ${uPhotos.map((p,i) => `
-              <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;"
-                   onclick="lightboxPhotos=${JSON.stringify(uPhotos).replace(/`/g,'\\`')};lightboxIndex=${i};updateLightbox();showModal('lightbox-modal')">
-                <img src="${p}" style="width:100%;height:100%;object-fit:cover;">
+              <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);"
+                   onclick="openLightbox(${i}, window._currentProPhotos)">
+                <img src="${p}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
               </div>`).join('')}
           </div>
-          <div style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:6px;">👆 Appuyez pour agrandir</div>
+          <div style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:6px;">👆 Appuyez pour agrandir · Glissez pour naviguer</div>
         </div>`
       : '';
     const reviewsHtml = u.reviews && u.reviews.length > 0
@@ -3769,8 +3771,7 @@ const app = {
     const photos = db.currentUser?.photos || [];
     grid.innerHTML = photos.map((p, i) => `
       <div class="photo-slot filled" style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;cursor:pointer;">
-        <img src="${p}" alt="réalisation ${i+1}" style="width:100%;height:100%;object-fit:cover;" onclick="openLightbox(${i}, db.currentUser?.photos||[])">
-        <button onclick="event.stopPropagation();app.removePhoto(${i})" 
+        <img src="${p}" alt="réalisation ${i+1}" style="width:100%;height:100%;object-fit:cover;" onclick="openLightbox(${i}, db.currentUser?.photos||[])">        <button onclick="event.stopPropagation();app.removePhoto(${i})" 
           style="position:absolute;top:4px;right:4px;background:rgba(239,68,68,0.9);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:900;">✕</button>
         <div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.5);color:white;font-size:0.65rem;padding:2px 6px;border-radius:6px;">${i+1}</div>
       </div>`).join('');
