@@ -651,6 +651,9 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <button class="tab-btn active" onclick="showProTab('edit',this)">Mon Profil</button>
       <button class="tab-btn" onclick="showProTab('stats',this)">Statistiques</button>
       <button class="tab-btn" onclick="showProTab('reviews',this)">Avis</button>
+      <button class="tab-btn" onclick="showProTab('rdvs',this);app.loadProRdvs()">
+        📅 RDV <span id="rdv-tab-badge" style="display:none;background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;font-weight:900;margin-left:3px;">0</span>
+      </button>
       <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 Abonnement</button>
     </div>
 
@@ -738,6 +741,14 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <!-- Tab: Avis -->
     <div id="pro-tab-reviews" class="hidden">
       <div id="pro-reviews-list"><div class="empty-state"><span class="material-icons-round">rate_review</span><h3>Pas encore d'avis</h3></div></div>
+    </div>
+
+    <!-- Tab: RDV -->
+    <div id="pro-tab-rdvs" class="hidden">
+      <div style="font-weight:800;margin-bottom:12px;">📅 Demandes de rendez-vous</div>
+      <div id="pro-rdvs-list">
+        <div class="empty-state"><span class="material-icons-round">event_busy</span><h3>Aucune demande</h3></div>
+      </div>
     </div>
 
     <!-- Tab: Abonnement -->
@@ -1232,6 +1243,43 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('terms-modal')">Fermer</button>
   </div>
 </div>
+<!-- Modal Prise de RDV -->
+<div id="rdv-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:1.5rem;">📅</div>
+      <div style="font-weight:900;font-size:1.1rem;">Prendre un rendez-vous</div>
+      <div style="font-size:0.8rem;color:var(--text3);margin-top:4px;" id="rdv-pro-name">avec le professionnel</div>
+    </div>
+    <div class="input-group">
+      <label>Votre prénom *</label>
+      <input type="text" id="rdv-client-name" class="input-field" placeholder="Ex: Karim">
+    </div>
+    <div class="input-group">
+      <label>Votre téléphone *</label>
+      <input type="tel" id="rdv-client-phone" class="input-field" placeholder="0661 XX XX XX">
+    </div>
+    <div class="input-group">
+      <label>Date souhaitée *</label>
+      <input type="date" id="rdv-date" class="input-field">
+    </div>
+    <div class="input-group">
+      <label>Heure souhaitée *</label>
+      <input type="time" id="rdv-time" class="input-field">
+    </div>
+    <div class="input-group">
+      <label>Description</label>
+      <textarea id="rdv-desc" class="input-field" rows="2" placeholder="Ex: Réparation fuite d'eau cuisine..." style="resize:none;font-family:inherit;"></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="app.submitRdv()">
+      <span class="material-icons-round">event_available</span> Envoyer la demande
+    </button>
+    <button class="btn btn-ghost" style="margin-top:8px;width:100%;" onclick="closeModal('rdv-modal')">Annuler</button>
+    <input type="hidden" id="rdv-target-id">
+  </div>
+</div>
+
 <div id="payment-modal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -2776,11 +2824,14 @@ const app = {
         <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer" onclick="app.trackContact('${u.id}','whatsapp')"><span class="material-icons-round">chat</span>WhatsApp</a>
       </div>
       <div class="action-row" style="margin-top:8px;">
+        <button class="action-btn btn-primary" style="flex:2;background:linear-gradient(135deg,#6C3CE1,#A855F7);" onclick="app.openRdv('${u.id}')">
+          <span class="material-icons-round">event</span>Prendre RDV
+        </button>
         <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav('${u.id}')">
-          <span class="material-icons-round">${isFav?'favorite':'favorite_border'}</span>${isFav?'Favori':'Ajouter'}
+          <span class="material-icons-round">${isFav?'favorite':'favorite_border'}</span>
         </button>
         <button class="action-btn btn-ghost" style="border:2px solid var(--border);" onclick="sharePro('${u.id}')">
-          <span class="material-icons-round">share</span>Partager
+          <span class="material-icons-round">share</span>
         </button>
       </div>
       <div class="action-row" style="margin-top:8px;">
@@ -2788,7 +2839,7 @@ const app = {
           ? `<button class="action-btn btn-primary" style="flex:2;" onclick="app.openRate('${u.id}')">
                <span class="material-icons-round">star</span>Laisser un avis
              </button>`
-          : `<button class="action-btn btn-ghost" style="border:2px solid var(--border);flex:2;opacity:0.6;" title="Contactez d'abord ce pro via WhatsApp ou Appel" disabled>
+          : `<button class="action-btn btn-ghost" style="border:2px solid var(--border);flex:2;opacity:0.6;" disabled>
                <span class="material-icons-round">star_border</span>Avis (après contact)
              </button>`
         }
@@ -2802,6 +2853,111 @@ const app = {
       </div>`;
 
     showModal('detail-modal');
+  },
+
+  // ── PRISE DE RDV ──
+  openRdv(id) {
+    const rawId = String(id);
+    const u = db.users.find(us => String(us.id) === rawId || us.fbId === rawId);
+    if (!u) return;
+    document.getElementById('rdv-target-id').value = u.fbId || rawId;
+    document.getElementById('rdv-pro-name').textContent = `avec ${sanitize(u.name)}`;
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('rdv-date').min = today;
+    document.getElementById('rdv-date').value = '';
+    document.getElementById('rdv-time').value = '';
+    document.getElementById('rdv-client-name').value = db.currentUser?.name || '';
+    document.getElementById('rdv-client-phone').value = db.currentUser?.phone || '';
+    document.getElementById('rdv-desc').value = '';
+    closeModal('detail-modal');
+    showModal('rdv-modal');
+  },
+
+  async submitRdv() {
+    const proId  = document.getElementById('rdv-target-id').value;
+    const name   = document.getElementById('rdv-client-name').value.trim();
+    const phone  = document.getElementById('rdv-client-phone').value.trim();
+    const date   = document.getElementById('rdv-date').value;
+    const time   = document.getElementById('rdv-time').value;
+    const desc   = document.getElementById('rdv-desc').value.trim();
+    if (!name)  return toast('Entrez votre prénom');
+    if (!phone) return toast('Entrez votre téléphone');
+    if (!date)  return toast('Choisissez une date');
+    if (!time)  return toast('Choisissez une heure');
+    const rdv = {
+      proId, clientName: sanitize(name), clientPhone: String(phone),
+      date, time, desc: sanitize(desc), status: 'pending', createdAt: Date.now()
+    };
+    if (USE_FIREBASE) {
+      try {
+        const { collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        await addDoc(collection(firebaseDB, 'rdvs'), rdv);
+      } catch(e) { console.warn('RDV error:', e.message); }
+    }
+    // Notifier le pro
+    const notifKey = `matloub_notifs_${proId}`;
+    const notifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
+    notifs.push({ title: `📅 Nouveau RDV de ${name}`, body: `${date} à ${time}`, read: false, createdAt: Date.now() });
+    localStorage.setItem(notifKey, JSON.stringify(notifs));
+    closeModal('rdv-modal');
+    toast('✅ Demande envoyée ! Le professionnel vous contactera pour confirmer.');
+  },
+
+  async loadProRdvs() {
+    const u = db.currentUser;
+    if (!u) return;
+    const proId = u.fbId || String(u.id);
+    const list  = document.getElementById('pro-rdvs-list');
+    if (!list) return;
+    list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);">⏳ Chargement...</div>`;
+    let rdvs = [];
+    if (USE_FIREBASE) {
+      try {
+        const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const snap = await getDocs(query(collection(firebaseDB, 'rdvs'), where('proId', '==', proId)));
+        rdvs = snap.docs.map(d => ({...d.data(), docId: d.id}));
+        rdvs.sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
+      } catch(e) { console.warn('loadProRdvs error:', e.message); }
+    }
+    if (!rdvs.length) {
+      list.innerHTML = `<div class="empty-state"><span class="material-icons-round">event_busy</span><h3>Aucune demande</h3><p>Les demandes de RDV apparaîtront ici</p></div>`;
+      return;
+    }
+    const newCount = rdvs.filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('rdv-tab-badge');
+    if (badge) { badge.textContent = newCount; badge.style.display = newCount > 0 ? 'inline' : 'none'; }
+    const sc = { pending:'#F59E0B', confirmed:'#10B981', refused:'#EF4444' };
+    const sl = { pending:'⏳ En attente', confirmed:'✅ Confirmé', refused:'❌ Refusé' };
+    list.innerHTML = rdvs.map(r => `
+      <div class="card" style="margin-bottom:10px;border-left:4px solid ${sc[r.status]||'#ccc'};">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+          <div>
+            <div style="font-weight:800;">${sanitize(r.clientName)}</div>
+            <div style="font-size:0.78rem;color:var(--text3);">📱 ${sanitize(String(r.clientPhone))}</div>
+          </div>
+          <span style="font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:12px;background:${sc[r.status]}22;color:${sc[r.status]};">${sl[r.status]||r.status}</span>
+        </div>
+        <div style="font-size:0.82rem;margin-bottom:8px;">📅 <strong>${r.date}</strong> à <strong>${r.time}</strong>${r.desc?`<br>📝 ${sanitize(r.desc)}`:''}</div>
+        ${r.status==='pending'?`
+          <div style="display:flex;gap:8px;">
+            <button onclick="app.respondRdv('${r.docId}','confirmed')" class="btn btn-primary" style="flex:1;padding:8px;">✅ Confirmer</button>
+            <button onclick="app.respondRdv('${r.docId}','refused')" class="btn btn-ghost" style="flex:1;padding:8px;border:2px solid #EF4444;color:#EF4444;">❌ Refuser</button>
+          </div>`:''}
+        ${r.status==='confirmed'?`
+          <a href="https://wa.me/213${String(r.clientPhone).replace(/^0/,'')}" target="_blank" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;margin-top:8px;">
+            <span class="material-icons-round" style="font-size:16px;">chat</span>Contacter via WhatsApp
+          </a>`:''}
+      </div>`).join('');
+  },
+
+  async respondRdv(docId, status) {
+    if (!USE_FIREBASE) return;
+    try {
+      const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      await updateDoc(doc(firebaseDB, 'rdvs', docId), { status });
+      toast(status === 'confirmed' ? '✅ RDV confirmé !' : '❌ RDV refusé');
+      app.loadProRdvs();
+    } catch(e) { toast('❌ Erreur: ' + e.message); }
   },
 
   showPaymentModal() {
@@ -4100,7 +4256,7 @@ function toast(msg) {
 //  PRO TABS
 // ────────────────────────────────────────────
 function showProTab(tab, el) {
-  ['edit','stats','reviews','messages','abonnement'].forEach(t => {
+  ['edit','stats','reviews','rdvs','messages','abonnement'].forEach(t => {
     const el = document.getElementById(`pro-tab-${t}`);
     if (el) el.classList.toggle('hidden', t !== tab);
   });
