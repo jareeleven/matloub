@@ -1832,18 +1832,25 @@ async function savePro(user) {
   try {
     const id = user.fbId || String(user.id);
     const data = { ...user };
-    // Supprimer les champs sensibles et non supportés
-    delete data.pass;
-    delete data.passHash;
-    delete data.selfie;
-    delete data.sessionToken;
-    // Supprimer les champs undefined (Firestore ne les accepte pas)
-    Object.keys(data).forEach(k => {
-      if (data[k] === undefined) delete data[k];
-      if (data[k] === '') data[k] = null; // Remplacer chaînes vides par null
-    });
-    data.updatedAt = FB.serverTimestamp();
-    await FB.setDoc(FB.doc(FB.db, 'professionals', id), data, { merge: true });
+    // Supprimer champs sensibles
+    ['pass','passHash','selfie','sessionToken'].forEach(k => delete data[k]);
+    // Supprimer TOUS les champs undefined ou invalides
+    const cleanData = {};
+    for (const [k, v] of Object.entries(data)) {
+      if (v === undefined) continue;
+      if (typeof v === 'object' && v !== null && !Array.isArray(v) && !(v instanceof Date)) {
+        // Nettoyer les objets imbriqués aussi
+        const cleaned = {};
+        for (const [k2, v2] of Object.entries(v)) {
+          if (v2 !== undefined) cleaned[k2] = v2 ?? null;
+        }
+        cleanData[k] = cleaned;
+      } else {
+        cleanData[k] = v ?? null;
+      }
+    }
+    cleanData.updatedAt = FB.serverTimestamp();
+    await FB.setDoc(FB.doc(FB.db, 'professionals', id), cleanData, { merge: true });
   } catch(e) { console.error('Erreur sauvegarde pro:', e); saveDB(); }
 }
 
