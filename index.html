@@ -1267,7 +1267,19 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       </div>
       <div style="flex:1;">
         <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">🕐 Heure *</label>
-        <input type="time" id="rdv-time" class="input-field" style="padding:10px 14px;width:100%;box-sizing:border-box;">
+        <div style="display:flex;gap:4px;align-items:center;">
+          <select id="rdv-hour" class="input-field" style="flex:1;padding:10px 8px;text-align:center;font-weight:700;">
+            ${Array.from({length:24},(_,i)=>`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}h</option>`).join('')}
+          </select>
+          <span style="font-weight:900;color:var(--primary);">:</span>
+          <select id="rdv-min" class="input-field" style="flex:1;padding:10px 8px;text-align:center;font-weight:700;">
+            <option value="00">00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+          </select>
+        </div>
+        <input type="hidden" id="rdv-time">
       </div>
     </div>
     <div class="input-group" style="margin-bottom:12px;">
@@ -2867,7 +2879,8 @@ const app = {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('rdv-date').min = today;
     document.getElementById('rdv-date').value = '';
-    document.getElementById('rdv-time').value = '';
+    if(document.getElementById('rdv-hour')) document.getElementById('rdv-hour').value = '09';
+    if(document.getElementById('rdv-min'))  document.getElementById('rdv-min').value  = '00';
     document.getElementById('rdv-client-name').value = db.currentUser?.name || '';
     document.getElementById('rdv-client-phone').value = db.currentUser?.phone || '';
     document.getElementById('rdv-desc').value = '';
@@ -2880,12 +2893,14 @@ const app = {
     const name   = document.getElementById('rdv-client-name').value.trim();
     const phone  = document.getElementById('rdv-client-phone').value.trim();
     const date   = document.getElementById('rdv-date').value;
-    const time   = document.getElementById('rdv-time').value;
+    const hour  = document.getElementById('rdv-hour')?.value || '09';
+    const min   = document.getElementById('rdv-min')?.value || '00';
+    const time  = `${hour}:${min}`;
     const desc   = document.getElementById('rdv-desc').value.trim();
     if (!name)  return toast('Entrez votre prénom');
     if (!phone) return toast('Entrez votre téléphone');
     if (!date)  return toast('Choisissez une date');
-    if (!time)  return toast('Choisissez une heure');
+    // time est toujours défini via les selects
     const rdv = {
       proId, clientName: sanitize(name), clientPhone: String(phone),
       date, time, desc: sanitize(desc), status: 'pending', createdAt: Date.now()
