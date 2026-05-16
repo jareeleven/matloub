@@ -12,10 +12,31 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MATLOUB">
 <link rel="manifest" href="manifest.json">
-<meta property="og:title" content="MATLOUB — Professionnels Oran">
-<meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran">
+<meta property="og:title" content="MATLOUB — Professionnels Oran" id="og-title">
+<meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran" id="og-desc">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://matloub.com/" id="og-url">
+<meta property="og:image" content="https://matloub.com/icon-512.png" id="og-image">
+<meta name="description" content="MATLOUB — Trouvez les meilleurs professionnels à Oran, Algérie" id="meta-desc">
+<meta name="keywords" content="professionnels Oran, plombier Oran, électricien Oran, médecin Oran, artisan Oran, MATLOUB">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://matloub.com/" id="canonical-link">
 <title>MATLOUB — Professionnels à Oran</title>
+<!-- Schema.org dynamique — mis à jour par JS -->
+<script type="application/ld+json" id="schema-org">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "MATLOUB",
+  "url": "https://matloub.com",
+  "description": "Trouvez les meilleurs professionnels à Oran, Algérie",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://matloub.com/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -655,6 +676,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
         📅 RDV <span id="rdv-tab-badge" style="display:none;background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;font-weight:900;margin-left:3px;">0</span>
       </button>
       <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 Abonnement</button>
+      <button class="tab-btn" onclick="showProTab('parrainage',this);app.renderParrainageTab()">🎁 Parrainage</button>
     </div>
 
     <!-- Tab: Edition -->
@@ -796,6 +818,15 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
         </div>
       </div>
     </div>
+  </div>
+
+    <!-- Tab: Parrainage -->
+    <div id="pro-tab-parrainage" class="hidden">
+      <div id="parrainage-content">
+        <div style="text-align:center;padding:20px;color:var(--text3);">⏳ Chargement...</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Connecté – Super Admin -->
@@ -1016,6 +1047,14 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div id="blacklist-warning" style="display:none;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:12px;padding:12px;margin-bottom:12px;">
       <div style="font-weight:800;color:#991B1B;font-size:0.85rem;">⛔ Compte bloqué détecté</div>
       <div style="font-size:0.78rem;color:#7F1D1D;margin-top:4px;" id="blacklist-msg"></div>
+    </div>
+
+    <!-- Code Parrain (optionnel) -->
+    <div style="background:linear-gradient(135deg,rgba(0,212,170,0.08),rgba(0,212,170,0.04));border:1px solid rgba(0,212,170,0.3);border-radius:14px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--accent);margin-bottom:6px;">🎁 Code Parrain (optionnel)</div>
+      <div style="font-size:0.75rem;color:var(--text3);margin-bottom:8px;">Si un professionnel vous a parrainé, entrez son code pour bénéficier d'une réduction de <strong>200 DA</strong> (800 DA au lieu de 1000 DA)</div>
+      <input type="text" id="reg-referral-code" class="input-field" placeholder="Ex: MTL-XXXXX" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;" oninput="this.value=this.value.toUpperCase();app.checkReferralCode()" maxlength="12">
+      <div id="referral-code-status" style="margin-top:6px;font-size:0.78rem;font-weight:700;display:none;"></div>
     </div>
 
     <!-- Acceptation Charte -->
@@ -2505,6 +2544,7 @@ function createProCard(u, showFavBtn=true) {
       <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
         ${isNew ? '<span class="badge-new">NOUVEAU</span>' : ''}
         ${isTop ? '<span class="badge-top">⭐ TOP</span>' : ''}
+        ${(u.badges||[]).includes('founder') ? '<span style="background:linear-gradient(135deg,#D97706,#F59E0B);color:white;font-size:0.6rem;font-weight:900;padding:2px 7px;border-radius:50px;">✨ FONDATEUR</span>' : ''}
         ${u.available === false
           ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;color:var(--accent2);font-weight:700;"><span class="pro-status-dot" style="background:var(--accent2);"></span>Indisponible</span>`
           : `<span style="display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;color:var(--accent);font-weight:700;"><span class="pro-status-dot available"></span>Disponible</span>`
@@ -2783,6 +2823,33 @@ const app = {
     u.views = (u.views || 0) + 1;
     saveDB();
 
+    // ── 🔍 SEO : Meta dynamiques ──
+    const avgRatingRaw = getAvgRating(u);
+    const proTitle = `${u.name} — ${u.job} à ${u.commune || 'Oran'} | MATLOUB`;
+    const proDesc  = `${u.job} à ${u.location || 'Oran'}. Note: ${avgRatingRaw}★ · ${(u.reviews||[]).length} avis. ${u.bio ? u.bio.substring(0,80) + '...' : 'Contactez ce professionnel sur MATLOUB.'}`;
+    document.title = proTitle;
+    const setMeta = (id, val) => { const el = document.getElementById(id); if(el) el.setAttribute('content', val); };
+    setMeta('og-title', proTitle);
+    setMeta('og-desc', proDesc);
+    setMeta('meta-desc', proDesc);
+    setMeta('og-url', `https://matloub.com/?pro=${u.fbId || u.id}`);
+    if (u.selfieUrl) setMeta('og-image', u.selfieUrl);
+    const canon = document.getElementById('canonical-link');
+    if (canon) canon.setAttribute('href', `https://matloub.com/?pro=${u.fbId || u.id}`);
+    // Schema.org LocalBusiness
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": u.name,
+      "description": u.job + (u.bio ? ' — ' + u.bio.substring(0,120) : ''),
+      "telephone": u.phone || '',
+      "address": { "@type": "PostalAddress", "addressLocality": u.commune || 'Oran', "addressRegion": "Oran", "addressCountry": "DZ" },
+      "aggregateRating": (u.reviews||[]).length > 0 ? { "@type": "AggregateRating", "ratingValue": avgRatingRaw, "reviewCount": (u.reviews||[]).length } : undefined,
+      "url": `https://matloub.com/?pro=${u.fbId || u.id}`
+    };
+    const schemaEl = document.getElementById('schema-org');
+    if (schemaEl) schemaEl.textContent = JSON.stringify(schema, null, 2);
+
     const favs = getFavs();
     const isFav = favs.includes(id);
     const avgRating = getAvgRating(u);
@@ -2825,6 +2892,7 @@ const app = {
       <div style="text-align:center;margin-bottom:16px;">
         <h2 style="font-size:1.15rem;margin-bottom:4px;">${sanitize(u.name)}${u.emailVerified ? ' <span style="font-size:0.8rem;color:#059669;">✅</span>' : ''}</h2>
         <div style="color:${cat.color};font-weight:700;font-size:0.9rem;">${sanitize(u.job)}</div>
+        ${(u.badges||[]).includes('founder') ? '<div style="margin-top:6px;"><span style="background:linear-gradient(135deg,#D97706,#F59E0B);color:white;font-size:0.72rem;font-weight:900;padding:3px 12px;border-radius:20px;">✨ MEMBRE FONDATEUR MATLOUB</span></div>' : ''}
         <div style="color:var(--text3);font-size:0.8rem;margin-top:4px;">${sanitize(u.commune||'')}, ${sanitize(oranData.dairas.find(d=>d.id===u.daira)?.name||u.location||'Oran')}</div>
         <div style="margin-top:8px;">
           ${u.available===false
@@ -2921,11 +2989,16 @@ const app = {
         await addDoc(collection(firebaseDB, 'rdvs'), rdv);
       } catch(e) { console.warn('RDV error:', e.message); }
     }
-    // Notifier le pro
+    // Notifier le pro (localStorage)
     const notifKey = `matloub_notifs_${proId}`;
     const notifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
     notifs.push({ title: `📅 Nouveau RDV de ${name}`, body: `${date} à ${time}`, read: false, createdAt: Date.now() });
     localStorage.setItem(notifKey, JSON.stringify(notifs));
+    // Sauvegarder aussi le RDV en localStorage (fallback si Firestore indisponible)
+    const rdvKey = `matloub_rdvs_${proId}`;
+    const localRdvs = JSON.parse(localStorage.getItem(rdvKey) || '[]');
+    localRdvs.push({...rdv, docId: `local_${Date.now()}`});
+    localStorage.setItem(rdvKey, JSON.stringify(localRdvs));
     closeModal('rdv-modal');
     toast('✅ Demande envoyée ! Le professionnel vous contactera pour confirmer.');
   },
@@ -2938,13 +3011,26 @@ const app = {
     if (!list) return;
     list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);">⏳ Chargement...</div>`;
     let rdvs = [];
+    let firestoreOk = false;
     if (USE_FIREBASE) {
       try {
         const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
         const snap = await getDocs(query(collection(firebaseDB, 'rdvs'), where('proId', '==', proId)));
         rdvs = snap.docs.map(d => ({...d.data(), docId: d.id}));
         rdvs.sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
-      } catch(e) { console.warn('loadProRdvs error:', e.message); }
+        firestoreOk = true;
+      } catch(e) {
+        console.warn('loadProRdvs Firestore error:', e.message);
+        // ── FALLBACK : lire depuis localStorage ──
+        const lsKey = `matloub_rdvs_${proId}`;
+        const localRdvs = JSON.parse(localStorage.getItem(lsKey) || '[]');
+        rdvs = localRdvs.sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
+      }
+    } else {
+      // Mode hors-ligne : localStorage uniquement
+      const lsKey = `matloub_rdvs_${proId}`;
+      rdvs = JSON.parse(localStorage.getItem(lsKey) || '[]')
+             .sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
     }
     if (!rdvs.length) {
       list.innerHTML = `<div class="empty-state"><span class="material-icons-round">event_busy</span><h3>Aucune demande</h3><p>Les demandes de RDV apparaîtront ici</p></div>`;
@@ -3032,6 +3118,11 @@ const app = {
     u.verified = true;
     saveDB();
 
+    // 🎁 Vérifier si ce pro a été parrainé → récompenser le parrain
+    if (u.referredBy) {
+      await this.rewardSponsor(u.referredBy);
+    }
+
     // Mettre à jour Firestore
     if (USE_FIREBASE) {
       try { await savePro({...u}); } catch(e) {}
@@ -3040,6 +3131,211 @@ const app = {
     toast('🎉 Abonnement Pro à Vie activé ! Bienvenue dans la famille MATLOUB 💎');
     this.renderSubscriptionStatus();
     this.updateProHero();
+  },
+
+  // ── 🎁 SYSTÈME PARRAINAGE ──
+
+  // Générer un code unique pour le pro connecté
+  generateReferralCode(user) {
+    // Format: MTL-XXXXX (5 chars basés sur l'id)
+    const base = (user.fbId || String(user.id)).replace(/[^a-zA-Z0-9]/g,'').substring(0,5).toUpperCase();
+    const pad = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const extra = pad[Math.abs(user.id % pad.length)] || 'X';
+    return `MTL-${base}${extra}`.substring(0, 10);
+  },
+
+  // Vérifier le code saisi à l'inscription
+  async checkReferralCode() {
+    const code = (document.getElementById('reg-referral-code')?.value || '').trim().toUpperCase();
+    const statusEl = document.getElementById('referral-code-status');
+    if (!statusEl) return;
+    if (code.length < 6) { statusEl.style.display = 'none'; return; }
+
+    // Chercher le pro avec ce code dans db.users
+    const sponsor = db.users.find(u => u.role === 'pro' && this.generateReferralCode(u) === code);
+    if (sponsor) {
+      statusEl.style.display = 'block';
+      statusEl.style.color = '#10B981';
+      statusEl.innerHTML = `✅ Code valide ! Parrain : <strong>${sanitize(sponsor.name)}</strong> · Vous bénéficiez de <strong>200 DA de réduction</strong> (800 DA au lieu de 1000 DA)`;
+      // Stocker le code valide
+      window._validReferralSponsorId = sponsor.fbId || String(sponsor.id);
+    } else if (USE_FIREBASE && code.length >= 9) {
+      // Chercher dans Firestore si pas trouvé localement
+      try {
+        const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const snap = await getDocs(collection(firebaseDB, 'professionals'));
+        const fbSponsor = snap.docs.map(d => ({...d.data(), fbId: d.id})).find(u => this.generateReferralCode(u) === code);
+        if (fbSponsor) {
+          statusEl.style.display = 'block';
+          statusEl.style.color = '#10B981';
+          statusEl.innerHTML = `✅ Code valide ! Parrain : <strong>${sanitize(fbSponsor.name)}</strong> · <strong>200 DA de réduction</strong>`;
+          window._validReferralSponsorId = fbSponsor.fbId || String(fbSponsor.id);
+        } else {
+          statusEl.style.display = 'block';
+          statusEl.style.color = '#EF4444';
+          statusEl.textContent = '❌ Code parrain introuvable';
+          window._validReferralSponsorId = null;
+        }
+      } catch(e) {
+        statusEl.style.display = 'block';
+        statusEl.style.color = '#F59E0B';
+        statusEl.textContent = '⚠️ Vérification impossible (hors ligne)';
+      }
+    } else {
+      statusEl.style.display = 'block';
+      statusEl.style.color = '#EF4444';
+      statusEl.textContent = '❌ Code invalide';
+      window._validReferralSponsorId = null;
+    }
+  },
+
+  // Récompenser le parrain quand son filleul s'abonne
+  async rewardSponsor(sponsorId) {
+    // Trouver le parrain
+    const sponsor = db.users.find(u => (u.fbId || String(u.id)) === String(sponsorId));
+    if (!sponsor) return;
+
+    // Calculer réduction: le parrain paiera 700 DA au lieu de 1000 DA
+    sponsor.referralReward = sponsor.referralReward || { discountDA: 0, filleuls: [] };
+    sponsor.referralReward.discountDA = (sponsor.referralReward.discountDA || 0) + 300;
+    sponsor.referralReward.filleuls = sponsor.referralReward.filleuls || [];
+    sponsor.referralReward.filleuls.push({ date: new Date().toISOString(), activated: true });
+
+    // Badge Fondateur si essai encore actif
+    const joinDate = new Date(sponsor.joinDate || sponsor.createdAt || Date.now());
+    const trialEnd = joinDate.getTime() + 30 * 24 * 3600 * 1000;
+    if (!sponsor.subscription?.active && Date.now() < trialEnd) {
+      // +30 jours d'essai bonus
+      sponsor.trialBonusDays = (sponsor.trialBonusDays || 0) + 30;
+    }
+    // Badge Fondateur
+    sponsor.badges = sponsor.badges || [];
+    if (!sponsor.badges.includes('founder')) sponsor.badges.push('founder');
+
+    saveDB();
+    if (USE_FIREBASE) {
+      try { await savePro({...sponsor}); } catch(e) {}
+    }
+
+    // Notif pour le parrain
+    const notifKey = `matloub_notifs_${sponsorId}`;
+    const notifs = JSON.parse(localStorage.getItem(notifKey) || '[]');
+    notifs.push({
+      title: '🎁 Parrainage réussi !',
+      body: 'Un de vos filleuls vient de s\'abonner → vous bénéficiez de 300 DA de réduction sur votre plan Pro !',
+      read: false, createdAt: Date.now()
+    });
+    localStorage.setItem(notifKey, JSON.stringify(notifs));
+    if (USE_FIREBASE) {
+      try {
+        const { collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        await addDoc(collection(firebaseDB, 'notifications'), {
+          userId: sponsorId, title: '🎁 Parrainage réussi !',
+          body: '300 DA de réduction débloquée sur votre abonnement Pro.',
+          read: false, createdAt: Date.now()
+        });
+      } catch(e) {}
+    }
+  },
+
+  // Afficher le tab parrainage du pro
+  renderParrainageTab() {
+    const u = db.currentUser;
+    if (!u) return;
+    const el = document.getElementById('parrainage-content');
+    if (!el) return;
+
+    const myCode = this.generateReferralCode(u);
+    const reward = u.referralReward || { discountDA: 0, filleuls: [] };
+    const filleuls = reward.filleuls || [];
+    const totalDiscount = reward.discountDA || 0;
+    const isSponsor = filleuls.length > 0;
+    const isFounder = (u.badges||[]).includes('founder');
+    const sub = u.subscription;
+    const prixFinal = sub?.active ? 0 : Math.max(700, 1000 - totalDiscount);
+
+    el.innerHTML = `
+      <!-- Ton code parrain -->
+      <div class="card" style="background:linear-gradient(135deg,#6C3CE1,#A855F7);color:white;margin-bottom:14px;text-align:center;">
+        <div style="font-size:0.8rem;opacity:0.85;margin-bottom:4px;">🎁 Ton code de parrainage unique</div>
+        <div style="font-size:1.8rem;font-weight:900;letter-spacing:4px;font-family:'Space Grotesk',sans-serif;">${myCode}</div>
+        <div style="font-size:0.75rem;opacity:0.8;margin:6px 0 12px;">Partage ce code → ton filleul paie <strong>800 DA</strong> au lieu de 1000 DA<br>Toi tu paies <strong>700 DA</strong> au lieu de 1000 DA !</div>
+        <button onclick="navigator.clipboard.writeText('${myCode}').then(()=>toast('✅ Code copié !'))" style="background:white;color:var(--primary);border:none;padding:8px 20px;border-radius:10px;font-weight:800;cursor:pointer;font-size:0.85rem;">
+          📋 Copier le code
+        </button>
+        <button onclick="app.shareReferral('${myCode}')" style="background:rgba(255,255,255,0.2);color:white;border:none;padding:8px 16px;border-radius:10px;font-weight:800;cursor:pointer;font-size:0.85rem;margin-left:8px;">
+          📤 Partager
+        </button>
+      </div>
+
+      <!-- Statut récompenses -->
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-weight:800;margin-bottom:12px;">📊 Mes récompenses</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div style="background:var(--bg);border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:var(--primary);">${filleuls.length}</div>
+            <div style="font-size:0.72rem;color:var(--text3);font-weight:700;">Filleuls inscrits</div>
+          </div>
+          <div style="background:var(--bg);border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#10B981;">${totalDiscount} DA</div>
+            <div style="font-size:0.72rem;color:var(--text3);font-weight:700;">Réduction gagnée</div>
+          </div>
+        </div>
+        ${!sub?.active ? `
+          <div style="background:linear-gradient(135deg,rgba(0,212,170,0.1),rgba(0,212,170,0.05));border:1px solid rgba(0,212,170,0.3);border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text);">💎 Ton prix Pro à Vie :</div>
+            ${totalDiscount > 0 ? `<div style="font-size:0.8rem;color:var(--text3);text-decoration:line-through;">1000 DA</div>` : ''}
+            <div style="font-size:1.8rem;font-weight:900;color:var(--accent);">${prixFinal} DA</div>
+            <button onclick="app.showPaymentModalWithDiscount(${totalDiscount})" class="btn btn-accent" style="margin-top:8px;padding:10px;">
+              💎 S'abonner à ${prixFinal} DA
+            </button>
+          </div>` : `
+          <div style="background:linear-gradient(135deg,rgba(108,60,225,0.1),rgba(108,60,225,0.05));border-radius:12px;padding:12px;text-align:center;color:var(--primary);font-weight:800;">
+            ✅ Abonnement Pro actif — continue à parrainer pour aider la communauté !
+          </div>`}
+        ${isFounder ? `
+          <div style="margin-top:10px;background:linear-gradient(135deg,#F59E0B22,#EAB30822);border:1px solid #F59E0B44;border-radius:12px;padding:10px;text-align:center;">
+            <span style="background:linear-gradient(135deg,#D97706,#F59E0B);color:white;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:900;">✨ MEMBRE FONDATEUR</span>
+            <div style="font-size:0.75rem;color:var(--text2);margin-top:6px;">Ce badge est visible sur ton profil public — merci de faire grandir MATLOUB !</div>
+          </div>` : ''}
+      </div>
+
+      <!-- Comment ça marche -->
+      <div class="card">
+        <div style="font-weight:800;margin-bottom:10px;">ℹ️ Comment ça marche ?</div>
+        <div style="font-size:0.82rem;color:var(--text2);line-height:1.9;">
+          1️⃣ Copie ton code <strong>${myCode}</strong><br>
+          2️⃣ Envoie-le à un autre professionnel<br>
+          3️⃣ Il entre le code lors de son inscription<br>
+          4️⃣ Il paie <strong>800 DA</strong> au lieu de 1000 DA<br>
+          5️⃣ Tu paies toi aussi <strong>700 DA</strong> au lieu de 1000 DA 🎉<br>
+          <br>
+          <strong>Bonus :</strong> Si tu es encore en essai (30j), tu gagnes <strong>+30 jours gratuits</strong> et le badge <strong>✨ Fondateur</strong> sur ton profil !
+        </div>
+      </div>`;
+  },
+
+  // Partager le code parrain
+  shareReferral(code) {
+    const text = `🎯 Rejoins MATLOUB — la plateforme des professionnels à Oran !\n\nUtilise mon code parrain : *${code}*\n\nTu profiteras de 200 DA de réduction sur l'abonnement Pro à Vie (800 DA au lieu de 1000 DA) !\n\n🔗 https://matloub.com`;
+    if (navigator.share) {
+      navigator.share({ title: 'MATLOUB — Code Parrainage', text }).catch(()=>{});
+    } else {
+      navigator.clipboard.writeText(text).then(() => toast('✅ Message copié ! Colle-le sur WhatsApp.'));
+    }
+  },
+
+  // Modal paiement avec réduction parrainage
+  showPaymentModalWithDiscount(discountDA) {
+    const finalPrice = Math.max(700, 1000 - discountDA);
+    document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
+    document.getElementById('payment-whatsapp').textContent = PAYMENT_INFO.whatsapp;
+    // Mettre à jour le prix affiché
+    const priceEl = document.querySelector('#payment-modal [style*="2rem;font-weight:900"]');
+    if (priceEl) priceEl.textContent = finalPrice + ' DA';
+    const noteEl = document.querySelector('#payment-modal [style*="0.82rem"]');
+    if (noteEl && discountDA > 0) noteEl.innerHTML = `✅ Réduction parrainage de <strong>${discountDA} DA</strong> appliquée automatiquement !`;
+    showModal('payment-modal');
   },
 
   async renderSubscriptionStatus() {
@@ -3547,7 +3843,9 @@ const app = {
       unavailReason: '',
       photos: [], views: 0, messages: [],
       joinDate: new Date().toISOString().split('T')[0],
-      sessionToken: null
+      sessionToken: null,
+      referredBy: window._validReferralSponsorId || null,
+      referralDiscount: window._validReferralSponsorId ? 200 : 0
     };
 
     db.users.push(newUser);
@@ -4288,7 +4586,7 @@ function toast(msg) {
 //  PRO TABS
 // ────────────────────────────────────────────
 function showProTab(tab, el) {
-  ['edit','stats','reviews','rdvs','messages','abonnement'].forEach(t => {
+  ['edit','stats','reviews','rdvs','messages','abonnement','parrainage'].forEach(t => {
     const el = document.getElementById(`pro-tab-${t}`);
     if (el) el.classList.toggle('hidden', t !== tab);
   });
