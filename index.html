@@ -1245,39 +1245,39 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 </div>
 <!-- Modal Prise de RDV -->
 <div id="rdv-modal" class="modal-overlay">
-  <div class="modal-sheet" style="padding-bottom:50px;">
+  <div class="modal-sheet" style="max-height:75vh;padding-bottom:30px;">
     <div class="modal-handle"></div>
-    <div style="text-align:center;margin-bottom:16px;">
-      <div style="font-size:1.5rem;">📅</div>
-      <div style="font-weight:900;font-size:1.1rem;">Prendre un rendez-vous</div>
-      <div style="font-size:0.8rem;color:var(--text3);margin-top:4px;" id="rdv-pro-name">avec le professionnel</div>
+    <div style="text-align:center;margin-bottom:12px;">
+      <div style="font-size:1.3rem;">📅</div>
+      <div style="font-weight:900;font-size:1rem;">Prendre un rendez-vous</div>
+      <div style="font-size:0.78rem;color:var(--text3);margin-top:2px;" id="rdv-pro-name">avec le professionnel</div>
     </div>
-    <div class="input-group">
-      <label>Votre prénom *</label>
-      <input type="text" id="rdv-client-name" class="input-field" placeholder="Ex: Karim">
+    <div class="input-group" style="margin-bottom:10px;">
+      <label style="font-size:0.82rem;">Votre prénom *</label>
+      <input type="text" id="rdv-client-name" class="input-field" placeholder="Ex: Karim" style="padding:10px 14px;">
     </div>
-    <div class="input-group">
-      <label>Votre téléphone *</label>
-      <input type="tel" id="rdv-client-phone" class="input-field" placeholder="0661 XX XX XX">
+    <div class="input-group" style="margin-bottom:10px;">
+      <label style="font-size:0.82rem;">Votre téléphone *</label>
+      <input type="tel" id="rdv-client-phone" class="input-field" placeholder="0661 XX XX XX" style="padding:10px 14px;">
     </div>
-    <div style="display:flex;gap:10px;">
-      <div class="input-group" style="flex:1;">
-        <label>Date *</label>
-        <input type="date" id="rdv-date" class="input-field">
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <div style="flex:1;">
+        <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">📅 Date *</label>
+        <input type="date" id="rdv-date" class="input-field" style="padding:10px 14px;width:100%;box-sizing:border-box;">
       </div>
-      <div class="input-group" style="flex:1;">
-        <label>Heure *</label>
-        <input type="time" id="rdv-time" class="input-field">
+      <div style="flex:1;">
+        <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">🕐 Heure *</label>
+        <input type="time" id="rdv-time" class="input-field" style="padding:10px 14px;width:100%;box-sizing:border-box;">
       </div>
     </div>
-    <div class="input-group">
-      <label>Description du service</label>
-      <textarea id="rdv-desc" class="input-field" rows="3" placeholder="Ex: Réparation fuite d'eau cuisine..." style="resize:none;font-family:inherit;"></textarea>
+    <div class="input-group" style="margin-bottom:12px;">
+      <label style="font-size:0.82rem;">Description</label>
+      <textarea id="rdv-desc" class="input-field" rows="2" placeholder="Ex: Réparation fuite d'eau..." style="resize:none;font-family:inherit;padding:10px 14px;"></textarea>
     </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:12px;padding:14px;font-size:1rem;" onclick="app.submitRdv()">
+    <button class="btn btn-primary" style="width:100%;padding:13px;font-size:0.95rem;" onclick="app.submitRdv()">
       <span class="material-icons-round">event_available</span> Envoyer la demande
     </button>
-    <button class="btn btn-ghost" style="margin-top:8px;width:100%;" onclick="closeModal('rdv-modal')">Annuler</button>
+    <button class="btn btn-ghost" style="margin-top:6px;width:100%;padding:10px;" onclick="closeModal('rdv-modal')">Annuler</button>
     <input type="hidden" id="rdv-target-id">
   </div>
 </div>
