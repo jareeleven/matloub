@@ -1,79 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  MATLOUB — sitemap.xml
-  ✅ À uploader à la racine de ton repo GitHub (même dossier que index.html)
-  ✅ Soumets l'URL https://matloub.com/sitemap.xml dans Google Search Console
-  ✅ Ce fichier est statique — les profils pros sont indexés via Schema.org dynamique
--->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Page principale -->
   <url>
-    <loc>https://matloub.com/</loc>
-    <lastmod>2025-01-01</lastmod>
+    <loc>https://jareeleven.github.io/matloub/</loc>
+    <lastmod>2026-05-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Pages catégories principales (explorées via chips) -->
   <url>
-    <loc>https://matloub.com/?cat=plombier</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=plombier</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=electricien</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=electricien</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=medecin</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=medecin</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=avocat</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=avocat</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=coiffeur</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=coiffeur</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=menuisier</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=menuisier</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=maconnerie</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=maconnerie</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=informatique</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=informatique</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=carreleur</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=carreleur</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=peintre</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=peintre</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=climatisation</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=climatisation</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://matloub.com/?cat=photographe</loc>
+    <loc>https://jareeleven.github.io/matloub/?cat=photographe</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
