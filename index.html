@@ -1267,18 +1267,35 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       </div>
       <div style="flex:1;">
         <label style="font-size:0.82rem;font-weight:700;display:block;margin-bottom:6px;">🕐 Heure *</label>
-        <div style="display:flex;gap:4px;align-items:center;">
-          <select id="rdv-hour" class="input-field" style="flex:1;padding:10px 8px;text-align:center;font-weight:700;">
-            ${Array.from({length:24},(_,i)=>`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}h</option>`).join('')}
-          </select>
-          <span style="font-weight:900;color:var(--primary);">:</span>
-          <select id="rdv-min" class="input-field" style="flex:1;padding:10px 8px;text-align:center;font-weight:700;">
-            <option value="00">00</option>
-            <option value="15">15</option>
-            <option value="30">30</option>
-            <option value="45">45</option>
-          </select>
+        <div style="display:flex;gap:6px;align-items:center;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:6px;overflow:hidden;">
+          <!-- Heures -->
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:0.7rem;color:var(--text3);margin-bottom:4px;">Heure</div>
+            <div style="height:120px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;" id="hour-scroll">
+              ${Array.from({length:24},(_,i)=>`
+                <div style="height:40px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-weight:700;font-size:1.1rem;" 
+                     data-h="${String(i).padStart(2,'0')}" 
+                     onclick="selectHour('${String(i).padStart(2,'0')}',this)">
+                  ${String(i).padStart(2,'0')}
+                </div>`).join('')}
+            </div>
+          </div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--primary);">:</div>
+          <!-- Minutes -->
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:0.7rem;color:var(--text3);margin-bottom:4px;">Min</div>
+            <div style="height:120px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;" id="min-scroll">
+              ${['00','05','10','15','20','25','30','35','40','45','50','55'].map(m=>`
+                <div style="height:40px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-weight:700;font-size:1.1rem;"
+                     data-m="${m}"
+                     onclick="selectMin('${m}',this)">
+                  ${m}
+                </div>`).join('')}
+            </div>
+          </div>
         </div>
+        <input type="hidden" id="rdv-hour" value="09">
+        <input type="hidden" id="rdv-min" value="00">
         <input type="hidden" id="rdv-time">
       </div>
     </div>
@@ -2028,7 +2045,36 @@ async function checkAndRestoreSuspensions() {
     } catch(e) { console.warn('Auto-restore error:', e); }
   }
 }
-// ── COMPRESSION IMAGE ──
+// ── SÉLECTEUR HEURE SCROLL ──
+function selectHour(h, el) {
+  document.getElementById('rdv-hour').value = h;
+  document.querySelectorAll('#hour-scroll div').forEach(d => {
+    d.style.color = d.dataset.h === h ? 'var(--primary)' : '';
+    d.style.fontWeight = d.dataset.h === h ? '900' : '700';
+    d.style.background = d.dataset.h === h ? 'rgba(108,60,225,0.1)' : '';
+    d.style.borderRadius = d.dataset.h === h ? '10px' : '';
+  });
+}
+
+function selectMin(m, el) {
+  document.getElementById('rdv-min').value = m;
+  document.querySelectorAll('#min-scroll div').forEach(d => {
+    d.style.color = d.dataset.m === m ? 'var(--primary)' : '';
+    d.style.fontWeight = d.dataset.m === m ? '900' : '700';
+    d.style.background = d.dataset.m === m ? 'rgba(108,60,225,0.1)' : '';
+    d.style.borderRadius = d.dataset.m === m ? '10px' : '';
+  });
+}
+
+// Initialiser à 09:00
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const h9 = document.querySelector('#hour-scroll [data-h="09"]');
+    if (h9) { selectHour('09', h9); h9.scrollIntoView({block:'center'}); }
+    const m00 = document.querySelector('#min-scroll [data-m="00"]');
+    if (m00) { selectMin('00', m00); }
+  }, 500);
+});
 function compressImage(file, maxSize = 800, quality = 0.75) {
   return new Promise((resolve) => {
     const reader = new FileReader();
