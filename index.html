@@ -3231,101 +3231,39 @@ const app = {
       const isPDF = file.type === 'application/pdf';
       const mediaType = isPDF ? 'application/pdf' : file.type;
 
-      // Appeler Claude AI pour analyser le reçu
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      // Appeler Railway qui appellera Claude AI (évite CORS)
+      const RAILWAY_URL = 'https://matloub-server-production.up.railway.app/analyserRecu';
+      const user = db.currentUser;
+      const tel = user?.phoneNumber || user?.email || '';
+
+      const response = await fetch(RAILWAY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: `Tu es un système de vérification de reçus de paiement pour MATLOUB (plateforme algérienne).
-Tu dois analyser des captures de reçus de paiement et répondre UNIQUEMENT en JSON valide.
-
-REÇUS ACCEPTÉS:
-1. Reçu BaridiMob (AlgériePoste): PDF ou capture avec "Algerie Poste", "Recu de transaction <<BaridiMob>>", Montant, Date, Destinataire, Devise DZD, "Baridimob" en bas
-2. Reçu CCP AlgériePoste: Formulaire jaune/bleu "SFP 01", logo AlgériePoste, champs Montant/Bénéficiaire/Expéditeur, tampon "Reçu de l'opération"
-
-MONTANT REQUIS: 1000 DA (ou 1000.00 DZD)
-
-Réponds UNIQUEMENT avec ce JSON (rien d'autre):
-{
-  "valide": true/false,
-  "type": "baridimob" ou "ccp" ou "inconnu",
-  "montant": nombre extrait ou 0,
-  "date": "date extraite ou vide",
-  "raison": "explication courte en français"
-}`,
-          messages: [{
-            role: 'user',
-            content: [{
-              type: isPDF ? 'document' : 'image',
-              source: {
-                type: 'base64',
-                media_type: mediaType,
-                data: base64
-              }
-            }, {
-              type: 'text',
-              text: 'Analyse ce reçu de paiement. Le montant requis est 1000 DA. Réponds uniquement en JSON.'
-            }]
-          }]
-        })
+        body: JSON.stringify({ imageBase64: base64, mediaType, telPro: tel })
       });
 
-      const data = await response.json();
-      const textContent = data.content?.find(c => c.type === 'text')?.text || '{}';
-
-      let result;
-      try {
-        result = JSON.parse(textContent.replace(/```json|```/g, '').trim());
-      } catch(e) {
-        throw new Error('Réponse IA invalide');
-      }
-
+      const result = await response.json();
       console.log('Résultat analyse reçu:', result);
 
-      if (result.valide && result.montant >= 1000) {
-        // ✅ Reçu valide — générer le code
+      if (result.ok && result.code) {
+        // ✅ Reçu valide — activer directement
         status.style.background = 'rgba(16,185,129,0.1)';
         status.style.color = '#065F46';
-        status.textContent = '✅ Reçu vérifié ! Génération du code...';
+        status.textContent = '✅ Reçu vérifié ! Activation en cours...';
 
-        // Générer code via Railway
-        const RAILWAY_URL = 'https://matloub-server-production.up.railway.app/genererCodeManuel';
-        const user = db.currentUser;
-        const tel = user?.phoneNumber || user?.email || 'inconnu';
+        document.getElementById('activation-code-input').value = result.code;
+        await this.activateWithCode();
 
-        const codeResp = await fetch(RAILWAY_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            telPro: tel,
-            adminKey: 'MATLOUB_ADMIN_2026',
-            source: result.type,
-            montant: result.montant
-          })
-        });
-
-        const codeData = await codeResp.json();
-
-        if (codeData.ok) {
-          // Activer directement le compte
-          document.getElementById('activation-code-input').value = codeData.code;
-          await this.activateWithCode();
-
-          status.style.background = 'rgba(16,185,129,0.15)';
-          status.style.color = '#065F46';
-          status.innerHTML = '🎉 <strong>Compte activé avec succès !</strong><br>Code: ' + codeData.code;
-          btn.textContent = '✅ Activé !';
-        } else {
-          throw new Error('Erreur génération code');
-        }
+        status.style.background = 'rgba(16,185,129,0.15)';
+        status.style.color = '#065F46';
+        status.innerHTML = '🎉 <strong>Compte activé !</strong><br>Code: ' + result.code;
+        btn.textContent = '✅ Activé !';
 
       } else {
         // ❌ Reçu invalide
         status.style.background = 'rgba(239,68,68,0.1)';
         status.style.color = '#991B1B';
-        status.innerHTML = '❌ <strong>Reçu non valide</strong><br>' + (result.raison || 'Image non reconnue comme reçu BaridiMob ou CCP');
+        status.innerHTML = '❌ <strong>Reçu non valide</strong><br>' + (result.raison || 'Image non reconnue');
         btn.disabled = false;
         btn.textContent = '🔍 Réessayer avec une autre image';
       }
@@ -3334,7 +3272,7 @@ Réponds UNIQUEMENT avec ce JSON (rien d'autre):
       console.error('Erreur analyse reçu:', err);
       status.style.background = 'rgba(239,68,68,0.1)';
       status.style.color = '#991B1B';
-      status.textContent = '❌ Erreur: ' + err.message + ' — Réessayez ou utilisez le code d'activation.';
+      status.textContent = "❌ Erreur: " + err.message + " — Réessayez ou utilisez le code d'activation.";
       btn.disabled = false;
       btn.textContent = '🔍 Réessayer';
     }
@@ -3380,7 +3318,7 @@ Réponds UNIQUEMENT avec ce JSON (rien d'autre):
         // Rafraîchir la liste des codes
         this.adminLoadCodes();
       } else {
-        toast('❌ Erreur : ' + (data.error || 'Vérifiez la configuration'));
+        toast("❌ Erreur : " + (data.error || "Vérifiez la configuration"));
         if (result) { result.style.display='block'; result.style.color='#EF4444'; result.textContent='❌ Erreur serveur'; }
       }
     } catch(e) {
@@ -3401,14 +3339,7 @@ Réponds UNIQUEMENT avec ce JSON (rien d'autre):
       }
 
       // Ouvrir WhatsApp directement
-      const msg = encodeURIComponent(
-        '💎 *MATLOUB* — Votre code d'activation :
-
-*' + code + '*
-
-Entrez ce code sur matloub.com → Abonnement → Code d'activation
-
-✅ Activation immédiate !');
+      const msg = encodeURIComponent("💎 *MATLOUB* — Votre code d'activation :\n\n*" + code + "*\n\nEntrez ce code sur matloub.com → Abonnement\n\n✅ Activation immédiate !");
       window.open('https://wa.me/' + tel + '?text=' + msg, '_blank');
 
       toast('✅ Code ' + code + ' — WhatsApp ouvert');
@@ -3493,7 +3424,7 @@ Entrez ce code sur matloub.com → Abonnement → Code d'activation
 
     toast('🎉 Abonnement Pro à Vie activé ! Bienvenue dans la famille MATLOUB 💎');
     this.renderSubscriptionStatus();
-    this.updateProHero();
+    try { updateHeroCount(); } catch(e) {}
   },
 
   // ── 🎁 SYSTÈME PARRAINAGE ──
