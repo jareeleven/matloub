@@ -3339,7 +3339,8 @@ const app = {
       }
 
       // Ouvrir WhatsApp directement
-      const msg = encodeURIComponent("💎 *MATLOUB* — Votre code d'activation :\n\n*" + code + "*\n\nEntrez ce code sur matloub.com → Abonnement\n\n✅ Activation immédiate !");
+      const msg = encodeURIComponent(
+        "💎 *MATLOUB* — Votre code d'activation :\n\n*" + code + "*\n\nEntrez ce code sur matloub.com → Abonnement → Code d'activation\n\n✅ Activation immédiate !");
       window.open('https://wa.me/' + tel + '?text=' + msg, '_blank');
 
       toast('✅ Code ' + code + ' — WhatsApp ouvert');
@@ -3376,28 +3377,29 @@ const app = {
 
   async activateWithCode() {
     const code = document.getElementById('activation-code-input').value.trim().toUpperCase();
-    if (!code) return toast('Entrez un code d\'activation');
-    if (!db.currentUser) return toast('Vous devez être connecté');
+    if (!code) return toast("Entrez un code d'activation");
+    if (!db.currentUser) return toast("Vous devez être connecté");
 
-    // Vérifier le code dans Firestore
     if (USE_FIREBASE) {
       try {
-        const { collection, query, where, getDocs, deleteDoc, doc } =
+        const { getDoc, doc, updateDoc } =
           await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-        const q = query(collection(firebaseDB, 'activation_codes'), where('code', '==', code), where('used', '==', false));
-        const snap = await getDocs(q);
-        if (snap.empty) return toast('❌ Code invalide ou déjà utilisé');
 
-        // Marquer le code comme utilisé
-        await deleteDoc(doc(firebaseDB, 'activation_codes', snap.docs[0].id));
+        const docRef = doc(firebaseDB, 'activation_codes', code);
+        const docSnap = await getDoc(docRef);
+        console.log('Code lookup:', code, 'exists:', docSnap.exists());
 
-        // Activer l'abonnement
+        if (!docSnap.exists()) return toast("❌ Code invalide ou déjà utilisé");
+        const data = docSnap.data();
+        if (data.used === true) return toast("❌ Code déjà utilisé");
+
+        await updateDoc(docRef, { used: true, usedAt: Date.now(), usedBy: db.currentUser?.id || "unknown" });
         await this.activateSubscription('code');
         closeModal('payment-modal');
         return;
-      } catch(e) { console.warn('Code activation error:', e); }
+      } catch(e) { console.warn('Code activation error:', e); toast("❌ Erreur: " + e.message); return; }
     }
-    toast('❌ Code invalide');
+    toast("❌ Code invalide");
   },
 
   async activateSubscription(method = 'manual') {
