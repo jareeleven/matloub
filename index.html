@@ -732,10 +732,10 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <div id="notif-list" style="font-size:0.85rem;color:var(--text2);">Aucune notification</div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="showProTab('edit',this)">Mon Profil</button>
-      <button class="tab-btn" onclick="showProTab('stats',this)">Statistiques</button>
-      <button class="tab-btn" onclick="showProTab('reviews',this)">Avis</button>
-      <button class="tab-btn" onclick="showProTab('rdvs',this);app.loadProRdvs()">
+      <button class="tab-btn active" onclick="showProTab('edit',this)" id="tab-btn-edit">Mon Profil</button>
+      <button class="tab-btn" onclick="showProTab('stats',this)" id="tab-btn-stats">Statistiques</button>
+      <button class="tab-btn" onclick="showProTab('reviews',this)" id="tab-btn-reviews">Avis</button>
+      <button class="tab-btn" onclick="showProTab('rdvs',this);app.loadProRdvs()" id="tab-btn-rdvs">
         📅 RDV <span id="rdv-tab-badge" style="display:none;background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;font-weight:900;margin-left:3px;">0</span>
       </button>
       <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 Abonnement</button>
@@ -2670,6 +2670,15 @@ function fillCommunes(prefix, dairaId) {
 // ────────────────────────────────────────────
 
 // ── HELPER : Vérifier si un pro est abonné ──
+
+// ── HELPER : Essai expiré ──
+function isTrialExpired(u) {
+  if (!u || u.role !== 'pro') return false;
+  if (isProSubscribed(u)) return false;
+  const joinDate = new Date(u.joinDate || u.createdAt || Date.now());
+  return Date.now() > joinDate.getTime() + 30 * 24 * 3600 * 1000;
+}
+
 function isProSubscribed(u) {
   return !!(u && u.subscription && u.subscription.plan === 'pro_lifetime' && u.subscription.active === true);
 }
@@ -2826,7 +2835,7 @@ const app = {
   renderMap(filterCat = this.currentMapCat || '') {
     const q       = (document.getElementById('explore-search')?.value || '').toLowerCase();
     const commune = document.getElementById('exp-commune')?.value || '';
-    let pros = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+    let pros = db.users.filter(u => u.role === 'pro' && u.status === 'active' && !isTrialExpired(u));
     if (q)         pros = pros.filter(u => (u.name+' '+u.job+' '+(u.commune||u.location||'')).toLowerCase().includes(q));
     if (commune)   pros = pros.filter(u => (u.commune||u.location||'') === commune);
     if (filterCat) pros = pros.filter(u => u.category === filterCat);
@@ -2913,7 +2922,7 @@ const app = {
     const commune = document.getElementById('home-commune').value;
     const q = search.toLowerCase() || document.getElementById('home-search').value.toLowerCase();
 
-    let list = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+    let list = db.users.filter(u => u.role === 'pro' && u.status === 'active' && !isTrialExpired(u));
     if (q) list = list.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.location||'').toLowerCase().includes(q));
     if (daira) list = list.filter(u => u.daira === daira);
     if (commune) list = list.filter(u => u.commune === commune);
@@ -2939,7 +2948,7 @@ const app = {
     const commune = document.getElementById('exp-commune').value;
     const sort = document.getElementById('exp-sort').value;
 
-    let list = db.users.filter(u => u.role === 'pro' && u.status === 'active');
+    let list = db.users.filter(u => u.role === 'pro' && u.status === 'active' && !isTrialExpired(u));
 
     if (exploreCatFilter) list = list.filter(u => u.category === exploreCatFilter);
     if (q) list = list.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.location||'').toLowerCase().includes(q));
@@ -4565,10 +4574,13 @@ const app = {
     navTo('profile');
     if (isProSubscribed(u)) {
       toast('💎 Bienvenue ' + sanitize(u.name.split(' ')[0]) + ' ! Abonnement Pro actif.');
+    } else if (isTrialExpired(u)) {
+      // Afficher modal d'expiration automatiquement après login
+      setTimeout(() => showTrialExpiredModal(), 800);
     } else {
       const _jd = new Date(u.joinDate || u.createdAt || Date.now());
       const _dl = Math.max(0, Math.ceil((_jd.getTime() + 30*24*3600*1000 - Date.now()) / (24*3600*1000)));
-      toast('👋 Bienvenue ' + sanitize(u.name.split(' ')[0]) + (_dl > 0 ? ' ! Essai: ' + _dl + 'j restants.' : ' ! Essai expiré.'));
+      toast('👋 Bienvenue ' + sanitize(u.name.split(' ')[0]) + ' ! Essai: ' + _dl + 'j restants.');
     }
 
     // 🔔 Demander permission notifications
@@ -4762,6 +4774,8 @@ const app = {
 
   saveProChanges() {
     const u = db.currentUser;
+    // Bloquer si essai expiré
+    if (isTrialExpired(u)) { showTrialExpiredModal(); return; }
     const nameVal = sanitize(document.getElementById('edit-name').value.trim());
     const bioVal  = sanitize(document.getElementById('edit-bio').value);
     if (!validateInput(nameVal, 'Nom')) return;
@@ -5025,16 +5039,55 @@ function toast(msg) {
 //  PRO TABS
 // ────────────────────────────────────────────
 function showProTab(tab, el) {
-  // Nettoyer le compte à rebours si on quitte l'onglet abonnement
-  if (tab !== 'abonnement' && window._countdownInterval) {
-    // On garde le timer actif pour qu'il continue en arrière-plan
+  const u = db.currentUser;
+  const expired = u && isTrialExpired(u);
+
+  // Si essai expiré → bloquer tous les onglets sauf 'abonnement'
+  if (expired && tab !== 'abonnement') {
+    // Afficher le modal d'expiration
+    showTrialExpiredModal();
+    return;
   }
+
   ['edit','stats','reviews','rdvs','messages','abonnement','parrainage'].forEach(t => {
-    const el = document.getElementById(`pro-tab-${t}`);
-    if (el) el.classList.toggle('hidden', t !== tab);
+    const el2 = document.getElementById(`pro-tab-${t}`);
+    if (el2) el2.classList.toggle('hidden', t !== tab);
   });
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
+}
+
+function showTrialExpiredModal() {
+  // Créer ou afficher le modal d'expiration
+  let modal = document.getElementById('trial-expired-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'trial-expired-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:var(--card);border-radius:20px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="font-size:3rem;margin-bottom:12px;">⛔</div>
+        <div style="font-weight:900;font-size:1.2rem;color:var(--text);margin-bottom:8px;">Période d'essai expirée</div>
+        <div style="font-size:0.88rem;color:var(--text2);margin-bottom:20px;line-height:1.5;">
+          Votre période d'essai gratuite de <strong>30 jours</strong> est terminée.<br><br>
+          ❌ Votre profil est <strong>masqué</strong> des recherches<br>
+          ❌ Votre profil est <strong>masqué</strong> de la carte<br>
+          ❌ Modification du profil <strong>désactivée</strong><br><br>
+          Abonnez-vous pour seulement <strong>1000 DA à vie</strong> et retrouvez toutes vos fonctionnalités immédiatement !
+        </div>
+        <button onclick="document.getElementById('trial-expired-modal').remove();showProTab('abonnement',null);app.renderSubscriptionStatus();"
+          style="background:linear-gradient(135deg,#0052A5,#0080D6);color:white;border:none;padding:14px 24px;border-radius:12px;font-weight:900;font-size:1rem;cursor:pointer;width:100%;margin-bottom:10px;">
+          💎 S'abonner maintenant — 1000 DA à vie
+        </button>
+        <button onclick="document.getElementById('trial-expired-modal').remove();"
+          style="background:var(--bg);color:var(--text2);border:1px solid var(--border);padding:10px 24px;border-radius:12px;font-weight:700;cursor:pointer;width:100%;font-size:0.9rem;">
+          Plus tard
+        </button>
+      </div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = 'flex';
+  }
 }
 
 // ── Indicateur scroll tabs ──
