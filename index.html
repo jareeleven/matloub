@@ -422,6 +422,60 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 /* ── LOADING SPINNER ── */
 .spinner{width:24px;height:24px;border:3px solid rgba(0,82,165,0.15);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Compte à rebours essai ── */
+.trial-countdown {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 10px 0;
+}
+.countdown-block {
+  background: rgba(255,255,255,0.25);
+  border-radius: 8px;
+  padding: 6px 10px;
+  text-align: center;
+  min-width: 44px;
+}
+.countdown-num {
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+  display: block;
+}
+.countdown-label {
+  font-size: 0.55rem;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+/* ── Badge Pro héro ── */
+.pro-badge-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #7C2D00;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 3px 10px;
+  border-radius: 50px;
+  margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(255,165,0,0.4);
+  letter-spacing: 0.3px;
+}
+.trial-badge-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 50px;
+  margin-top: 6px;
+}
 </style>
 </head>
 <body>
@@ -658,6 +712,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
           <div style="font-size:1.1rem;font-weight:900;" id="pro-name-hero">Professionnel</div>
           <div style="opacity:0.8;font-size:0.82rem;" id="pro-job-hero">Métier</div>
           <div id="pro-status-hero" class="status-badge status-active" style="margin-top:8px;display:inline-block;">Actif</div>
+          <div id="pro-sub-badge-hero" style="display:none;"></div>
         </div>
         <div style="position:relative;">
           <button onclick="app.toggleNotifPanel()" style="background:rgba(255,255,255,0.2);border:none;border-radius:12px;padding:10px;cursor:pointer;color:white;">
@@ -3665,23 +3720,86 @@ const app = {
     const daysLeft = Math.max(0, Math.ceil((trialEnd - now) / (24 * 3600 * 1000)));
 
     if (sub?.plan === 'pro_lifetime' && sub?.active) {
+      const activatedDate = sub.activatedAt ? new Date(sub.activatedAt).toLocaleDateString('fr-FR') : 'Récemment';
       banner.innerHTML = `
         <div style="background:linear-gradient(135deg,#0052A5,#0080D6);color:white;border-radius:14px;padding:16px;text-align:center;">
-          <div style="font-size:1.5rem;margin-bottom:4px;">💎</div>
-          <div style="font-weight:900;font-size:1rem;">Abonnement Pro à Vie Actif</div>
-          <div style="font-size:0.8rem;opacity:0.85;margin-top:4px;">Activé le ${new Date(sub.activatedAt).toLocaleDateString('fr-FR')}</div>
-          <div style="margin-top:8px;background:rgba(255,255,255,0.2);border-radius:8px;padding:6px;font-size:0.78rem;">✅ Badge vérifié · ✅ Priorité recherche · ✅ Stats complètes</div>
+          <div style="font-size:1.8rem;margin-bottom:4px;">💎</div>
+          <div style="font-weight:900;font-size:1.05rem;">Abonnement Pro à Vie Actif</div>
+          <div style="font-size:0.8rem;opacity:0.85;margin-top:4px;">Activé le ${activatedDate}</div>
+          <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+            <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:700;">✅ Badge vérifié</span>
+            <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:700;">🔝 Priorité recherche</span>
+            <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:700;">📊 Stats complètes</span>
+          </div>
         </div>`;
+
+      // Badge doré dans le héro
+      const heroBadge = document.getElementById('pro-sub-badge-hero');
+      if (heroBadge) {
+        heroBadge.style.display = 'inline-flex';
+        heroBadge.className = 'pro-badge-hero';
+        heroBadge.innerHTML = '💎 PRO VÉRIFIÉ';
+      }
+
+      // Arrêter le compte à rebours si actif
+      if (window._countdownInterval) { clearInterval(window._countdownInterval); window._countdownInterval = null; }
     } else if (daysLeft > 0) {
+      // Calcul heures/minutes pour le compte à rebours
+      const msLeft = trialEnd - now;
+      const daysCD  = Math.floor(msLeft / (24*3600*1000));
+      const hoursCD = Math.floor((msLeft % (24*3600*1000)) / (3600*1000));
+      const minsCD  = Math.floor((msLeft % (3600*1000)) / (60*1000));
+      const secsCD  = Math.floor((msLeft % (60*1000)) / 1000);
+
       banner.innerHTML = `
-        <div style="background:linear-gradient(135deg,#F59E0B,#EF4444);color:white;border-radius:14px;padding:16px;">
-          <div style="font-weight:900;font-size:1rem;">⏳ Période d'essai gratuite</div>
-          <div style="font-size:0.85rem;margin-top:6px;">Il vous reste <strong>${daysLeft} jour(s)</strong> d'essai</div>
-          <div style="font-size:0.78rem;opacity:0.9;margin:6px 0;">Passez à Pro à Vie pour continuer après l'essai</div>
-          <button onclick="app.showPaymentModal()" style="background:white;color:#F59E0B;border:none;padding:8px 16px;border-radius:10px;font-weight:800;cursor:pointer;width:100%;margin-top:4px;">
-            💎 S'abonner — 1000 DA à vie
+        <div style="background:linear-gradient(135deg,#F59E0B,#D97706);color:white;border-radius:14px;padding:16px;">
+          <div style="font-weight:900;font-size:1rem;text-align:center;">⏳ Période d'essai gratuite</div>
+          <div style="font-size:0.78rem;opacity:0.9;text-align:center;margin:4px 0;">Temps restant avant expiration :</div>
+          <div class="trial-countdown" id="trial-countdown-display">
+            <div class="countdown-block">
+              <span class="countdown-num" id="cd-days">${String(daysCD).padStart(2,'0')}</span>
+              <span class="countdown-label">Jours</span>
+            </div>
+            <div class="countdown-block">
+              <span class="countdown-num" id="cd-hours">${String(hoursCD).padStart(2,'0')}</span>
+              <span class="countdown-label">Heures</span>
+            </div>
+            <div class="countdown-block">
+              <span class="countdown-num" id="cd-mins">${String(minsCD).padStart(2,'0')}</span>
+              <span class="countdown-label">Min</span>
+            </div>
+            <div class="countdown-block">
+              <span class="countdown-num" id="cd-secs">${String(secsCD).padStart(2,'0')}</span>
+              <span class="countdown-label">Sec</span>
+            </div>
+          </div>
+          <button onclick="app.showPaymentModal()" style="background:white;color:#D97706;border:none;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;width:100%;margin-top:8px;">
+            💎 S'abonner maintenant — 1000 DA à vie
           </button>
         </div>`;
+
+      // Démarrer le compte à rebours en temps réel
+      if (window._countdownInterval) clearInterval(window._countdownInterval);
+      window._countdownInterval = setInterval(() => {
+        const msNow = trialEnd - new Date();
+        if (msNow <= 0) { clearInterval(window._countdownInterval); app.renderSubscriptionStatus(); return; }
+        const d = document.getElementById('cd-days');
+        const h = document.getElementById('cd-hours');
+        const m = document.getElementById('cd-mins');
+        const s = document.getElementById('cd-secs');
+        if (d) d.textContent = String(Math.floor(msNow / (24*3600*1000))).padStart(2,'0');
+        if (h) h.textContent = String(Math.floor((msNow % (24*3600*1000)) / (3600*1000))).padStart(2,'0');
+        if (m) m.textContent = String(Math.floor((msNow % (3600*1000)) / (60*1000))).padStart(2,'0');
+        if (s) s.textContent = String(Math.floor((msNow % (60*1000)) / 1000)).padStart(2,'0');
+      }, 1000);
+
+      // Badge héro
+      const heroBadge = document.getElementById('pro-sub-badge-hero');
+      if (heroBadge) {
+        heroBadge.style.display = 'inline-flex';
+        heroBadge.className = 'trial-badge-hero';
+        heroBadge.innerHTML = '⏳ Essai : ' + daysLeft + ' jour(s)';
+      }
     } else {
       // Essai expiré
       banner.innerHTML = `
@@ -4907,6 +5025,10 @@ function toast(msg) {
 //  PRO TABS
 // ────────────────────────────────────────────
 function showProTab(tab, el) {
+  // Nettoyer le compte à rebours si on quitte l'onglet abonnement
+  if (tab !== 'abonnement' && window._countdownInterval) {
+    // On garde le timer actif pour qu'il continue en arrière-plan
+  }
   ['edit','stats','reviews','rdvs','messages','abonnement','parrainage'].forEach(t => {
     const el = document.getElementById(`pro-tab-${t}`);
     if (el) el.classList.toggle('hidden', t !== tab);
