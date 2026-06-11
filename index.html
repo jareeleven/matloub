@@ -2613,6 +2613,18 @@ function fillCommunes(prefix, dairaId) {
 // ────────────────────────────────────────────
 //  CRÉATION CARTE PRO
 // ────────────────────────────────────────────
+
+// ── HELPER : Vérifier si un pro est abonné ──
+function isProSubscribed(u) {
+  return !!(u && u.subscription && u.subscription.plan === 'pro_lifetime' && u.subscription.active === true);
+}
+function getProBadge(u) {
+  if (isProSubscribed(u)) {
+    return '<span style="display:inline-flex;align-items:center;gap:2px;background:linear-gradient(135deg,#0052A5,#0080D6);color:white;font-size:0.6rem;font-weight:900;padding:2px 7px;border-radius:50px;">💎 PRO</span>';
+  }
+  return '';
+}
+
 function createProCard(u, showFavBtn=true) {
   const favs = getFavs();
   const isFav = favs.includes(u.id);
@@ -2850,7 +2862,12 @@ const app = {
     if (q) list = list.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.location||'').toLowerCase().includes(q));
     if (daira) list = list.filter(u => u.daira === daira);
     if (commune) list = list.filter(u => u.commune === commune);
-    list = list.sort((a,b) => getAvgRating(b) - getAvgRating(a));
+    list = list.sort((a,b) => {
+      const aPro = isProSubscribed(a) ? 1 : 0;
+      const bPro = isProSubscribed(b) ? 1 : 0;
+      if (bPro !== aPro) return bPro - aPro;
+      return getAvgRating(b) - getAvgRating(a);
+    });
 
     const container = document.getElementById('home-pros-list');
     if (list.length === 0) {
@@ -2985,6 +3002,7 @@ const app = {
         <h2 style="font-size:1.15rem;margin-bottom:4px;">${sanitize(u.name)}${u.emailVerified ? ' <span style="font-size:0.8rem;color:#059669;">✅</span>' : ''}</h2>
         <div style="color:${cat.color};font-weight:700;font-size:0.9rem;">${sanitize(u.job)}</div>
         ${(u.badges||[]).includes('founder') ? '<div style="margin-top:6px;"><span style="background:linear-gradient(135deg,#D97706,#F59E0B);color:white;font-size:0.72rem;font-weight:900;padding:3px 12px;border-radius:20px;">✨ MEMBRE FONDATEUR MATLOUB</span></div>' : ''}
+        ${isProSubscribed(u) ? '<div style="margin-top:6px;"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#0052A5,#0080D6);color:white;font-size:0.72rem;font-weight:900;padding:3px 12px;border-radius:20px;">💎 Professionnel Vérifié Pro MATLOUB</span></div>' : ''}
         <div style="color:var(--text3);font-size:0.8rem;margin-top:4px;">${sanitize(u.commune||'')}, ${sanitize(oranData.dairas.find(d=>d.id===u.daira)?.name||u.location||'Oran')}</div>
         <div style="margin-top:8px;">
           ${u.available===false
@@ -4427,7 +4445,13 @@ const app = {
     saveDB();
     closeModal('login-modal');
     navTo('profile');
-    toast(`👋 Bienvenue ${sanitize(u.name)} !`);
+    if (isProSubscribed(u)) {
+      toast('💎 Bienvenue ' + sanitize(u.name.split(' ')[0]) + ' ! Abonnement Pro actif.');
+    } else {
+      const _jd = new Date(u.joinDate || u.createdAt || Date.now());
+      const _dl = Math.max(0, Math.ceil((_jd.getTime() + 30*24*3600*1000 - Date.now()) / (24*3600*1000)));
+      toast('👋 Bienvenue ' + sanitize(u.name.split(' ')[0]) + (_dl > 0 ? ' ! Essai: ' + _dl + 'j restants.' : ' ! Essai expiré.'));
+    }
 
     // 🔔 Demander permission notifications
     setTimeout(() => {
