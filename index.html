@@ -499,14 +499,15 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div class="logo-text">MATLOUB</div>
   </div>
   <div class="header-right">
-    <div id="lang-selector" style="position:relative;">
-      <button onclick="toggleLangMenu()" class="theme-toggle" style="font-size:0.8rem;font-weight:900;" title="Langue / Language">
-        <span id="lang-flag">FR</span>
+    <div style="position:relative;" id="lang-wrap">
+      <button onclick="document.getElementById('lang-dd').style.display=document.getElementById('lang-dd').style.display==='block'?'none':'block'" 
+        class="theme-toggle" title="Langue" style="font-size:0.78rem;font-weight:900;letter-spacing:0.5px;">
+        <span id="lang-flag-btn">FR</span>
       </button>
-      <div id="lang-menu" style="display:none;position:absolute;top:44px;right:0;background:var(--card);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:9999;min-width:150px;overflow:hidden;border:1px solid var(--border);">
-        <button onclick="setLang('fr')" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;">🇫🇷 Français</button>
-        <button onclick="setLang('ar')" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;">🇩🇿 العربية</button>
-        <button onclick="setLang('kab')" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;">🏔️ Tamazight</button>
+      <div id="lang-dd" style="display:none;position:absolute;top:46px;right:0;background:var(--card);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:9999;min-width:150px;border:1px solid var(--border);overflow:hidden;">
+        <button onclick="setLang('fr');document.getElementById('lang-dd').style.display='none';" style="width:100%;padding:11px 14px;background:none;border:none;border-bottom:1px solid var(--border);text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);">🇫🇷 Français</button>
+        <button onclick="setLang('ar');document.getElementById('lang-dd').style.display='none';" style="width:100%;padding:11px 14px;background:none;border:none;border-bottom:1px solid var(--border);text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);">🇩🇿 العربية</button>
+        <button onclick="setLang('kab');document.getElementById('lang-dd').style.display='none';" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);">🏔️ Tamazight</button>
       </div>
     </div>
     <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Mode sombre/clair">
@@ -532,7 +533,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   </div>
 
   <!-- Recherche avec suggestions -->
-  <div id="search-history-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:0 4px;margin-bottom:6px;min-height:0;"></div>
+  <div id="srch-hist" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:6px;padding:0 2px;"></div>
   <div class="search-wrap" style="position:relative;">
     <span class="material-icons-round search-icon-l">search</span>
     <input type="text" class="search-input" id="home-search" placeholder="Plombier, Médecin, Coiffeur..."
@@ -547,8 +548,8 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
   <!-- Filtres Daïra / Commune -->
   <div class="location-dropdowns">
-    <button onclick="app.prosPrezDeMoi()" id="btn-near-me"
-      style="width:100%;padding:11px;background:linear-gradient(135deg,#059669,#10B981);color:white;border:none;border-radius:14px;font-weight:800;font-size:0.9rem;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <button onclick="app.prosPrezDeMoi(this)" id="btn-near-me"
+      style="width:100%;padding:10px;background:linear-gradient(135deg,#059669,#10B981);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.88rem;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
       📍 Pros près de moi
     </button>
     <select class="input-field" id="home-daira" onchange="app.onDairaChange('home'); app.renderHomePros();" style="margin-bottom:0;">
@@ -740,6 +741,9 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
           <div style="opacity:0.8;font-size:0.82rem;" id="pro-job-hero">Métier</div>
           <div id="pro-status-hero" class="status-badge status-active" style="margin-top:8px;display:inline-block;">Actif</div>
           <div id="pro-sub-badge-hero" style="display:none;"></div>
+      <button onclick="app.showQRCode()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:6px 14px;border-radius:20px;font-size:0.75rem;font-weight:800;cursor:pointer;margin-top:6px;">
+        📱 Mon QR Code
+      </button>
         </div>
         <div style="position:relative;">
           <button onclick="app.toggleNotifPanel()" style="background:rgba(255,255,255,0.2);border:none;border-radius:12px;padding:10px;cursor:pointer;color:white;">
@@ -838,23 +842,22 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
     <!-- Tab: Stats -->
     <div id="pro-tab-stats" class="hidden">
-      <!-- Stats en temps réel -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div class="card" style="text-align:center;padding:16px;">
-          <div id="stat-views" style="font-size:2rem;font-weight:900;color:var(--primary);">0</div>
-          <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">👁️ Vues profil</div>
+        <div class="card" style="text-align:center;padding:14px;">
+          <div id="stat-profile-views" style="font-size:2rem;font-weight:900;color:var(--primary);">—</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;margin-top:2px;">👁️ Vues profil</div>
         </div>
-        <div class="card" style="text-align:center;padding:16px;">
-          <div id="stat-clicks" style="font-size:2rem;font-weight:900;color:#059669;">0</div>
-          <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">📱 Clics contact</div>
+        <div class="card" style="text-align:center;padding:14px;">
+          <div id="stat-contact-clicks" style="font-size:2rem;font-weight:900;color:#059669;">—</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;margin-top:2px;">📱 Clics contact</div>
         </div>
-        <div class="card" style="text-align:center;padding:16px;">
-          <div id="stat-rdvs" style="font-size:2rem;font-weight:900;color:#7C3AED;">0</div>
-          <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">📅 RDV reçus</div>
+        <div class="card" style="text-align:center;padding:14px;">
+          <div id="stat-rdv-count" style="font-size:2rem;font-weight:900;color:#7C3AED;">—</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;margin-top:2px;">📅 RDV reçus</div>
         </div>
-        <div class="card" style="text-align:center;padding:16px;">
-          <div id="stat-rating" style="font-size:2rem;font-weight:900;color:#F59E0B;">—</div>
-          <div style="font-size:0.75rem;color:var(--text3);font-weight:700;">⭐ Note moyenne</div>
+        <div class="card" style="text-align:center;padding:14px;">
+          <div id="stat-avg-rating" style="font-size:2rem;font-weight:900;color:#F59E0B;">—</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;margin-top:2px;">⭐ Note moyenne</div>
         </div>
       </div>
       <div class="admin-stat-grid">
@@ -1063,16 +1066,16 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 <!-- ══════════ MODALS ══════════ -->
 
 <!-- Connexion -->
-<!-- ── Modal QR Code profil ───────────────────────────── -->
+<!-- Modal QR Code -->
 <div id="qr-modal" class="modal-overlay">
-  <div class="modal-sheet" style="text-align:center;">
+  <div class="modal-sheet" style="text-align:center;padding:24px 20px 32px;">
     <div class="modal-handle"></div>
-    <div style="font-size:1.1rem;font-weight:900;margin-bottom:4px;">📱 QR Code — Mon Profil</div>
-    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:16px;">Faites scanner ce code pour accéder directement à votre profil</div>
-    <div id="qr-canvas-container" style="display:flex;justify-content:center;margin-bottom:12px;background:white;border-radius:16px;padding:16px;display:inline-block;"></div>
-    <div id="qr-profile-url" style="font-size:0.72rem;color:var(--text3);margin-bottom:16px;word-break:break-all;padding:0 8px;"></div>
-    <button onclick="app.downloadQR()" class="btn btn-primary" style="width:100%;margin-bottom:8px;">⬇️ Télécharger le QR Code</button>
-    <button onclick="navigator.share ? navigator.share({title:'Mon profil MATLOUB', url: document.getElementById('qr-profile-url').textContent}) : app.copyToClipboard(document.getElementById('qr-profile-url').textContent)" class="btn btn-ghost" style="width:100%;margin-bottom:8px;">🔗 Partager le lien</button>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:4px;">📱 QR Code Mon Profil</div>
+    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:16px;">Partagez votre profil en faisant scanner ce code</div>
+    <div id="qr-canvas-wrap" style="background:white;border-radius:16px;padding:16px;display:inline-flex;justify-content:center;margin-bottom:12px;"></div>
+    <div id="qr-url-text" style="font-size:0.72rem;color:var(--text3);margin-bottom:16px;word-break:break-all;"></div>
+    <button onclick="app.downloadQRCode()" class="btn btn-primary" style="width:100%;margin-bottom:8px;">⬇️ Télécharger le QR Code</button>
+    <button onclick="app.copyProfileLink()" class="btn btn-ghost" style="width:100%;margin-bottom:8px;">🔗 Copier le lien</button>
     <button class="btn btn-ghost" onclick="closeModal('qr-modal')">Fermer</button>
   </div>
 </div>
@@ -2418,13 +2421,17 @@ function startRealtimeListener() {
 function loadDB() {
   const saved = localStorage.getItem('matloub_v3_users');
   if (saved) {
-    db.users = JSON.parse(saved);
+    try {
+      const parsed = JSON.parse(saved);
+      // Supprimer les pros démo (emails @demo.dz)
+      db.users = parsed.filter(u => !u.email?.includes('@demo.dz') && !u.email?.includes('demo'));
+      if (db.users.length !== parsed.length) {
+        localStorage.setItem('matloub_v3_users', JSON.stringify(db.users));
+      }
+    } catch(e) { db.users = []; }
   } else {
-    // Données initiales (admin uniquement — pros chargés depuis Firebase)
-    db.users = [
-      {id:99,name:"Administrateur",job:"Admin",phone:"0000000000",email:"admin",role:"admin",status:"active",photos:[]}
-    ];
-    saveDB();
+    // Aucune donnée locale — Firebase est la source principale
+    db.users = []
   }
   // Traffic simulation (localStorage fallback)
   db.traffic = JSON.parse(localStorage.getItem('matloub_traffic') || '{"day":30,"month":650,"year":4200}');
@@ -3036,13 +3043,12 @@ const app = {
 
   // ── DÉTAIL PRO ──
   showDetail(id) {
-    // Track profile view
-    app.trackProfileView(id);
     const u = db.users.find(us => us.id == id || us.id === String(id) || us.fbId === String(id));
     if (!u) { console.warn('Pro non trouvé:', id); return; }
     // Incrémenter vues
     u.views = (u.views || 0) + 1;
     saveDB();
+    app.trackView(id); // Firebase stats
 
     // ── 🔍 SEO : Meta dynamiques ──
     const avgRatingRaw = getAvgRating(u);
@@ -3983,7 +3989,7 @@ const app = {
     } catch(e) { console.warn('Notification listener error:', e); }
   },
   trackContact(id, type) {
-    app.trackContactClick(id); // Update Firebase stats
+    app.trackClick(id); // Firebase stats
     const nid = isNaN(id) ? id : Number(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
     if (!contacted.some(c => String(c) === String(id))) {
@@ -5088,10 +5094,9 @@ function toast(msg) {
 //  PRO TABS
 // ────────────────────────────────────────────
 function showProTab(tab, el) {
+  if (tab === 'stats') setTimeout(() => app.loadProStats(), 100);
   const u = db.currentUser;
   const expired = u && isTrialExpired(u);
-  // Load stats when switching to stats tab
-  if (tab === 'stats') setTimeout(() => app.loadProStats(), 100);
 
   // Si essai expiré → bloquer tous les onglets sauf 'abonnement'
   if (expired && tab !== 'abonnement') {
@@ -5208,6 +5213,196 @@ function addNotif(msg) {
   // 5. Render home avec données locales en premier (rapide)
   app.renderHomePros();
 
+// ════════════════════════════════════════════════════════
+// 🆕 NOUVELLES FONCTIONNALITÉS v7
+// ════════════════════════════════════════════════════════
+
+// ── GÉOLOCALISATION ──────────────────────────────────────
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+app.prosPrezDeMoi = function(btn) {
+  if (!navigator.geolocation) { toast('Géolocalisation non supportée'); return; }
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ Localisation...'; btn.disabled = true; }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      const prosAvecCoords = db.users.filter(u => u.role==='pro' && u.status==='active' && !isTrialExpired(u) && u.lat && u.lng);
+      if (prosAvecCoords.length > 0) {
+        const sorted = prosAvecCoords
+          .map(u => ({ ...u, _dist: haversineKm(lat, lng, parseFloat(u.lat), parseFloat(u.lng)) }))
+          .sort((a, b) => a._dist - b._dist);
+        const container = document.getElementById('pros-list');
+        if (container) {
+          container.innerHTML = sorted.map(u =>
+            createProCard(u) + '<div style="text-align:right;font-size:0.7rem;color:var(--text3);margin:-4px 0 8px;padding-right:8px;">📍 ' + u._dist.toFixed(1) + ' km</div>'
+          ).join('');
+        }
+        toast('📍 ' + sorted.length + ' pro(s) triés par distance !');
+      } else {
+        toast('📍 Position obtenue ! Pros affichés pour votre région.');
+        app.renderHomePros();
+      }
+      if (btn) { btn.innerHTML = orig || '📍 Pros près de moi'; btn.disabled = false; }
+    },
+    (err) => {
+      toast('❌ Position refusée ou indisponible');
+      if (btn) { btn.innerHTML = orig || '📍 Pros près de moi'; btn.disabled = false; }
+    },
+    { timeout: 8000, enableHighAccuracy: false }
+  );
+};
+
+// ── HISTORIQUE DE RECHERCHE ───────────────────────────────
+const HIST_KEY = 'matloub_srch_hist';
+function getSrchHist() { try { return JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); } catch(e){ return []; } }
+function saveSrchHist(q) {
+  if (!q || q.length < 2) return;
+  let h = getSrchHist().filter(x => x !== q);
+  h.unshift(q);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h.slice(0, 6)));
+  renderSrchHist();
+}
+function renderSrchHist() {
+  const el = document.getElementById('srch-hist');
+  if (!el) return;
+  const h = getSrchHist();
+  if (!h.length) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = h.map(q =>
+    `<button onclick="document.getElementById('home-search').value='${q.replace(/'/g,"\'")}';app.onSearch('${q.replace(/'/g,"\'")}');" style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:0.73rem;font-weight:700;color:var(--text2);cursor:pointer;">🕐 ${q}</button>`
+  ).join('') + `<button onclick="localStorage.removeItem('${HIST_KEY}');renderSrchHist();" style="background:none;border:none;font-size:0.72rem;color:var(--text3);cursor:pointer;padding:4px;">✕</button>`;
+}
+// Intercepter doSearch pour enregistrer l'historique
+(function() {
+  const _orig = app.doSearch;
+  app.doSearch = function() {
+    const val = (document.getElementById('home-search')?.value || '').trim();
+    if (val.length >= 2) saveSrchHist(val);
+    if (_orig) _orig.call(app);
+  };
+})();
+
+// ── QR CODE ──────────────────────────────────────────────
+app.showQRCode = function() {
+  const u = db.currentUser;
+  if (!u) { toast('Connectez-vous d'abord'); return; }
+  const url = location.origin + location.pathname + '?pro=' + encodeURIComponent(u.fbId || u.id || '');
+  const wrap = document.getElementById('qr-canvas-wrap');
+  const urlEl = document.getElementById('qr-url-text');
+  if (urlEl) urlEl.textContent = url;
+  if (wrap) {
+    wrap.innerHTML = '';
+    const img = document.createElement('img');
+    img.width = 200; img.height = 200;
+    img.style.borderRadius = '8px';
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&color=0052A5&bgcolor=FFFFFF&margin=2';
+    img.alt = 'QR Code profil';
+    wrap.appendChild(img);
+  }
+  showModal('qr-modal');
+};
+app.downloadQRCode = function() {
+  const img = document.querySelector('#qr-canvas-wrap img');
+  if (!img) return;
+  const a = document.createElement('a');
+  a.href = img.src;
+  a.download = 'qr-matloub.png';
+  a.target = '_blank';
+  a.click();
+};
+app.copyProfileLink = function() {
+  const url = document.getElementById('qr-url-text')?.textContent || location.href;
+  if (navigator.share) {
+    navigator.share({ title: 'Mon profil MATLOUB', url }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(url).then(() => toast('✅ Lien copié !')).catch(() => toast('Lien: ' + url));
+  }
+};
+
+// ── MULTILINGUE ──────────────────────────────────────────
+const LANGS = {
+  fr: { flag:'FR', dir:'ltr', searchPH:'Plombier, Médecin, Coiffeur...', nearMe:'📍 Pros près de moi', noResult:'Aucun professionnel trouvé' },
+  ar: { flag:'عر', dir:'rtl', searchPH:'سباك، طبيب، حلاق...', nearMe:'📍 المحترفون بالقرب مني', noResult:'لم يتم العثور على محترف' },
+  kab:{ flag:'KAB', dir:'ltr', searchPH:'Awalay, Tabib...', nearMe:'📍 Imeslkinen dani', noResult:'Ulac imeslki yettwaf' }
+};
+let _lang = localStorage.getItem('matloub_lang') || 'fr';
+
+function setLang(l) {
+  _lang = l;
+  localStorage.setItem('matloub_lang', l);
+  applyLang();
+}
+function applyLang() {
+  const t = LANGS[_lang] || LANGS.fr;
+  // Flag button
+  const fl = document.getElementById('lang-flag-btn');
+  if (fl) fl.textContent = t.flag;
+  // Direction
+  document.documentElement.setAttribute('dir', t.dir);
+  // Search placeholder
+  const sp = document.getElementById('home-search');
+  if (sp) sp.placeholder = t.searchPH;
+  // Near me button
+  const nb = document.getElementById('btn-near-me');
+  if (nb && !nb.disabled) nb.childNodes[nb.childNodes.length-1].textContent = ' ' + t.nearMe;
+}
+
+// ── STATS PRO AMÉLIORÉES ─────────────────────────────────
+app.loadProStats = async function() {
+  const u = db.currentUser;
+  if (!u) return;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('stat-profile-views', u.profileViews || u.views || 0);
+  set('stat-contact-clicks', u.contactClicks || 0);
+  set('stat-avg-rating', u.rating ? parseFloat(u.rating).toFixed(1) : '—');
+  // RDV count depuis Firebase
+  if (USE_FIREBASE) {
+    try {
+      const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+      const snap = await getDocs(query(collection(firebaseDB, 'rdvs'), where('proId', '==', String(u.id || u.fbId || ''))));
+      set('stat-rdv-count', snap.size);
+    } catch(e) { set('stat-rdv-count', 0); }
+  }
+};
+
+// Track profile view
+app.trackView = async function(proId) {
+  if (!USE_FIREBASE || !proId) return;
+  try {
+    const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    await updateDoc(doc(firebaseDB, 'professionals', String(proId)), { profileViews: increment(1) });
+  } catch(e) {}
+};
+
+// Track contact click
+app.trackClick = async function(proId) {
+  if (!USE_FIREBASE || !proId) return;
+  try {
+    const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    await updateDoc(doc(firebaseDB, 'professionals', String(proId)), { contactClicks: increment(1) });
+  } catch(e) {}
+};
+
+// ── INIT AU CHARGEMENT ────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    applyLang();
+    renderSrchHist();
+  }, 400);
+  // Fermer menu lang au clic extérieur
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('lang-wrap');
+    const dd = document.getElementById('lang-dd');
+    if (wrap && dd && !wrap.contains(e.target)) dd.style.display = 'none';
+  });
+});
+
+
   // 6. Pre-fill explore dairas
   const expSel = document.getElementById('exp-daira');
   if (expSel) {
@@ -5296,287 +5491,6 @@ if ('serviceWorker' in navigator) {
       .catch(e => console.warn('SW non enregistré:', e));
   });
 }
-
-// ══════════════════════════════════════════════════════════════
-// 🆕 NOUVELLES FONCTIONNALITÉS MATLOUB
-// ══════════════════════════════════════════════════════════════
-
-// ── 1. GÉOLOCALISATION — Pros près de moi ──────────────────
-function getDistanceKm(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-app.prosPrezDeMoi = async function() {
-  const btn = document.getElementById('btn-near-me');
-  if (btn) { btn.textContent = '📍 Localisation...'; btn.disabled = true; }
-  
-  try {
-    const pos = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
-    });
-    const { latitude, longitude } = pos.coords;
-    
-    // Filtrer les pros avec coordonnées et calculer distance
-    let pros = db.users.filter(u => u.role === 'pro' && u.status === 'active' && !isTrialExpired(u) && u.lat && u.lng);
-    
-    if (pros.length === 0) {
-      // Fallback: chercher par commune/daira
-      toast('📍 Position obtenue — affichage des pros d'Oran');
-      if (btn) { btn.innerHTML = '📍 Pros près de moi'; btn.disabled = false; }
-      app.renderHomePros();
-      return;
-    }
-    
-    pros = pros.map(u => ({ ...u, distKm: getDistanceKm(latitude, longitude, u.lat, u.lng) }))
-               .sort((a, b) => a.distKm - b.distKm)
-               .slice(0, 12);
-    
-    const container = document.getElementById('pros-list');
-    if (container) {
-      container.innerHTML = '<div style="font-size:0.8rem;color:var(--text3);font-weight:700;margin-bottom:10px;text-align:center;">📍 Pros les plus proches de vous</div>' +
-        pros.map(u => createProCard(u) + `<div style="text-align:right;font-size:0.72rem;color:var(--text3);margin-top:-6px;margin-bottom:10px;">📍 ${u.distKm.toFixed(1)} km</div>`).join('');
-    }
-    toast('📍 ' + pros.length + ' pros trouvés près de vous !');
-  } catch(e) {
-    toast('⚠️ Impossible d'obtenir votre position');
-  }
-  
-  if (btn) { btn.innerHTML = '📍 Pros près de moi'; btn.disabled = false; }
-};
-
-// ── 2. HISTORIQUE DE RECHERCHE ────────────────────────────
-const SEARCH_HISTORY_KEY = 'matloub_search_history';
-
-function getSearchHistory() {
-  try { return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]'); } 
-  catch(e) { return []; }
-}
-
-function addToSearchHistory(query) {
-  if (!query || query.length < 2) return;
-  let hist = getSearchHistory();
-  hist = [query, ...hist.filter(h => h !== query)].slice(0, 6);
-  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(hist));
-  renderSearchHistory();
-}
-
-function renderSearchHistory() {
-  const container = document.getElementById('search-history-chips');
-  if (!container) return;
-  const hist = getSearchHistory();
-  if (hist.length === 0) { container.style.display = 'none'; return; }
-  container.style.display = 'flex';
-  container.innerHTML = hist.map(h =>
-    '<button onclick="document.getElementById('home-search').value='' + h.replace(/'/g, '') + '';app.onSearch('' + h.replace(/'/g, '') + '');" ' +
-    'style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--text2);cursor:pointer;white-space:nowrap;">' +
-    '🕐 ' + h + '</button>'
-  ).join('') +
-  '<button onclick="localStorage.removeItem('' + SEARCH_HISTORY_KEY + '');renderSearchHistory();" ' +
-  'style="background:none;border:none;font-size:0.72rem;color:var(--text3);cursor:pointer;padding:4px 6px;">✕</button>';
-}
-
-// Hook into search
-const _origOnSearch = app.onSearch;
-app.onSearch = function(val) {
-  if (_origOnSearch) _origOnSearch.call(app, val);
-};
-const _origDoSearch = app.doSearch;
-app.doSearch = function() {
-  const val = document.getElementById('home-search')?.value?.trim();
-  if (val && val.length >= 2) addToSearchHistory(val);
-  if (_origDoSearch) _origDoSearch.call(app);
-};
-
-// Render on load
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(renderSearchHistory, 500);
-});
-
-// ── 3. QR CODE PROFIL ────────────────────────────────────
-app.showQRCode = async function() {
-  const u = db.currentUser;
-  if (!u) return toast('Connectez-vous d'abord');
-  
-  const profileUrl = window.location.origin + window.location.pathname + '?pro=' + (u.id || u.uid || '');
-  
-  const container = document.getElementById('qr-canvas-container');
-  const urlEl = document.getElementById('qr-profile-url');
-  
-  if (container) {
-    container.innerHTML = '';
-    if (urlEl) urlEl.textContent = profileUrl;
-    
-    try {
-      if (typeof QRCode !== 'undefined') {
-        const canvas = document.createElement('canvas');
-        container.appendChild(canvas);
-        QRCode.toCanvas(canvas, profileUrl, { 
-          width: 200, margin: 2,
-          color: { dark: '#0052A5', light: '#FFFFFF' }
-        });
-      } else {
-        // Fallback: API QR code
-        const img = document.createElement('img');
-        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(profileUrl) + '&color=0052A5';
-        img.style.borderRadius = '8px';
-        container.appendChild(img);
-      }
-    } catch(e) {
-      const img = document.createElement('img');
-      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(profileUrl) + '&color=0052A5';
-      img.style.borderRadius = '8px';
-      container.appendChild(img);
-    }
-  }
-  showModal('qr-modal');
-};
-
-app.downloadQR = function() {
-  const canvas = document.querySelector('#qr-canvas-container canvas');
-  const img = document.querySelector('#qr-canvas-container img');
-  if (canvas) {
-    const link = document.createElement('a');
-    link.download = 'qr-code-matloub.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  } else if (img) {
-    window.open(img.src, '_blank');
-  }
-};
-
-// ── 4. LANGUE / MULTILINGUE ──────────────────────────────
-const TRANSLATIONS = {
-  fr: {
-    search_placeholder: 'Plombier, Médecin, Coiffeur...',
-    near_me: '📍 Pros près de moi',
-    subscribe: '💎 S'abonner maintenant — 1000 DA à vie',
-    login: 'Se connecter',
-    register: 'Créer un compte Pro',
-    no_pros: 'Aucun professionnel trouvé',
-    reviews: 'Avis',
-    contact: 'Contacter',
-    lang_flag: 'FR',
-  },
-  ar: {
-    search_placeholder: 'سباك، طبيب، حلاق...',
-    near_me: '📍 المحترفون بالقرب مني',
-    subscribe: '💎 اشترك الآن — 1000 دج مدى الحياة',
-    login: 'تسجيل الدخول',
-    register: 'إنشاء حساب مهني',
-    no_pros: 'لم يتم العثور على محترف',
-    reviews: 'تقييمات',
-    contact: 'اتصل',
-    lang_flag: 'عر',
-  },
-  kab: {
-    search_placeholder: 'Awalay, Tabib, ...',
-    near_me: '📍 Imeslkinen dani',
-    subscribe: '💎 Jerred tura — 1000 DA i lebda',
-    login: 'Kcem',
-    register: 'Rnu amiḍan',
-    no_pros: 'Ulac imeslki yettwaf',
-    reviews: 'Tiyersiwin',
-    contact: 'Muqel',
-    lang_flag: 'KAB',
-  }
-};
-
-let currentLang = localStorage.getItem('matloub_lang') || 'fr';
-
-function setLang(lang) {
-  currentLang = lang;
-  localStorage.setItem('matloub_lang', lang);
-  applyTranslations();
-  document.getElementById('lang-menu').style.display = 'none';
-  // RTL for Arabic
-  document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
-}
-
-function applyTranslations() {
-  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.fr;
-  // Search placeholder
-  const searchInput = document.getElementById('home-search');
-  if (searchInput) searchInput.placeholder = t.search_placeholder;
-  // Near me button
-  const nearBtn = document.getElementById('btn-near-me');
-  if (nearBtn && !nearBtn.disabled) nearBtn.innerHTML = t.near_me;
-  // Language flag
-  const flag = document.getElementById('lang-flag');
-  if (flag) flag.textContent = t.lang_flag;
-}
-
-function toggleLangMenu() {
-  const menu = document.getElementById('lang-menu');
-  if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
-// Close lang menu on outside click
-document.addEventListener('click', (e) => {
-  const sel = document.getElementById('lang-selector');
-  if (sel && !sel.contains(e.target)) {
-    const menu = document.getElementById('lang-menu');
-    if (menu) menu.style.display = 'none';
-  }
-});
-
-// Apply on load
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => { applyTranslations(); }, 300);
-});
-
-// ── 5. STATS PRO AMÉLIORÉES ───────────────────────────────
-app.loadProStats = function() {
-  const u = db.currentUser;
-  if (!u) return;
-  
-  // Vues profil depuis Firestore
-  const views = u.profileViews || 0;
-  const clicks = u.contactClicks || 0;
-  const rdvCount = db.users.filter ? 0 : 0; // From rdvs collection
-  const rating = u.rating || null;
-  
-  const statViews = document.getElementById('stat-views');
-  const statClicks = document.getElementById('stat-clicks');
-  const statRdvs = document.getElementById('stat-rdvs');
-  const statRating = document.getElementById('stat-rating');
-  
-  if (statViews) statViews.textContent = views;
-  if (statClicks) statClicks.textContent = clicks;
-  if (statRating) statRating.textContent = rating ? rating.toFixed(1) : '—';
-  
-  // Load RDVs count from Firebase
-  if (USE_FIREBASE) {
-    import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').then(({ collection, query, where, getDocs }) => {
-      getDocs(query(collection(firebaseDB, 'rdvs'), where('proId', '==', u.id || u.uid || ''))).then(snap => {
-        if (statRdvs) statRdvs.textContent = snap.size;
-      }).catch(() => {});
-    });
-  }
-};
-
-// Track profile views
-app.trackProfileView = async function(proId) {
-  if (!USE_FIREBASE || !proId) return;
-  try {
-    const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-    await updateDoc(doc(firebaseDB, 'professionals', String(proId)), { profileViews: increment(1) });
-  } catch(e) {}
-};
-
-// Track contact clicks
-app.trackContactClick = async function(proId) {
-  if (!USE_FIREBASE || !proId) return;
-  try {
-    const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-    await updateDoc(doc(firebaseDB, 'professionals', String(proId)), { contactClicks: increment(1) });
-  } catch(e) {}
-};
-
-
 </script>
 </body>
 </html>
