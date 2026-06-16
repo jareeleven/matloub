@@ -1,0 +1,67 @@
+# ╔══════════════════════════════════════════════════════════╗
+# ║  MATLOUB — Configuration MacroDroid (Android)           ║
+# ║  Détecte le SMS BaridiMob et déclenche l'automatisation ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# ─── COMMENT ÇA MARCHE ─────────────────────────────────────
+# MacroDroid = app Android GRATUITE (Play Store)
+# Elle tourne en arrière-plan sur un vieux téléphone Android
+# Quand elle voit un SMS BaridiMob → envoie le SMS à Firebase
+# Firebase génère le code → envoie WhatsApp au pro
+# TOI tu ne fais RIEN ✅
+
+# ─── TÉLÉCHARGER ───────────────────────────────────────────
+# https://play.google.com/store/apps/details?id=com.arlosoft.macrodroid
+
+# ─── MACRO À CRÉER (instructions étape par étape) ──────────
+
+MACRO_NOM: "MATLOUB — BaridiMob Auto"
+
+# == DÉCLENCHEUR (Trigger) ==================================
+DECLENCHEUR:
+  Type: "SMS Reçu"
+  Filtre_expediteur: ""          # laisser vide = tous
+  Filtre_contenu: "BaridiMob"   # mot clé dans le SMS
+  # BaridiMob envoie toujours "BaridiMob" dans ses SMS
+
+# == ACTIONS ================================================
+ACTIONS:
+
+  # Action 1 — Envoyer le SMS vers Firebase
+  - Type: "Requête HTTP"
+    URL: "https://us-central1-matloub-7914f.cloudfunctions.net/smsBaridimob"
+    Methode: "POST"
+    En_têtes:
+      Content-Type: "application/json"
+    Corps: |
+      {
+        "sms": "{sms_body}"
+      }
+    # {sms_body} = variable MacroDroid = contenu du SMS reçu
+
+  # Action 2 — Log local (optionnel, pour vérifier)
+  - Type: "Écrire dans un fichier"
+    Fichier: "matloub_log.txt"
+    Contenu: "[{date} {time}] SMS traité: {sms_body}"
+
+# == FIN MACRO ==============================================
+
+# ─── CONFIGURATION TÉLÉPHONE ───────────────────────────────
+# 1. Aller dans Paramètres Android → Batterie
+#    → Désactiver l'optimisation batterie pour MacroDroid
+# 2. Aller dans MacroDroid → Paramètres
+#    → Activer "Démarrer au boot"
+#    → Activer "Maintenir en arrière-plan"
+# 3. Laisser le téléphone branché en charge 24h/24
+
+# ─── VARIABLES MACRODROID ──────────────────────────────────
+# {sms_body}    = contenu complet du SMS
+# {sms_sender}  = numéro expéditeur
+# {date}        = date du jour
+# {time}        = heure
+
+# ─── TEST ──────────────────────────────────────────────────
+# Pour tester sans vrai virement :
+# Envoie toi-même un SMS contenant :
+# "BaridiMob : vous avez recu 1000 DA de 0550123456"
+# et vérifie que MacroDroid déclenche la macro

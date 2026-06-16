@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATLOUB — Guide Installation Firebase</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:#F0F2FF;color:#1A1040;line-height:1.6;}
+.container{max-width:860px;margin:0 auto;padding:24px 16px;}
+.header{background:linear-gradient(135deg,#1A1040,#6C3CE1);color:white;border-radius:20px;padding:32px;margin-bottom:24px;text-align:center;}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;margin-bottom:8px;}
+.subtitle{opacity:0.8;font-size:0.95rem;}
+.step-card{background:white;border-radius:18px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(108,60,225,0.08);border:1px solid rgba(108,60,225,0.1);}
+.step-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.step-num{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:white;flex-shrink:0;}
+.step-title{font-size:1.05rem;font-weight:800;}
+.step-sub{font-size:0.82rem;color:#5A5780;margin-top:2px;}
+.code-block{background:#1A1040;color:#E0DDFF;border-radius:12px;padding:16px;font-family:monospace;font-size:0.85rem;margin:12px 0;overflow-x:auto;line-height:1.7;}
+.code-block .key{color:#00D4AA;}
+.code-block .val{color:#FFB547;}
+.code-block .comment{color:#6A5F90;}
+.highlight{background:rgba(108,60,225,0.08);border-left:4px solid #6C3CE1;border-radius:0 12px 12px 0;padding:12px 16px;margin:12px 0;font-size:0.88rem;}
+.warning{background:rgba(255,107,107,0.08);border-left:4px solid #FF6B6B;border-radius:0 12px 12px 0;padding:12px 16px;margin:12px 0;font-size:0.88rem;color:#991B1B;}
+.success{background:rgba(0,212,170,0.08);border-left:4px solid #00D4AA;border-radius:0 12px 12px 0;padding:12px 16px;margin:12px 0;font-size:0.88rem;color:#065F46;}
+.btn-link{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6C3CE1,#8B5CF6);color:white;padding:10px 20px;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.88rem;margin:8px 4px 8px 0;}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:800;}
+.tag-free{background:#DCFCE7;color:#166534;}
+.tag-easy{background:#EEF2FF;color:#4F46E5;}
+.file-card{background:#F0F2FF;border-radius:12px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:12px;font-size:0.88rem;}
+.file-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6C3CE1,#8B5CF6);display:flex;align-items:center;justify-content:center;color:white;font-size:18px;flex-shrink:0;}
+.rules-code{background:#0D1117;color:#C9D1D9;border-radius:12px;padding:16px;font-family:monospace;font-size:0.8rem;line-height:1.8;overflow-x:auto;}
+.rules-code .keyword{color:#FF7B72;}
+.rules-code .string{color:#A5D6FF;}
+.rules-code .comment2{color:#8B949E;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+th{background:#F0F2FF;padding:10px 12px;text-align:left;font-weight:800;font-size:0.78rem;color:#5A5780;}
+td{padding:10px 12px;border-top:1px solid rgba(108,60,225,0.08);}
+.checklist{list-style:none;}
+.checklist li{padding:8px 0;border-bottom:1px solid rgba(108,60,225,0.06);display:flex;align-items:center;gap:10px;font-size:0.88rem;}
+.checklist li::before{content:'✅';font-size:1rem;}
+@media(max-width:600px){.container{padding:12px;}.step-card{padding:16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">🔥 MATLOUB × Firebase</div>
+    <div class="subtitle">Guide complet d'installation — De zéro à un site professionnel</div>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+      <span class="tag tag-free">100% Gratuit</span>
+      <span class="tag tag-easy" style="background:rgba(255,255,255,0.2);color:white;">⏱ 30 minutes</span>
+      <span class="tag" style="background:rgba(255,255,255,0.15);color:white;">🔒 Sécurisé</span>
+    </div>
+  </div>
+
+  <!-- FICHIERS -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#1A1040,#6C3CE1);">📁</div>
+      <div><div class="step-title">Vos fichiers MATLOUB</div><div class="step-sub">3 fichiers à configurer et héberger</div></div>
+    </div>
+    <div class="file-card"><div class="file-icon">📱</div><div><div style="font-weight:800;">MATLOUB_Firebase_App.html</div><div style="color:#5A5780;font-size:0.78rem;">L'application principale pour vos utilisateurs (clients + professionnels)</div></div></div>
+    <div class="file-card"><div class="file-icon" style="background:linear-gradient(135deg,#1A1040,#6C3CE1);">🖥️</div><div><div style="font-weight:800;">MATLOUB_Admin_Firebase.html</div><div style="color:#5A5780;font-size:0.78rem;">Votre panneau d'administration privé (vous seul y accédez)</div></div></div>
+    <div class="file-card"><div class="file-icon" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">📖</div><div><div style="font-weight:800;">Ce guide d'installation</div><div style="color:#5A5780;font-size:0.78rem;">Suivez les étapes dans l'ordre</div></div></div>
+  </div>
+
+  <!-- ÉTAPE 1 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">1</div>
+      <div><div class="step-title">Créer un compte Google Firebase</div><div class="step-sub">Gratuit — Aucune carte bancaire requise pour commencer</div></div>
+    </div>
+    <p style="margin-bottom:12px;font-size:0.88rem;color:#5A5780;">Firebase est le service de base de données de Google. Le plan gratuit (Spark) suffit largement pour démarrer MATLOUB.</p>
+    <a href="https://console.firebase.google.com" target="_blank" class="btn-link">🌐 Ouvrir Firebase Console</a>
+    <div class="highlight">
+      <strong>Plan gratuit Firebase (Spark) inclut :</strong><br>
+      • 50 000 lectures / jour<br>
+      • 20 000 écritures / jour<br>
+      • 1 GB de stockage Firestore<br>
+      • 5 GB de Firebase Storage (photos)<br>
+      • SSL/HTTPS automatique
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#6C3CE1,#8B5CF6);">2</div>
+      <div><div class="step-title">Créer un nouveau projet Firebase</div><div class="step-sub">2 minutes</div></div>
+    </div>
+    <ol style="padding-left:20px;font-size:0.88rem;display:grid;gap:8px;color:#5A5780;">
+      <li>Cliquez sur <strong style="color:#1A1040;">"Créer un projet"</strong></li>
+      <li>Nom du projet : <strong style="color:#6C3CE1;">matloub-oran</strong> (ou matloub-com)</li>
+      <li>Désactivez Google Analytics (optionnel)</li>
+      <li>Cliquez <strong style="color:#1A1040;">"Créer le projet"</strong></li>
+      <li>Attendez la création (~30 secondes)</li>
+    </ol>
+    <div class="success">✅ Votre projet Firebase est créé ! Notez bien le <strong>Project ID</strong> (ex: matloub-oran-12345)</div>
+  </div>
+
+  <!-- ÉTAPE 3 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#EC4899,#A855F7);">3</div>
+      <div><div class="step-title">Ajouter une application Web</div><div class="step-sub">Récupérer les clés de configuration</div></div>
+    </div>
+    <ol style="padding-left:20px;font-size:0.88rem;display:grid;gap:8px;color:#5A5780;">
+      <li>Dans la console Firebase, cliquez sur l'icône <strong style="color:#1A1040;">&lt;/&gt;</strong> (Web)</li>
+      <li>Nom de l'app : <strong style="color:#6C3CE1;">MATLOUB Web</strong></li>
+      <li>Ne cochez PAS "Firebase Hosting" pour l'instant</li>
+      <li>Cliquez <strong style="color:#1A1040;">"Enregistrer l'application"</strong></li>
+      <li>Firebase vous donne un bloc de code — <strong>copiez-le</strong></li>
+    </ol>
+    <p style="font-size:0.85rem;color:#5A5780;margin:12px 0;">Vous obtiendrez quelque chose comme :</p>
+    <div class="code-block">
+<span class="comment">// Votre configuration Firebase (exemple)</span>
+<span class="key">const</span> <span class="val">firebaseConfig</span> = {
+  <span class="key">apiKey</span>: <span class="val">"AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span>,
+  <span class="key">authDomain</span>: <span class="val">"matloub-oran.firebaseapp.com"</span>,
+  <span class="key">projectId</span>: <span class="val">"matloub-oran-12345"</span>,
+  <span class="key">storageBucket</span>: <span class="val">"matloub-oran-12345.appspot.com"</span>,
+  <span class="key">messagingSenderId</span>: <span class="val">"123456789012"</span>,
+  <span class="key">appId</span>: <span class="val">"1:123456789012:web:abcdef1234567890"</span>
+};
+    </div>
+    <div class="warning">⚠️ Gardez ces clés en sécurité. Ne les partagez pas publiquement sur GitHub.</div>
+  </div>
+
+  <!-- ÉTAPE 4 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#0EA5E9,#06B6D4);">4</div>
+      <div><div class="step-title">Configurer Firestore Database</div><div class="step-sub">La base de données des professionnels</div></div>
+    </div>
+    <ol style="padding-left:20px;font-size:0.88rem;display:grid;gap:8px;color:#5A5780;">
+      <li>Dans le menu gauche Firebase : <strong style="color:#1A1040;">Build → Firestore Database</strong></li>
+      <li>Cliquez <strong style="color:#1A1040;">"Créer une base de données"</strong></li>
+      <li>Choisissez <strong style="color:#6C3CE1;">"Mode production"</strong></li>
+      <li>Région : choisissez <strong style="color:#6C3CE1;">europe-west3</strong> (Frankfurt, plus proche de l'Algérie)</li>
+      <li>Cliquez "Activer"</li>
+    </ol>
+    <p style="font-size:0.88rem;font-weight:700;margin:14px 0 8px;">Configurer les règles de sécurité Firestore :</p>
+    <p style="font-size:0.82rem;color:#5A5780;margin-bottom:8px;">Cliquez sur l'onglet <strong>"Règles"</strong> et collez :</p>
+    <div class="rules-code">
+<span class="comment2">// Règles Firestore MATLOUB</span>
+<span class="keyword">rules_version</span> = <span class="string">'2'</span>;
+<span class="keyword">service</span> cloud.firestore {
+  <span class="keyword">match</span> /databases/{database}/documents {
+
+    <span class="comment2">// Professionnels — lecture publique, écriture filtrée</span>
+    <span class="keyword">match</span> /professionals/{docId} {
+      <span class="keyword">allow</span> read: <span class="keyword">if</span> <span class="keyword">true</span>;
+      <span class="keyword">allow</span> create: <span class="keyword">if</span> request.resource.data.keys().hasAll([
+        <span class="string">'name'</span>, <span class="string">'job'</span>, <span class="string">'phone'</span>, <span class="string">'status'</span>, <span class="string">'joinDate'</span>
+      ]) &amp;&amp; request.resource.data.name.size() &lt;= 100
+        &amp;&amp; request.resource.data.job.size() &lt;= 100;
+      <span class="keyword">allow</span> update: <span class="keyword">if</span> request.resource.data.diff(resource.data)
+        .affectedKeys().hasOnly([<span class="string">'status'</span>, <span class="string">'available'</span>, <span class="string">'bio'</span>,
+          <span class="string">'photos'</span>, <span class="string">'phone'</span>, <span class="string">'reviews'</span>, <span class="string">'reports'</span>,
+          <span class="string">'reportDetails'</span>, <span class="string">'noResponseReports'</span>, <span class="string">'views'</span>,
+          <span class="string">'messages'</span>, <span class="string">'updatedAt'</span>, <span class="string">'lastLogin'</span>,
+          <span class="string">'emailVerified'</span>, <span class="string">'unavailReason'</span>]);
+      <span class="keyword">allow</span> delete: <span class="keyword">if</span> <span class="keyword">false</span>; <span class="comment2">// Suppression via Admin uniquement</span>
+    }
+
+    <span class="comment2">// Trafic — écriture publique, lecture admin</span>
+    <span class="keyword">match</span> /traffic/{date} {
+      <span class="keyword">allow</span> write: <span class="keyword">if</span> <span class="keyword">true</span>;
+      <span class="keyword">allow</span> read: <span class="keyword">if</span> <span class="keyword">true</span>;
+    }
+
+    <span class="comment2">// Clients</span>
+    <span class="keyword">match</span> /clients/{docId} {
+      <span class="keyword">allow</span> read, write: <span class="keyword">if</span> <span class="keyword">true</span>;
+    }
+  }
+}
+    </div>
+    <div class="success">✅ Publiez les règles en cliquant "Publier"</div>
+  </div>
+
+  <!-- ÉTAPE 5 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#10B981,#059669);">5</div>
+      <div><div class="step-title">Configurer Firebase Storage (Photos)</div><div class="step-sub">Pour les photos de profil des professionnels</div></div>
+    </div>
+    <ol style="padding-left:20px;font-size:0.88rem;display:grid;gap:8px;color:#5A5780;">
+      <li>Menu Firebase : <strong style="color:#1A1040;">Build → Storage</strong></li>
+      <li>Cliquez "Commencer"</li>
+      <li>Choisissez "Mode production"</li>
+      <li>Même région : <strong style="color:#6C3CE1;">europe-west3</strong></li>
+    </ol>
+    <p style="font-size:0.88rem;font-weight:700;margin:14px 0 8px;">Règles Storage (onglet Règles) :</p>
+    <div class="rules-code">
+<span class="keyword">rules_version</span> = <span class="string">'2'</span>;
+<span class="keyword">service</span> firebase.storage {
+  <span class="keyword">match</span> /b/{bucket}/o {
+    <span class="keyword">match</span> /photos/{allPaths=**} {
+      <span class="keyword">allow</span> read: <span class="keyword">if</span> <span class="keyword">true</span>;
+      <span class="keyword">allow</span> write: <span class="keyword">if</span> request.resource.size &lt; 5 * 1024 * 1024
+        &amp;&amp; request.resource.contentType.matches(<span class="string">'image/.*'</span>);
+    }
+  }
+}
+    </div>
+    <div class="success">✅ Les photos seront stockées automatiquement sur Firebase Storage</div>
+  </div>
+
+  <!-- ÉTAPE 6 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#F59E0B,#D97706);">6</div>
+      <div><div class="step-title">Coller votre configuration dans les fichiers</div><div class="step-sub">La partie la plus importante !</div></div>
+    </div>
+    <p style="font-size:0.88rem;color:#5A5780;margin-bottom:12px;">Ouvrez chacun de vos 2 fichiers HTML avec un éditeur de texte (Notepad++, VSCode) et cherchez cette section :</p>
+    <div class="code-block">
+<span class="comment">// ⚠️ REMPLACEZ CES VALEURS PAR VOTRE PROPRE PROJET FIREBASE</span>
+<span class="key">const</span> <span class="val">FIREBASE_CONFIG</span> = {
+  <span class="key">apiKey</span>:            <span class="val">"VOTRE_API_KEY"</span>,           <span class="comment">← Remplacez</span>
+  <span class="key">authDomain</span>:        <span class="val">"votre-projet.firebaseapp.com"</span>, <span class="comment">← Remplacez</span>
+  <span class="key">projectId</span>:         <span class="val">"votre-projet-id"</span>,        <span class="comment">← Remplacez</span>
+  <span class="key">storageBucket</span>:     <span class="val">"votre-projet.appspot.com"</span>, <span class="comment">← Remplacez</span>
+  <span class="key">messagingSenderId</span>: <span class="val">"VOTRE_SENDER_ID"</span>,        <span class="comment">← Remplacez</span>
+  <span class="key">appId</span>:             <span class="val">"VOTRE_APP_ID"</span>             <span class="comment">← Remplacez</span>
+};
+    </div>
+    <div class="warning">⚠️ Faites cette modification dans <strong>LES DEUX fichiers</strong> : l'app principale ET le panneau admin. Ils doivent avoir exactement la même configuration.</div>
+    <div class="highlight">💡 Astuce : Utilisez Ctrl+H (Rechercher/Remplacer) dans Notepad++ pour remplacer "VOTRE_API_KEY" par votre vraie clé rapidement.</div>
+  </div>
+
+  <!-- ÉTAPE 7 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#6366F1,#4F46E5);">7</div>
+      <div><div class="step-title">Héberger vos fichiers sur un site web</div><div class="step-sub">Choisissez votre option</div></div>
+    </div>
+
+    <div style="display:grid;gap:12px;">
+      <!-- Option A -->
+      <div style="border:2px solid #00D4AA;border-radius:14px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="background:#DCFCE7;color:#166534;font-weight:800;font-size:0.78rem;padding:3px 10px;border-radius:20px;">⭐ RECOMMANDÉ — GRATUIT</span>
+        </div>
+        <div style="font-weight:800;font-size:0.95rem;margin-bottom:8px;">A) Netlify Drop (5 minutes)</div>
+        <ol style="padding-left:16px;font-size:0.85rem;color:#5A5780;display:grid;gap:5px;">
+          <li>Allez sur <strong style="color:#1A1040;">netlify.com/drop</strong></li>
+          <li>Glissez-déposez vos 2 fichiers HTML</li>
+          <li>Vous obtenez 2 URLs instantanément</li>
+          <li>Renommez dans Netlify : index.html pour l'app principale</li>
+        </ol>
+        <a href="https://netlify.com/drop" target="_blank" class="btn-link" style="margin-top:10px;display:inline-flex;">🚀 Ouvrir Netlify Drop</a>
+      </div>
+
+      <!-- Option B -->
+      <div style="border:2px solid rgba(108,60,225,0.2);border-radius:14px;padding:16px;">
+        <div style="font-weight:800;font-size:0.95rem;margin-bottom:8px;">B) Domaine propre (Hostinger)</div>
+        <p style="font-size:0.85rem;color:#5A5780;margin-bottom:10px;">Pour avoir <strong>matloub.com</strong> ou <strong>matloub.dz</strong> :</p>
+        <table>
+          <tr><th>Étape</th><th>Action</th><th>Coût</th></tr>
+          <tr><td>1</td><td>Acheter <strong>matloub.dz</strong> sur NIC.DZ</td><td>~1500 DA/an</td></tr>
+          <tr><td>2</td><td>Hébergement Hostinger Premium</td><td>~2500 DA/an</td></tr>
+          <tr><td>3</td><td>Upload fichiers via cPanel → File Manager</td><td>Inclus</td></tr>
+          <tr><td>4</td><td>Placer dans <code>public_html/</code></td><td>—</td></tr>
+        </table>
+        <div style="margin-top:10px;background:#F0F2FF;border-radius:10px;padding:12px;font-family:monospace;font-size:0.82rem;">
+          public_html/<br>
+          ├── index.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← MATLOUB_Firebase_App.html<br>
+          └── admin/<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;└── index.html &nbsp;← MATLOUB_Admin_Firebase.html
+        </div>
+        <div style="margin-top:8px;font-size:0.82rem;color:#5A5780;">
+          Résultat : <strong style="color:#6C3CE1;">https://matloub.dz</strong> → App principale<br>
+          Et : <strong style="color:#6C3CE1;">https://matloub.dz/admin</strong> → Votre panneau admin
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 8 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#DC2626,#991B1B);">8</div>
+      <div><div class="step-title">Sécuriser l'accès Admin</div><div class="step-sub">Empêcher les inconnus d'accéder à votre panneau</div></div>
+    </div>
+    <p style="font-size:0.88rem;color:#5A5780;margin-bottom:12px;">Si vous utilisez Hostinger/cPanel, protégez le dossier <code>/admin</code> avec un mot de passe htpasswd :</p>
+    <ol style="padding-left:16px;font-size:0.85rem;color:#5A5780;display:grid;gap:6px;">
+      <li>Dans cPanel → <strong>Directory Privacy</strong></li>
+      <li>Trouvez le dossier <strong>admin</strong></li>
+      <li>Cochez "Password protect this directory"</li>
+      <li>Créez un utilisateur avec un mot de passe fort</li>
+    </ol>
+    <div style="margin-top:12px;background:#F0F2FF;border-radius:12px;padding:14px;font-size:0.85rem;">
+      <div style="font-weight:800;margin-bottom:8px;">🔐 Identifiants de connexion Admin MATLOUB :</div>
+      <div style="font-family:monospace;">Login : <strong style="color:#6C3CE1;">admin</strong></div>
+      <div style="font-family:monospace;margin-top:4px;">Mot de passe : <strong style="color:#6C3CE1;">Admin@2024</strong></div>
+      <div style="margin-top:8px;color:#EF4444;font-weight:700;font-size:0.8rem;">⚠️ Changez ce mot de passe dans Paramètres → Changer mot de passe</div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST FINALE -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#00D4AA,#059669);">✓</div>
+      <div><div class="step-title">Checklist finale — Vérifiez tout</div><div class="step-sub">Avant de lancer MATLOUB au public</div></div>
+    </div>
+    <ul class="checklist">
+      <li>Projet Firebase créé avec Firestore activé</li>
+      <li>Firebase Storage activé (pour les photos)</li>
+      <li>Règles Firestore et Storage configurées</li>
+      <li>FIREBASE_CONFIG copié dans les 2 fichiers HTML</li>
+      <li>Les 2 fichiers testés localement (ouvrir dans navigateur)</li>
+      <li>La console affiche "🔥 Firebase connecté" au démarrage</li>
+      <li>Test d'inscription pro fonctionnel</li>
+      <li>Test de connexion admin fonctionnel</li>
+      <li>Fichiers uploadés sur votre hébergeur</li>
+      <li>Dossier /admin protégé par mot de passe</li>
+      <li>Mot de passe admin changé (pas Admin@2024)</li>
+      <li>URL finale testée sur mobile</li>
+    </ul>
+  </div>
+
+  <!-- STRUCTURE FIREBASE -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num" style="background:linear-gradient(135deg,#F59E0B,#F97316);">🗃️</div>
+      <div><div class="step-title">Structure de votre base de données Firebase</div><div class="step-sub">Collections Firestore créées automatiquement</div></div>
+    </div>
+    <table>
+      <tr><th>Collection</th><th>Contenu</th><th>Accès</th></tr>
+      <tr><td><code>professionals</code></td><td>Tous les profils pros (nom, métier, photos, avis, signalements...)</td><td>Lecture publique</td></tr>
+      <tr><td><code>clients</code></td><td>Comptes clients (nom, email)</td><td>Privé</td></tr>
+      <tr><td><code>traffic</code></td><td>Statistiques de visites par jour/mois/année</td><td>Admin</td></tr>
+    </table>
+    <div style="margin-top:12px;font-size:0.85rem;color:#5A5780;">Chaque professionnel inscrit crée automatiquement un document dans la collection <code>professionals</code> avec son ID Firebase unique. Vous pouvez visualiser toutes les données directement dans la console Firebase → Firestore.</div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div style="background:linear-gradient(135deg,#6C3CE1,#8B5CF6);border-radius:20px;padding:24px;text-align:center;color:white;margin-top:8px;">
+    <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">🚀 MATLOUB est prêt !</div>
+    <div style="opacity:0.85;font-size:0.88rem;margin-bottom:16px;">Une fois Firebase configuré, toutes les inscriptions des professionnels seront sauvegardées en temps réel dans votre base de données cloud. Accessibles depuis n'importe quel appareil, n'importe où dans le monde.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:14px;font-size:0.82rem;">
+      <strong>Architecture MATLOUB :</strong><br>
+      Navigateur utilisateur → Firebase Firestore (Google Cloud) → Panneau Admin<br>
+      <span style="opacity:0.7;">Données chiffrées AES-256 · Mots de passe SHA-256 · Anti-XSS · Rate Limiting</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

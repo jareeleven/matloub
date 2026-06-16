@@ -981,13 +981,23 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <div style="font-weight:900;font-size:1rem;color:#065F46;margin-bottom:4px;">🤖 Activation automatique BaridiMob</div>
       <div style="font-size:0.78rem;color:var(--text2);margin-bottom:12px;">Le système génère et envoie les codes automatiquement. Utilisez ci-dessous uniquement si besoin.</div>
       <div style="background:var(--bg);border-radius:12px;padding:12px;margin-bottom:12px;">
-        <div style="font-size:0.75rem;font-weight:700;color:var(--text3);margin-bottom:8px;">🔑 GÉNÉRER UN CODE MANUELLEMENT</div>
-        <input type="tel" id="admin-code-tel" class="input-field" placeholder="Numéro WhatsApp du pro (ex: 0550112233)"
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text3);margin-bottom:8px;">🔑 GÉNÉRER UN CODE D'ACTIVATION</div>
+        <input type="text" id="admin-code-tel" class="input-field" placeholder="Téléphone (0550...) ou Email du pro"
           style="font-size:0.9rem;margin-bottom:8px;color:var(--text) !important;-webkit-text-fill-color:var(--text);">
-        <button onclick="app.adminGenererCode()" class="btn btn-primary"
-          style="padding:12px;font-size:0.9rem;background:linear-gradient(135deg,#059669,#10B981);">
-          ⚡ Générer &amp; Envoyer par WhatsApp
-        </button>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <button onclick="app.adminGenererCode('whatsapp')" class="btn btn-primary"
+            style="flex:1;padding:10px;font-size:0.85rem;background:linear-gradient(135deg,#059669,#10B981);">
+            📱 WA
+          </button>
+          <button onclick="app.adminGenererCode('telegram')" class="btn btn-primary"
+            style="flex:1;padding:10px;font-size:0.85rem;background:linear-gradient(135deg,#0088CC,#00AAFF);">
+            ✈️ TG
+          </button>
+          <button onclick="app.adminGenererCode('copy')" class="btn btn-primary"
+            style="flex:1;padding:10px;font-size:0.85rem;background:linear-gradient(135deg,#7C3AED,#A855F7);">
+            📋 Copier
+          </button>
+        </div>
         <div id="admin-code-result" style="margin-top:10px;font-size:0.85rem;font-weight:700;text-align:center;display:none;"></div>
       </div>
       <div style="font-size:0.75rem;font-weight:700;color:var(--text3);margin-bottom:6px;">📋 CODES RÉCENTS (Firebase)</div>
@@ -1012,6 +1022,8 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <div class="admin-tab" onclick="app.switchAdminTab('pending',this)">En attente</div>
       <div class="admin-tab" onclick="app.switchAdminTab('suspended',this)">Suspendus</div>
       <div class="admin-tab" onclick="app.switchAdminTab('reports',this)">Signalés</div>
+      <div class="admin-tab" onclick="app.switchAdminTab('comptes',this)">🔐 Comptes</div>
+      <div class="admin-tab" onclick="app.switchAdminTab('expired',this)">⏰ Expirés</div>
     </div>
 
     <div class="search-wrap" style="margin-bottom:12px;">
@@ -1080,6 +1092,22 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   </div>
 </div>
 
+<!-- Modal mot de passe oublié -->
+<div id="forgot-password-modal" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:8px;">🔑 Mot de passe oublié</div>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:20px;line-height:1.5;">Entrez votre email ou téléphone — nous vous enverrons un nouveau mot de passe temporaire.</p>
+    <div class="input-group">
+      <label>Email ou Téléphone</label>
+      <input type="text" id="forgot-contact" class="input-field" placeholder="votre@email.com ou 0550...">
+    </div>
+    <div id="forgot-status" style="display:none;margin:10px 0;padding:10px;border-radius:10px;font-size:0.85rem;font-weight:700;text-align:center;"></div>
+    <button class="btn btn-primary" onclick="app.sendResetPassword()">📧 Envoyer le nouveau mot de passe</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('forgot-password-modal')">Annuler</button>
+  </div>
+</div>
+
 <div id="login-modal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -1087,6 +1115,9 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div class="input-group"><label>Email ou Téléphone</label><input type="text" id="login-user" class="input-field" placeholder="admin ou 0661..."></div>
     <div class="input-group"><label>Mot de passe</label><input type="password" id="login-pass" class="input-field" placeholder="••••••••"></div>
     <button class="btn btn-primary" onclick="app.login()">Se connecter</button>
+    <div style="text-align:center;margin-top:10px;">
+      <button onclick="closeModal('login-modal');showModal('forgot-password-modal')" style="background:none;border:none;color:var(--primary);font-size:0.85rem;cursor:pointer;font-weight:700;text-decoration:underline;">🔑 Mot de passe oublié ?</button>
+    </div>
     <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('login-modal')">Annuler</button>
   </div>
 </div>
@@ -4884,6 +4915,35 @@ const app = {
     if (adminFilter === 'pending') pros = pros.filter(u => u.status === 'pending');
     else if (adminFilter === 'suspended') pros = pros.filter(u => u.status === 'suspended' || u.status === 'banned');
     else if (adminFilter === 'reports') pros = pros.filter(u => u.reports > 0);
+    else if (adminFilter === 'expired') pros = pros.filter(u => isTrialExpired(u) && !isProSubscribed(u));
+
+    // Onglet comptes spécial
+    if (adminFilter === 'comptes') {
+      const listEl = document.getElementById('admin-users-list');
+      if (!listEl) return;
+      listEl.innerHTML = '<div style="margin-bottom:10px;padding:8px 12px;background:rgba(239,68,68,0.08);border-radius:10px;font-size:0.75rem;color:#991B1B;font-weight:700;">🔐 Zone confidentielle — Données des comptes</div>' +
+        pros.map(u => {
+          const sub = isProSubscribed(u) ? '💎 Pro Vie' : (isTrialExpired(u) ? '⛔ Expiré' : '⏳ Essai');
+          const subColor = isProSubscribed(u) ? '#0052A5' : (isTrialExpired(u) ? '#DC2626' : '#D97706');
+          return '<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--border);">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+            '<strong>' + sanitize(u.name || '') + '</strong>' +
+            '<span style="font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:20px;background:' + subColor + '22;color:' + subColor + ';">' + sub + '</span>' +
+            '</div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.75rem;">' +
+            '<div style="background:var(--bg);border-radius:8px;padding:6px;"><div style="color:var(--text3);font-size:0.65rem;margin-bottom:2px;">📧 EMAIL</div><div style="font-weight:700;word-break:break-all;">' + (u.email || u.emailMain || '—') + '</div></div>' +
+            '<div style="background:var(--bg);border-radius:8px;padding:6px;"><div style="color:var(--text3);font-size:0.65rem;margin-bottom:2px;">📱 TÉL</div><div style="font-weight:700;">' + (u.phone || u.phoneMain || '—') + '</div></div>' +
+            '<div style="background:var(--bg);border-radius:8px;padding:6px;"><div style="color:var(--text3);font-size:0.65rem;margin-bottom:2px;">🔑 MOT DE PASSE</div><div style="font-weight:700;font-family:monospace;">' + (u.password ? '••••••••' : 'Firebase Auth') + '</div></div>' +
+            '<div style="background:var(--bg);border-radius:8px;padding:6px;"><div style="color:var(--text3);font-size:0.65rem;margin-bottom:2px;">📅 INSCRIPTION</div><div style="font-weight:700;">' + new Date(u.joinDate || u.createdAt || Date.now()).toLocaleDateString('fr-FR') + '</div></div>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;margin-top:8px;">' +
+            '<button onclick="document.getElementById('admin-code-tel').value='' + (u.phone || '') + '';app.adminGenererCode('copy')" class="btn btn-primary" style="flex:1;padding:6px;font-size:0.75rem;">🔑 Générer Code</button>' +
+            '<button onclick="app.adminResetPassword('' + (u.email || '') + '')" class="btn btn-ghost" style="flex:1;padding:6px;font-size:0.75rem;">🔐 Reset MDP</button>' +
+            '</div>' +
+            '</div>';
+        }).join('');
+      return;
+    }
 
     if (q) pros = pros.filter(u => u.name.toLowerCase().includes(q) || u.job.toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q));
 
@@ -5212,6 +5272,8 @@ function addNotif(msg) {
 
   // 5. Render home avec données locales en premier (rapide)
   app.renderHomePros();
+})();
+
 
 // ════════════════════════════════════════════════════════
 // 🆕 NOUVELLES FONCTIONNALITÉS v7
@@ -5449,7 +5511,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   console.log(`%c🔐 MATLOUB v6 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256 + Rate Limiting`, 'color:#0052A5;font-weight:bold;font-size:13px;');
-})();
 </script>
 
 <!-- 📱 PWA Install Banner -->
