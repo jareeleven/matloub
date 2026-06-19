@@ -4937,8 +4937,8 @@ const app = {
             '<div style="background:var(--bg);border-radius:8px;padding:6px;"><div style="color:var(--text3);font-size:0.65rem;margin-bottom:2px;">📅 INSCRIPTION</div><div style="font-weight:700;">' + new Date(u.joinDate || u.createdAt || Date.now()).toLocaleDateString('fr-FR') + '</div></div>' +
             '</div>' +
             '<div style="display:flex;gap:6px;margin-top:8px;">' +
-            '<button onclick="document.getElementById('admin-code-tel').value='' + (u.phone || '') + '';app.adminGenererCode('copy')" class="btn btn-primary" style="flex:1;padding:6px;font-size:0.75rem;">🔑 Générer Code</button>' +
-            '<button onclick="app.adminResetPassword('' + (u.email || '') + '')" class="btn btn-ghost" style="flex:1;padding:6px;font-size:0.75rem;">🔐 Reset MDP</button>' +
+            '<button onclick="window.__tel=\'' + (u.phone || '') + '\';document.getElementById(\'admin-code-tel\').value=window.__tel;app.adminGenererCode(\'copy\')" class="btn btn-primary" style="flex:1;padding:6px;font-size:0.75rem;">🔑 Générer Code</button>' +
+            '<button onclick="app.adminResetPassword(\'' + (u.email || '') + '\')" class="btn btn-ghost" style="flex:1;padding:6px;font-size:0.75rem;">🔐 Reset MDP</button>' +
             '</div>' +
             '</div>';
         }).join('');
@@ -5352,7 +5352,7 @@ function renderSrchHist() {
 // ── QR CODE ──────────────────────────────────────────────
 app.showQRCode = function() {
   const u = db.currentUser;
-  if (!u) { toast('Connectez-vous d'abord'); return; }
+  if (!u) { toast("Connectez-vous d'abord"); return; }
   const url = location.origin + location.pathname + '?pro=' + encodeURIComponent(u.fbId || u.id || '');
   const wrap = document.getElementById('qr-canvas-wrap');
   const urlEl = document.getElementById('qr-url-text');
