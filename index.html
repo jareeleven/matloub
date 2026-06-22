@@ -417,7 +417,10 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
 /* ── DAIRA DROPDOWN ── */
 .location-dropdowns{display:flex;gap:8px;margin-bottom:16px;}
-.location-dropdowns select{flex:1;}
+.location-dropdowns select{flex:1;min-width:0;font-size:0.82rem;padding:11px 8px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;}
+@media(max-width:380px){
+  .location-dropdowns select{font-size:0.74rem;padding:10px 4px;}
+}
 
 /* ── SUPER ADMIN ── */
 .sa-header{background:linear-gradient(135deg,#0A1F44,#0052A5);color:white;border-radius:var(--r);padding:20px;margin-bottom:20px;}
@@ -2676,12 +2679,14 @@ function initUI() {
     </div>`).join('');
 
   // Remplir Daïras dans tous les selects
+  const tCur = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
   ['home-daira','exp-daira','reg-daira','edit-daira'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
     const isFilter = id.startsWith('home') || id.startsWith('exp');
     if (isFilter) {
-      sel.innerHTML = '<option value="">📍 Toute Wilaya</option>';
+      const lbl = tCur.all_wilaya || '📍 Toute Wilaya';
+      sel.innerHTML = `<option value="" data-i18n="all_wilaya">${lbl}</option>`;
       oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
         sel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
       });
@@ -2781,7 +2786,13 @@ function fillCommunes(prefix, dairaId) {
   const csel = document.getElementById(suffixes[prefix] || prefix+'-commune');
   if (!csel) return;
   const isAll = prefix==='home'||prefix==='exp';
-  csel.innerHTML = isAll ? '<option value="">Toutes communes</option>' : '<option value="">Choisir la Commune</option>';
+  const tCur3 = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
+  if (isAll) {
+    const lblAll = tCur3.all_communes || 'Toutes communes';
+    csel.innerHTML = `<option value="" data-i18n="all_communes">${lblAll}</option>`;
+  } else {
+    csel.innerHTML = '<option value="">Choisir la Commune</option>';
+  }
   const list = dairaId ? (oranData.communes[dairaId] || []) : (isAll ? oranData.allCommunes : []);
   list.forEach(c => csel.innerHTML += `<option value="${c}">${c}</option>`);
 }
@@ -3083,7 +3094,8 @@ const app = {
 
     const container = document.getElementById('explore-pros-list');
     if (list.length === 0) {
-      container.innerHTML = `<div class="empty-state"><span class="material-icons-round">search_off</span><h3>Aucun professionnel trouvé</h3><p>Modifiez vos filtres</p></div>`;
+      const tEmpty = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
+      container.innerHTML = `<div class="empty-state"><span class="material-icons-round">search_off</span><h3>${tEmpty.no_pro_found || 'Aucun professionnel trouvé'}</h3><p>${tEmpty.modify_filters || 'Modifiez vos filtres'}</p></div>`;
     } else {
       container.innerHTML = list.map(u => createProCard(u)).join('');
     }
@@ -4989,7 +5001,8 @@ const app = {
 
     const list = document.getElementById('admin-users-list');
     if (pros.length === 0) {
-      list.innerHTML = `<div class="empty-state"><span class="material-icons-round">person_search</span><h3>Aucun professionnel</h3></div>`;
+      const tEmpty2 = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
+      list.innerHTML = `<div class="empty-state"><span class="material-icons-round">person_search</span><h3>${tEmpty2.no_pro || 'Aucun professionnel'}</h3></div>`;
       return;
     }
 
@@ -5316,7 +5329,9 @@ function addNotif(msg) {
   // 6. Pre-fill explore dairas
   const expSel = document.getElementById('exp-daira');
   if (expSel) {
-    expSel.innerHTML = '<option value="">📍 Toute Daïra</option>';
+    const tCur2 = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
+    const lblDaira = tCur2.all_daira || '📍 Toute Daïra';
+    expSel.innerHTML = `<option value="" data-i18n="all_daira">${lblDaira}</option>`;
     oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
       expSel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
     });
@@ -5521,6 +5536,10 @@ const I18N = {
     bio_label: 'Bio / Description',
     bio_ph: 'Décrivez vos services...',
     availability: 'Disponibilité',
+    all_communes: 'Toutes communes',
+    no_pro_found: 'Aucun professionnel trouvé',
+    modify_filters: 'Modifiez vos filtres',
+    no_pro: 'Aucun professionnel',
   },
   ar: {
     flag: 'عر', dir: 'rtl',
@@ -5566,6 +5585,10 @@ const I18N = {
     bio_label: 'نبذة / وصف',
     bio_ph: 'صف خدماتك...',
     availability: 'التوفر',
+    all_communes: 'كل البلديات',
+    no_pro_found: 'لم يتم العثور على محترف',
+    modify_filters: 'عدّل عوامل التصفية',
+    no_pro: 'لا يوجد محترف',
   },
   kab: {
     flag: 'KAB', dir: 'ltr',
@@ -5611,6 +5634,10 @@ const I18N = {
     bio_label: 'Awennit',
     bio_ph: 'Glem ameslay-ik...',
     availability: 'Tella',
+    all_communes: 'Akk tagmamin',
+    no_pro_found: 'Ulac imeslki yettwaf',
+    modify_filters: 'Senfel ismitiwen-ik',
+    no_pro: 'Ulac amusnaw',
   }
 };
 let _lang = localStorage.getItem('matloub_lang') || 'fr';
