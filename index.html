@@ -12,6 +12,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MATLOUB">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 <meta property="og:title" content="MATLOUB — Professionnels Oran" id="og-title">
 <meta property="og:description" content="Trouvez un plombier, médecin, électricien... à Oran" id="og-desc">
 <meta property="og:type" content="website">
@@ -239,6 +245,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);backd
 .cat-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform 0.2s;}
 .cat-item:active{transform:scale(0.94);}
 .cat-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.cat-icon svg{width:30px;height:30px;}
 .cat-icon span{font-size:22px;}
 .cat-label{font-size:0.65rem;font-weight:700;text-align:center;color:var(--text2);line-height:1.2;}
 
@@ -504,7 +511,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
         class="theme-toggle" title="Langue" style="font-size:0.78rem;font-weight:900;letter-spacing:0.5px;">
         <span id="lang-flag-btn">FR</span>
       </button>
-      <div id="lang-dd" style="display:none;position:absolute;top:46px;right:0;background:var(--card);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:9999;min-width:150px;border:1px solid var(--border);overflow:hidden;">
+      <div id="lang-dd" style="display:none;position:absolute;top:46px;right:0;background:var(--surface);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:9999;min-width:150px;border:1px solid var(--border);overflow:hidden;">
         <button onclick="setLang('fr');document.getElementById('lang-dd').style.display='none';" style="width:100%;padding:11px 14px;background:none;border:none;border-bottom:1px solid var(--border);text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);">🇫🇷 Français</button>
         <button onclick="setLang('ar');document.getElementById('lang-dd').style.display='none';" style="width:100%;padding:11px 14px;background:none;border:none;border-bottom:1px solid var(--border);text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);">🇩🇿 العربية</button>
         <button onclick="setLang('kab');document.getElementById('lang-dd').style.display='none';" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;cursor:pointer;font-size:0.85rem;font-weight:700;color:var(--text);">🏔️ Tamazight</button>
@@ -527,8 +534,8 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
   <!-- Hero -->
   <div class="hero-banner">
-    <div class="hero-title">Trouvez un Pro à Oran 🔍</div>
-    <div class="hero-sub">Plombier, Médecin, Électricien... à portée de main</div>
+    <div class="hero-title" data-i18n="hero_title">Trouvez un Pro à Oran 🔍</div>
+    <div class="hero-sub" data-i18n="hero_sub">Plombier, Médecin, Électricien... à portée de main</div>
     <div class="hero-count"><span class="material-icons-round" style="font-size:16px;">verified</span><span id="hero-count-text">0 professionnels vérifiés</span></div>
   </div>
 
@@ -536,7 +543,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   <div id="srch-hist" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:6px;padding:0 2px;"></div>
   <div class="search-wrap" style="position:relative;">
     <span class="material-icons-round search-icon-l">search</span>
-    <input type="text" class="search-input" id="home-search" placeholder="Plombier, Médecin, Coiffeur..."
+    <input type="text" class="search-input" id="home-search" data-i18n-ph="search_ph" placeholder="Plombier, Médecin, Coiffeur..."
       oninput="app.onSearch(this.value); showSuggestions(this.value, 'home-suggestions')"
       onkeydown="if(event.key==='Enter'){hideSuggestions('home-suggestions');app.doSearch();}"
       onfocus="showSuggestions(this.value,'home-suggestions')"
@@ -546,31 +553,32 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div class="suggestions-box" id="home-suggestions" style="display:none;"></div>
   </div>
 
+  <button onclick="app.prosPrezDeMoi(this)" id="btn-near-me"
+    style="width:100%;padding:10px;background:linear-gradient(135deg,#059669,#10B981);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.88rem;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
+    📍 Pros près de moi
+  </button>
+
   <!-- Filtres Daïra / Commune -->
   <div class="location-dropdowns">
-    <button onclick="app.prosPrezDeMoi(this)" id="btn-near-me"
-      style="width:100%;padding:10px;background:linear-gradient(135deg,#059669,#10B981);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.88rem;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      📍 Pros près de moi
-    </button>
     <select class="input-field" id="home-daira" onchange="app.onDairaChange('home'); app.renderHomePros();" style="margin-bottom:0;">
-      <option value="">📍 Toute Wilaya</option>
+      <option value="" data-i18n="all_wilaya">📍 Toute Wilaya</option>
     </select>
     <select class="input-field" id="home-commune" onchange="app.renderHomePros();" style="margin-bottom:0;">
-      <option value="">Commune</option>
+      <option value="" data-i18n="commune">Commune</option>
     </select>
   </div>
 
   <!-- Catégories -->
   <div class="section-header">
-    <div class="section-title">Catégories</div>
-    <div class="section-link" onclick="app.showAllCats()">Voir tout</div>
+    <div class="section-title" data-i18n="categories">Catégories</div>
+    <div class="section-link" onclick="app.showAllCats()" data-i18n="see_all">Voir tout</div>
   </div>
   <div class="cat-grid" id="cat-grid"></div>
 
   <!-- Professionnels -->
   <div class="section-header">
-    <div class="section-title">À proximité</div>
-    <div class="section-link" onclick="navTo('explore')">Explorer</div>
+    <div class="section-title" data-i18n="nearby">À proximité</div>
+    <div class="section-link" onclick="navTo('explore')" data-i18n="nav_explore">Explorer</div>
   </div>
   <div id="home-pros-list"></div>
 
@@ -578,7 +586,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
 <!-- ══════════════════════ PAGE EXPLORER ══════════════════════ -->
 <div id="page-explore" class="page">
-  <div class="section-title" style="margin-bottom:14px;font-size:1.1rem;">🔎 Explorer</div>
+  <div class="section-title" style="margin-bottom:14px;font-size:1.1rem;" data-i18n="explore">🔎 Explorer</div>
 
   <div class="search-wrap" style="position:relative;">
     <span class="material-icons-round search-icon-l">search</span>
@@ -589,20 +597,20 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
   <div class="location-dropdowns">
     <select class="input-field" id="exp-daira" onchange="app.onDairaChange('exp'); app.renderExplorePros();" style="margin-bottom:0;">
-      <option value="">📍 Toute Daïra</option>
+      <option value="" data-i18n="all_daira">📍 Toute Daïra</option>
     </select>
     <select class="input-field" id="exp-commune" onchange="app.renderExplorePros();" style="margin-bottom:0;">
-      <option value="">Commune</option>
+      <option value="" data-i18n="commune">Commune</option>
     </select>
   </div>
 
   <!-- Toggle Vue Liste / Carte -->
   <div style="display:flex;gap:8px;margin-bottom:12px;">
     <button id="btn-view-list" onclick="app.switchView('list')" style="flex:1;padding:8px;border-radius:10px;border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span class="material-icons-round" style="font-size:16px;">view_list</span> Liste
+      <span class="material-icons-round" style="font-size:16px;">view_list</span> <span data-i18n="view_list">Liste</span>
     </button>
     <button id="btn-view-map" onclick="app.switchView('map')" style="flex:1;padding:8px;border-radius:10px;border:2px solid var(--primary);background:white;color:var(--primary);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span class="material-icons-round" style="font-size:16px;">map</span> Carte
+      <span class="material-icons-round" style="font-size:16px;">map</span> <span data-i18n="view_map">Carte</span>
     </button>
   </div>
 
@@ -617,15 +625,15 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div id="chips-fade-left" style="position:absolute;left:0;top:0;bottom:8px;width:28px;background:linear-gradient(to right,var(--bg),transparent);z-index:5;pointer-events:none;display:none;border-radius:50px 0 0 50px;"></div>
     <div id="chips-fade-right" style="position:absolute;right:0;top:0;bottom:8px;width:28px;background:linear-gradient(to left,var(--bg),transparent);z-index:5;pointer-events:none;border-radius:0 50px 50px 0;"></div>
     <div class="chips-scroll" id="explore-cat-chips" onscroll="updateChipsArrows()">
-      <div class="chip active" onclick="app.selectExploreCat('', this)">Tous</div>
+      <div class="chip active" onclick="app.selectExploreCat('', this)" data-i18n="all_m">Tous</div>
     </div>
   </div>
 
   <div class="filter-bar">
     <select class="filter-select" id="exp-sort" onchange="app.renderExplorePros()">
-      <option value="rating">⭐ Mieux notés</option>
-      <option value="new">🆕 Plus récents</option>
-      <option value="reviews">💬 Plus d'avis</option>
+      <option value="rating" data-i18n="best_rated">⭐ Mieux notés</option>
+      <option value="new" data-i18n="most_recent">🆕 Plus récents</option>
+      <option value="reviews" data-i18n="most_reviews">💬 Plus d'avis</option>
     </select>
   </div>
 
@@ -649,7 +657,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
 <!-- ══════════════════════ PAGE FAVORIS ══════════════════════ -->
 <div id="page-favorites" class="page">
-  <div class="section-title" style="margin-bottom:16px;font-size:1.1rem;">❤️ Mes Favoris</div>
+  <div class="section-title" style="margin-bottom:16px;font-size:1.1rem;" data-i18n="my_favorites">❤️ Mes Favoris</div>
   <div id="favorites-list"></div>
 </div>
 
@@ -662,11 +670,11 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <div style="width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
         <span class="material-icons-round" style="font-size:40px;color:white;">person</span>
       </div>
-      <h2 style="font-size:1.2rem;margin-bottom:6px;">Bienvenue sur MATLOUB</h2>
-      <p style="color:var(--text2);font-size:0.85rem;margin-bottom:28px;">Connectez-vous ou inscrivez-vous</p>
+      <h2 style="font-size:1.2rem;margin-bottom:6px;" data-i18n="welcome_matloub">Bienvenue sur MATLOUB</h2>
+      <p style="color:var(--text2);font-size:0.85rem;margin-bottom:28px;" data-i18n="login_or_register">Connectez-vous ou inscrivez-vous</p>
     </div>
-    <button class="btn btn-primary" style="margin-bottom:12px;" onclick="showModal('login-modal')">Se connecter</button>
-    <button class="btn btn-outline" onclick="showModal('register-type-modal')">Inscription Professionnel</button>
+    <button class="btn btn-primary" style="margin-bottom:12px;" onclick="showModal('login-modal')" data-i18n="login_btn">Se connecter</button>
+    <button class="btn btn-outline" onclick="showModal('register-type-modal')" data-i18n="register_pro">Inscription Professionnel</button>
 
     <!-- Conditions d'abonnement -->
     <div class="card" style="margin-top:20px;background:linear-gradient(135deg,rgba(0,82,165,0.08),rgba(168,85,247,0.05));border:1px solid rgba(0,82,165,0.2);">
@@ -675,7 +683,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
         <!-- Plan Essai -->
         <div style="flex:1;background:var(--surface);border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;">
           <div style="font-size:1.3rem;margin-bottom:4px;">🆓</div>
-          <div style="font-weight:800;font-size:0.85rem;">Essai Gratuit</div>
+          <div style="font-weight:800;font-size:0.85rem;" data-i18n="free_trial">Essai Gratuit</div>
           <div style="font-size:1.2rem;font-weight:900;color:#10B981;margin:4px 0;">0 DA</div>
           <div style="font-size:0.72rem;color:var(--text3);margin-bottom:8px;">30 jours</div>
           <div style="font-size:0.72rem;color:var(--text2);text-align:left;line-height:1.7;">
@@ -690,7 +698,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
         <div style="flex:1;background:var(--primary);border-radius:12px;padding:12px;text-align:center;position:relative;">
           <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F59E0B;color:white;padding:2px 10px;border-radius:20px;font-size:0.65rem;font-weight:800;white-space:nowrap;">⭐ RECOMMANDÉ</div>
           <div style="font-size:1.3rem;margin-bottom:4px;margin-top:8px;">💎</div>
-          <div style="font-weight:800;font-size:0.85rem;color:white;">Pro à Vie</div>
+          <div style="font-weight:800;font-size:0.85rem;color:white;" data-i18n="pro_lifetime_label">Pro à Vie</div>
           <div style="font-size:1.2rem;font-weight:900;color:white;margin:4px 0;">1000 DA</div>
           <div style="font-size:0.72rem;color:rgba(255,255,255,0.8);margin-bottom:8px;">Paiement unique</div>
           <div style="font-size:0.72rem;color:rgba(255,255,255,0.9);text-align:left;line-height:1.7;">
@@ -713,20 +721,20 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div class="pro-hero" style="background:linear-gradient(135deg,#0EA5E9,#06B6D4);">
       <div class="pro-hero-avatar" id="client-avatar-hero"><span class="material-icons-round" style="font-size:32px;">person</span></div>
       <div style="font-size:1.1rem;font-weight:900;" id="client-name-hero">Client</div>
-      <div style="opacity:0.8;font-size:0.82rem;">Membre Oran</div>
+      <div style="opacity:0.8;font-size:0.82rem;" data-i18n="member_oran">Membre Oran</div>
       <div style="display:flex;gap:10px;margin-top:16px;position:relative;z-index:1;">
-        <button class="btn" style="flex:1;background:rgba(255,255,255,0.2);color:white;padding:10px;" onclick="app.logout()">Déconnexion</button>
+        <button class="btn" style="flex:1;background:rgba(255,255,255,0.2);color:white;padding:10px;" onclick="app.logout()" data-i18n="logout">Déconnexion</button>
       </div>
     </div>
-    <div class="section-title" style="margin-bottom:12px;">Mes activités</div>
+    <div class="section-title" style="margin-bottom:12px;" data-i18n="my_activities">Mes activités</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div class="card-sm text-center" onclick="navTo('favorites')">
         <span class="material-icons-round" style="font-size:28px;color:var(--accent2);">favorite</span>
-        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;">Favoris</div>
+        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;" data-i18n="nav_favorites">Favoris</div>
       </div>
       <div class="card-sm text-center" onclick="navTo('explore')">
         <span class="material-icons-round" style="font-size:28px;color:var(--primary);">manage_search</span>
-        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;">Explorer</div>
+        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;" data-i18n="nav_explore">Explorer</div>
       </div>
     </div>
   </div>
@@ -755,22 +763,22 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     </div>
 
     <!-- Panel notifications -->
-    <div id="notif-panel" style="display:none;background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--border);">
+    <div id="notif-panel" style="display:none;background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--border);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <div style="font-weight:800;">🔔 Notifications</div>
-        <button onclick="app.clearNotifs()" style="font-size:0.75rem;color:var(--text3);background:none;border:none;cursor:pointer;">Tout effacer</button>
+        <button onclick="app.clearNotifs()" style="font-size:0.75rem;color:var(--text3);background:none;border:none;cursor:pointer;" data-i18n="clear_all">Tout effacer</button>
       </div>
-      <div id="notif-list" style="font-size:0.85rem;color:var(--text2);">Aucune notification</div>
+      <div id="notif-list" style="font-size:0.85rem;color:var(--text2);" data-i18n="no_notifications">Aucune notification</div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="showProTab('edit',this)" id="tab-btn-edit">Mon Profil</button>
-      <button class="tab-btn" onclick="showProTab('stats',this)" id="tab-btn-stats">Statistiques</button>
-      <button class="tab-btn" onclick="showProTab('reviews',this)" id="tab-btn-reviews">Avis</button>
+      <button class="tab-btn active" onclick="showProTab('edit',this)" id="tab-btn-edit" data-i18n="tab_profile">Mon Profil</button>
+      <button class="tab-btn" onclick="showProTab('stats',this)" id="tab-btn-stats" data-i18n="tab_stats">Statistiques</button>
+      <button class="tab-btn" onclick="showProTab('reviews',this)" id="tab-btn-reviews" data-i18n="tab_reviews">Avis</button>
       <button class="tab-btn" onclick="showProTab('rdvs',this);app.loadProRdvs()" id="tab-btn-rdvs">
-        📅 RDV <span id="rdv-tab-badge" style="display:none;background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;font-weight:900;margin-left:3px;">0</span>
+        📅 <span data-i18n="tab_rdv">RDV</span> <span id="rdv-tab-badge" style="display:none;background:#EF4444;color:white;border-radius:50%;padding:1px 6px;font-size:0.7rem;font-weight:900;margin-left:3px;">0</span>
       </button>
-      <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 Abonnement</button>
-      <button class="tab-btn" onclick="showProTab('parrainage',this);app.renderParrainageTab()">🎁 Parrainage</button>
+      <button class="tab-btn" onclick="showProTab('abonnement',this)">💎 <span data-i18n="tab_subscription">Abonnement</span></button>
+      <button class="tab-btn" onclick="showProTab('parrainage',this);app.renderParrainageTab()">🎁 <span data-i18n="tab_referral">Parrainage</span></button>
     </div>
     <!-- Indicateur scroll tabs -->
     <div class="tabs-scroll-hint" id="tabs-scroll-hint">
@@ -795,15 +803,15 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
           <label>Commune</label>
           <select id="edit-commune" class="input-field"></select>
         </div>
-        <div class="input-group"><label>Bio / Description</label>
-          <textarea id="edit-bio" class="input-field" rows="3" placeholder="Décrivez vos services..."></textarea>
+        <div class="input-group"><label data-i18n="bio_label">Bio / Description</label>
+          <textarea id="edit-bio" class="input-field" rows="3" data-i18n-ph="bio_ph" placeholder="Décrivez vos services..."></textarea>
         </div>
 
         <!-- Disponibilité -->
         <div style="background:var(--bg);border-radius:14px;padding:14px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <div style="font-weight:800;font-size:0.9rem;">🟢 Disponibilité</div>
+              <div style="font-weight:800;font-size:0.9rem;">🟢 <span data-i18n="availability">Disponibilité</span></div>
               <div style="font-size:0.78rem;color:var(--text3);margin-top:3px;" id="avail-subtitle">Je suis disponible pour les clients</div>
             </div>
             <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;">
@@ -1062,16 +1070,16 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
 <nav class="bottom-nav">
   <button class="nav-item active" id="nav-home" onclick="navTo('home',this)">
-    <span class="material-icons-round">home_filled</span>Accueil
+    <span class="material-icons-round">home_filled</span><span data-i18n="nav_home">Accueil</span>
   </button>
   <button class="nav-item" id="nav-explore" onclick="navTo('explore',this)">
-    <span class="material-icons-round">manage_search</span>Explorer
+    <span class="material-icons-round">manage_search</span><span data-i18n="nav_explore">Explorer</span>
   </button>
   <button class="nav-item" id="nav-favorites" onclick="navTo('favorites',this)">
-    <span class="material-icons-round">favorite_border</span>Favoris
+    <span class="material-icons-round">favorite_border</span><span data-i18n="nav_favorites">Favoris</span>
   </button>
   <button class="nav-item" id="nav-profile" onclick="navTo('profile',this)">
-    <span class="material-icons-round">person_outline</span>Profil
+    <span class="material-icons-round">person_outline</span><span data-i18n="nav_profile">Profil</span>
   </button>
 </nav>
 
@@ -1372,7 +1380,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div id="notif-list">
       <div class="empty-state" style="padding:20px 0;">
         <span class="material-icons-round">notifications_none</span>
-        <h3>Aucune notification</h3>
+        <h3 data-i18n="no_notifications">Aucune notification</h3>
       </div>
     </div>
     <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeModal('notif-modal')">Fermer</button>
@@ -1658,27 +1666,57 @@ const oranData = {
 //  CATÉGORIES (20 catégories)
 // ────────────────────────────────────────────
 const categories = [
-  {id:"plombier",   name:"Plombier",       icon:"🔧",  color:"#F59E0B"},
-  {id:"elec",       name:"Électricien",    icon:"⚡",  color:"#3B82F6"},
-  {id:"med",        name:"Médecin",        icon:"🏥",  color:"#EF4444"},
-  {id:"menuisier",  name:"Menuisier",      icon:"🪵",  color:"#D97706"},
-  {id:"dev",        name:"Informatique",   icon:"💻",  color:"#8B5CF6"},
-  {id:"coiffure",   name:"Coiffure",       icon:"✂️",  color:"#EC4899"},
-  {id:"mecano",     name:"Mécanicien",     icon:"🚗",  color:"#6366F1"},
-  {id:"clim",       name:"Climatisation",  icon:"❄️",  color:"#0EA5E9"},
-  {id:"mason",      name:"Maçon",          icon:"🧱",  color:"#92400E"},
-  {id:"peintre",    name:"Peintre",        icon:"🎨",  color:"#10B981"},
-  {id:"serrurier",  name:"Serrurier",      icon:"🔐",  color:"#64748B"},
-  {id:"vitrier",    name:"Vitrier",        icon:"🪟",  color:"#06B6D4"},
-  {id:"deco",       name:"Décoration",     icon:"🛋️",  color:"#F472B6"},
-  {id:"jardin",     name:"Jardinage",      icon:"🌿",  color:"#22C55E"},
-  {id:"photo",      name:"Photographe",    icon:"📸",  color:"#0080D6"},
-  {id:"avocat",     name:"Avocat",         icon:"⚖️",  color:"#DC2626"},
-  {id:"transport",  name:"Transport",      icon:"🚚",  color:"#EA580C"},
-  {id:"nettoyage",  name:"Nettoyage",      icon:"🧹",  color:"#14B8A6"},
-  {id:"cuisine",    name:"Cuisinier",      icon:"👨‍🍳",  color:"#F97316"},
-  {id:"sante",      name:"Santé",          icon:"💊",  color:"#BE185D"}
+  {id:"plombier",   name:"Plombier",       nameAr:"سباك",          nameKab:"Anaẓur n waman",  color:"#F59E0B",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 8L56 20L48 28L36 16L44 8Z" fill="#F59E0B"/><path d="M36 16L8 44L8 56L20 56L48 28L36 16Z" fill="#FBBF24"/><circle cx="14" cy="50" r="3" fill="#FFF"/><path d="M40 12L52 24" stroke="#FFF" stroke-width="2" stroke-linecap="round"/></svg>'},
+  {id:"elec",       name:"Électricien",    nameAr:"كهربائي",       nameKab:"Akahraban",       color:"#3B82F6",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M36 4L14 34H26L20 60L48 26H34L36 4Z" fill="#3B82F6"/></svg>'},
+  {id:"med",        name:"Médecin",        nameAr:"طبيب",          nameKab:"Ǔdwa",            color:"#EF4444",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 56C32 56 10 42 10 24C10 14 17 8 24 8C28 8 32 11 32 11C32 11 36 8 40 8C47 8 54 14 54 24C54 42 32 56 32 56Z" fill="#EF4444"/><rect x="28" y="20" width="8" height="20" rx="2" fill="white"/><rect x="22" y="26" width="20" height="8" rx="2" fill="white"/></svg>'},
+  {id:"menuisier",  name:"Menuisier",      nameAr:"نجار",          nameKab:"Anejjar",         color:"#D97706",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="28" width="52" height="8" rx="2" fill="#D97706" transform="rotate(-15 32 32)"/><circle cx="48" cy="14" r="6" fill="#92400E"/><path d="M10 50L18 42" stroke="#92400E" stroke-width="4" stroke-linecap="round"/></svg>'},
+  {id:"dev",        name:"Informatique",   nameAr:"معلوماتي",      nameKab:"Aselkim",         color:"#8B5CF6",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="48" height="32" rx="3" fill="#8B5CF6"/><rect x="13" y="17" width="38" height="22" rx="1" fill="#1E1B4B"/><rect x="20" y="48" width="24" height="4" rx="2" fill="#6D28D9"/><rect x="14" y="44" width="36" height="4" fill="#A78BFA"/></svg>'},
+  {id:"coiffure",   name:"Coiffure",       nameAr:"حلاق",          nameKab:"Amjjad",          color:"#EC4899",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="44" r="8" fill="none" stroke="#EC4899" stroke-width="4"/><circle cx="18" cy="20" r="8" fill="none" stroke="#EC4899" stroke-width="4"/><path d="M24 24L52 52M24 40L52 12" stroke="#EC4899" stroke-width="4" stroke-linecap="round"/></svg>'},
+  {id:"mecano",     name:"Mécanicien",     nameAr:"ميكانيكي",      nameKab:"Amikanik",        color:"#6366F1",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 38L14 24C15 21 18 19 21 19H43C46 19 49 21 50 24L56 38V50C56 52 54 54 52 54H48C46 54 44 52 44 50V48H20V50C20 52 18 54 16 54H12C10 54 8 52 8 50V38Z" fill="#6366F1"/><circle cx="18" cy="42" r="5" fill="#312E81"/><circle cx="46" cy="42" r="5" fill="#312E81"/><rect x="14" y="24" width="36" height="10" fill="#A5B4FC"/></svg>'},
+  {id:"clim",       name:"Climatisation",  nameAr:"تكييف",         nameKab:"Aẓemẓi",          color:"#0EA5E9",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="20" width="48" height="16" rx="6" fill="#0EA5E9"/><path d="M32 40V56M24 48L32 56L40 48M16 40C16 44 18 47 22 48M48 40C48 44 46 47 42 48" stroke="#7DD3FC" stroke-width="3" stroke-linecap="round"/></svg>'},
+  {id:"mason",      name:"Maçon",          nameAr:"بنّاء",          nameKab:"Abennay",         color:"#92400E",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="36" width="14" height="14" fill="#92400E"/><rect x="26" y="36" width="14" height="14" fill="#B45309"/><rect x="42" y="36" width="14" height="14" fill="#92400E"/><rect x="18" y="22" width="14" height="14" fill="#B45309"/><rect x="34" y="22" width="14" height="14" fill="#92400E"/><rect x="26" y="8" width="14" height="14" fill="#B45309"/></svg>'},
+  {id:"peintre",    name:"Peintre",        nameAr:"صباغ",          nameKab:"Aneqqas",         color:"#10B981",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="44" width="48" height="8" rx="2" fill="#10B981"/><path d="M16 44L20 16C20 12 24 10 28 10H36C40 10 44 12 44 16L48 44" stroke="#059669" stroke-width="4" fill="none"/><circle cx="32" cy="16" r="6" fill="#34D399"/></svg>'},
+  {id:"serrurier",  name:"Serrurier",      nameAr:"حداد أقفال",     nameKab:"Amesnay n tsura", color:"#64748B",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="14" fill="none" stroke="#64748B" stroke-width="6"/><rect x="28" y="32" width="8" height="26" rx="2" fill="#64748B" transform="rotate(35 32 45)"/><rect x="38" y="42" width="14" height="6" rx="2" fill="#475569" transform="rotate(35 45 45)"/></svg>'},
+  {id:"vitrier",    name:"Vitrier",        nameAr:"زجاج",          nameKab:"Amzeggar",        color:"#06B6D4",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="44" height="44" rx="3" fill="#CFFAFE" stroke="#06B6D4" stroke-width="3"/><path d="M10 32H54M32 10V54" stroke="#06B6D4" stroke-width="3"/></svg>'},
+  {id:"deco",       name:"Décoration",     nameAr:"تزيين",          nameKab:"Aẓebbuj",         color:"#F472B6",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 36C10 26 18 18 32 18C46 18 54 26 54 36V44H10V36Z" fill="#F472B6"/><rect x="6" y="44" width="52" height="8" rx="3" fill="#DB2777"/><circle cx="20" cy="30" r="3" fill="white"/><circle cx="32" cy="26" r="3" fill="white"/><circle cx="44" cy="30" r="3" fill="white"/></svg>'},
+  {id:"jardin",     name:"Jardinage",      nameAr:"بستنة",          nameKab:"Tafellaḥt",       color:"#22C55E",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 58V30" stroke="#16A34A" stroke-width="4" stroke-linecap="round"/><path d="M32 34C32 34 14 30 14 16C28 16 32 34 32 34Z" fill="#22C55E"/><path d="M32 30C32 30 50 26 50 12C36 12 32 30 32 30Z" fill="#4ADE80"/></svg>'},
+  {id:"photo",      name:"Photographe",    nameAr:"مصور",          nameKab:"Amalan",          color:"#0080D6",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="20" width="52" height="36" rx="6" fill="#0080D6"/><rect x="22" y="12" width="20" height="10" rx="3" fill="#0080D6"/><circle cx="32" cy="38" r="12" fill="#BAE6FD"/><circle cx="32" cy="38" r="7" fill="#0080D6"/></svg>'},
+  {id:"avocat",     name:"Avocat",         nameAr:"محامي",          nameKab:"Asaɣaḍ",          color:"#DC2626",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="29" y="6" width="6" height="50" fill="#DC2626"/><path d="M8 16L20 16L14 30C14 30 8 30 8 24C8 21 8 16 8 16Z" fill="#FCA5A5"/><path d="M44 16L56 16L50 30C50 30 44 30 44 24C44 21 44 16 44 16Z" fill="#FCA5A5"/><rect x="16" y="54" width="32" height="6" rx="2" fill="#991B1B"/></svg>'},
+  {id:"transport",  name:"Transport",      nameAr:"نقل",            nameKab:"Anaqal",          color:"#EA580C",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="26" width="32" height="18" rx="2" fill="#EA580C"/><path d="M36 30H50L58 38V44H36V30Z" fill="#FB923C"/><circle cx="16" cy="48" r="6" fill="#451A03"/><circle cx="48" cy="48" r="6" fill="#451A03"/></svg>'},
+  {id:"nettoyage",  name:"Nettoyage",      nameAr:"تنظيف",          nameKab:"Asellek",         color:"#14B8A6",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="28" y="6" width="8" height="30" rx="3" fill="#14B8A6"/><path d="M16 36H48L44 56H20L16 36Z" fill="#5EEAD4"/><path d="M20 42L44 42M22 48L42 48" stroke="#0F766E" stroke-width="2"/></svg>'},
+  {id:"cuisine",    name:"Cuisinier",      nameAr:"طباخ",           nameKab:"Aẓeggaɣ",         color:"#F97316",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 30C16 18 24 10 32 10C40 10 48 18 48 30" stroke="#F97316" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="14" y="30" width="36" height="8" rx="2" fill="#F97316"/><rect x="20" y="38" width="24" height="20" rx="2" fill="#FDBA74"/></svg>'},
+  {id:"sante",      name:"Santé",          nameAr:"صحة",            nameKab:"Tazmert",         color:"#BE185D",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="44" height="44" rx="8" fill="#BE185D"/><rect x="26" y="20" width="12" height="24" rx="2" fill="white"/><rect x="20" y="26" width="24" height="12" rx="2" fill="white"/></svg>'}
 ];
+
+// Récupère le nom de catégorie traduit selon la langue active
+function catName(c) {
+  if (typeof _lang !== 'undefined') {
+    if (_lang === 'ar' && c.nameAr) return c.nameAr;
+    if (_lang === 'kab' && c.nameKab) return c.nameKab;
+  }
+  return c.name;
+}
+
 
 // ────────────────────────────────────────────
 //  MÉTIERS COMPLETS (30+)
@@ -2625,20 +2663,16 @@ function initUI() {
   const cg = document.getElementById('cat-grid');
   cg.innerHTML = categories.slice(0,8).map(c => `
     <div class="cat-item" onclick="app.filterByCat('${c.id}')">
-      <div class="cat-icon" style="background:${c.color}18;">
-        <span class="material-icons-round" style="color:${c.color};">${c.icon}</span>
-      </div>
-      <div class="cat-label">${c.name}</div>
+      <div class="cat-icon" style="background:${c.color}18;">${c.svg}</div>
+      <div class="cat-label" data-cat-id="${c.id}">${catName(c)}</div>
     </div>`).join('');
 
   // Remplir all-cats-grid
   const ag = document.getElementById('all-cats-grid');
   ag.innerHTML = categories.map(c => `
     <div class="cat-item" onclick="app.filterByCat('${c.id}');closeModal('all-cats-modal')">
-      <div class="cat-icon" style="background:${c.color}18;width:56px;height:56px;">
-        <span class="material-icons-round" style="color:${c.color};font-size:26px;">${c.icon}</span>
-      </div>
-      <div class="cat-label">${c.name}</div>
+      <div class="cat-icon" style="background:${c.color}18;width:56px;height:56px;">${c.svg.replace('<svg ', '<svg style="width:36px;height:36px;" ')}</div>
+      <div class="cat-label" data-cat-id="${c.id}">${catName(c)}</div>
     </div>`).join('');
 
   // Remplir Daïras dans tous les selects
@@ -2675,15 +2709,18 @@ function initUI() {
 
 function updateHeroCount() {
   const actives = db.users.filter(u => u.role === 'pro' && u.status === 'active').length;
-  document.getElementById('hero-count-text').textContent = actives + ' professionnels vérifiés';
+  const t = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
+  const suffix = t.verified_pros || 'professionnels vérifiés';
+  document.getElementById('hero-count-text').textContent = actives + ' ' + suffix;
 }
 
 function buildExploreChips() {
   const chips = document.getElementById('explore-cat-chips');
-  chips.innerHTML = `<div class="chip ${exploreCatFilter==='' ? 'active':''}" onclick="app.selectExploreCat('',this)">🔍 Tous</div>`;
+  const allLabel = (typeof I18N !== 'undefined' && I18N[_lang] && I18N[_lang].all_m) ? I18N[_lang].all_m : 'Tous';
+  chips.innerHTML = `<div class="chip ${exploreCatFilter==='' ? 'active':''}" onclick="app.selectExploreCat('',this)" data-i18n-chip="all">🔍 ${allLabel}</div>`;
   categories.forEach(c => {
     chips.innerHTML += `<div class="chip ${exploreCatFilter===c.id ? 'active':''}" onclick="app.selectExploreCat('${c.id}',this)" data-cat="${c.id}" style="${exploreCatFilter===c.id ? '' : 'border-color:'+c.color+'22;'}">
-      <span style="color:${c.color};">${c.icon}</span> ${c.name}
+      <span style="display:inline-flex;width:16px;height:16px;vertical-align:-3px;margin-right:3px;">${c.svg.replace('<svg ', '<svg style="width:16px;height:16px;" ')}</span> ${catName(c)}
     </div>`;
   });
   setTimeout(updateChipsArrows, 100);
@@ -2780,7 +2817,7 @@ function createProCard(u, showFavBtn=true) {
   const cat = categories.find(c => c.id === u.category) || categories[0];
   const avatar = u.photos && u.photos.length > 0
     ? `<img src="${u.photos[0]}" class="pro-avatar" alt="${u.name}">`
-    : `<div class="pro-avatar" style="background:${cat.color}20;display:flex;align-items:center;justify-content:center;"><span class="material-icons-round" style="color:${cat.color};font-size:28px;">${cat.icon}</span></div>`;
+    : `<div class="pro-avatar" style="background:${cat.color}20;display:flex;align-items:center;justify-content:center;">${cat.svg.replace('<svg ', '<svg style="width:28px;height:28px;" ')}</div>`;
   const isNew = u.joinDate && (Date.now() - new Date(u.joinDate).getTime()) < 60*24*3600*1000;
   const isTop = avgRating >= 4.8 && u.reviews && u.reviews.length >= 2;
 
@@ -2881,7 +2918,7 @@ const app = {
         style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:20px;
         border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;
         font-size:0.82rem;cursor:pointer;margin-right:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,82,165,0.3);">
-        🗺️ Tous (${activePros.length})
+        🗺️ <span id="map-all-label">Tous</span> (${activePros.length})
       </button>
       ${usedCats.map(c => {
         const count = activePros.filter(u => u.category === c.id).length;
@@ -2889,7 +2926,7 @@ const app = {
           style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:20px;
           border:2px solid ${c.color}33;background:${c.color}11;color:${c.color};font-weight:700;
           font-size:0.82rem;cursor:pointer;margin-right:8px;white-space:nowrap;">
-          ${c.icon} ${c.name} (${count})
+          <span style="display:inline-flex;width:14px;height:14px;">${c.svg.replace('<svg ', '<svg style="width:14px;height:14px;" ')}</span> ${catName(c)} (${count})
         </button>`;
       }).join('')}`;
   },
@@ -2949,9 +2986,10 @@ const app = {
       const lng = coords[1] + (Math.random() - 0.5) * 0.006;
       const cat = categories.find(c => c.id === u.category) || categories[0];
       const avg = getAvgRating(u);
+      const markerSvg = cat.svg ? cat.svg.replace('<svg ', '<svg style="width:20px;height:20px;filter:brightness(0) invert(1);" ') : '👷';
       const icon = L.divIcon({
         className: '',
-        html: `<div style="background:${cat.color||'#0052A5'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.icon||'👷'}</div>`,
+        html: `<div style="background:${cat.color||'#0052A5'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${markerSvg}</div>`,
         iconSize: [38, 38], iconAnchor: [19, 19]
       });
       const marker = L.marker([lat, lng], { icon }).addTo(mapInstance)
@@ -3142,7 +3180,7 @@ const app = {
 
     const avatarHtml = u.photos && u.photos.length > 0
       ? `<img src="${u.photos[0]}" style="width:80px;height:80px;border-radius:20px;object-fit:cover;margin:0 auto 12px;display:block;">`
-      : `<div style="width:80px;height:80px;border-radius:20px;background:${cat.color}20;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><span class="material-icons-round" style="color:${cat.color};font-size:38px;">${cat.icon}</span></div>`;
+      : `<div style="width:80px;height:80px;border-radius:20px;background:${cat.color}20;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">${cat.svg.replace('<svg ', '<svg style="width:42px;height:42px;" ')}</div>`;
 
     document.getElementById('detail-content').innerHTML = `
       <div class="modal-handle"></div>
@@ -4020,17 +4058,19 @@ const app = {
     } catch(e) { console.warn('Notification listener error:', e); }
   },
   trackContact(id, type) {
+    const sid = String(id);
     app.trackClick(id); // Firebase stats
     const nid = isNaN(id) ? id : Number(id);
     const contacted = JSON.parse(localStorage.getItem('matloub_contacted') || '[]');
-    if (!contacted.some(c => String(c) === String(id))) {
+    if (!contacted.some(c => String(c) === sid)) {
       contacted.push(nid);
       localStorage.setItem('matloub_contacted', JSON.stringify(contacted));
     }
-    // Incrémenter vues
+    // Incrémenter clics contact en local
     const u = db.users.find(us => String(us.id) === sid || us.fbId === sid);
     if (u) {
       u.views = (u.views || 0) + 1;
+      u.contactClicks = (u.contactClicks || 0) + 1;
       saveDB();
       if (USE_FIREBASE && u.fbId) {
         try { savePro({...u}); } catch(e) {}
@@ -4925,7 +4965,7 @@ const app = {
         pros.map(u => {
           const sub = isProSubscribed(u) ? '💎 Pro Vie' : (isTrialExpired(u) ? '⛔ Expiré' : '⏳ Essai');
           const subColor = isProSubscribed(u) ? '#0052A5' : (isTrialExpired(u) ? '#DC2626' : '#D97706');
-          return '<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--border);">' +
+          return '<div style="background:var(--surface);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--border);">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
             '<strong>' + sanitize(u.name || '') + '</strong>' +
             '<span style="font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:20px;background:' + subColor + '22;color:' + subColor + ';">' + sub + '</span>' +
@@ -5181,7 +5221,7 @@ function showTrialExpiredModal() {
     modal.id = 'trial-expired-modal';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
     modal.innerHTML = `
-      <div style="background:var(--card);border-radius:20px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="background:var(--surface);border-radius:20px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <div style="font-size:3rem;margin-bottom:12px;">⛔</div>
         <div style="font-weight:900;font-size:1.2rem;color:var(--text);margin-bottom:8px;">Période d'essai expirée</div>
         <div style="font-size:0.88rem;color:var(--text2);margin-bottom:20px;line-height:1.5;">
@@ -5272,6 +5312,51 @@ function addNotif(msg) {
 
   // 5. Render home avec données locales en premier (rapide)
   app.renderHomePros();
+
+  // 6. Pre-fill explore dairas
+  const expSel = document.getElementById('exp-daira');
+  if (expSel) {
+    expSel.innerHTML = '<option value="">📍 Toute Daïra</option>';
+    oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
+      expSel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+    });
+  }
+
+  // 7. RGPD
+  checkRGPD();
+
+  // 8. Password strength listener
+  document.getElementById('reg-pass')?.addEventListener('input', function() {
+    updatePasswordUI('reg-pass', 'reg-pass-bar', 'reg-pass-label');
+  });
+
+  // 9. Explore search suggestions
+  const expSearch = document.getElementById('explore-search');
+  if (expSearch) {
+    expSearch.addEventListener('input', () => showSuggestions(expSearch.value, 'exp-suggestions'));
+    expSearch.addEventListener('focus', () => showSuggestions(expSearch.value, 'exp-suggestions'));
+    expSearch.addEventListener('blur', () => setTimeout(() => hideSuggestions('exp-suggestions'), 200));
+  }
+
+  // 10. Session integrity check
+  if (db.currentUser) {
+    const stored = db.users.find(u => u.id === db.currentUser.id);
+    if (stored && stored.status !== 'active' && stored.role !== 'admin') {
+      db.currentUser = null;
+      sessionStorage.removeItem('matloub_session');
+    }
+  }
+
+  // 11. 🔥 Initialiser Firebase et synchroniser les données réelles
+  const fbOk = await initFirebase();
+  if (fbOk) {
+    await syncFromFirebase();
+    checkAndRestoreSuspensions();
+  } else {
+    checkAndRestoreSuspensions();
+  }
+
+  console.log(`%c🔐 MATLOUB v7 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256`, 'color:#0052A5;font-weight:bold;font-size:13px;');
 })();
 
 
@@ -5288,32 +5373,35 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 
 app.prosPrezDeMoi = function(btn) {
   if (!navigator.geolocation) { toast('Géolocalisation non supportée'); return; }
-  const orig = btn ? btn.innerHTML : '';
+  const orig = btn ? btn.innerHTML : '📍 Pros près de moi';
   if (btn) { btn.innerHTML = '⏳ Localisation...'; btn.disabled = true; }
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      const { latitude: lat, longitude: lng } = pos.coords;
-      const prosAvecCoords = db.users.filter(u => u.role==='pro' && u.status==='active' && !isTrialExpired(u) && u.lat && u.lng);
-      if (prosAvecCoords.length > 0) {
-        const sorted = prosAvecCoords
-          .map(u => ({ ...u, _dist: haversineKm(lat, lng, parseFloat(u.lat), parseFloat(u.lng)) }))
-          .sort((a, b) => a._dist - b._dist);
-        const container = document.getElementById('pros-list');
-        if (container) {
-          container.innerHTML = sorted.map(u =>
-            createProCard(u) + '<div style="text-align:right;font-size:0.7rem;color:var(--text3);margin:-4px 0 8px;padding-right:8px;">📍 ' + u._dist.toFixed(1) + ' km</div>'
-          ).join('');
-        }
-        toast('📍 ' + sorted.length + ' pro(s) triés par distance !');
-      } else {
-        toast('📍 Position obtenue ! Pros affichés pour votre région.');
-        app.renderHomePros();
-      }
-      if (btn) { btn.innerHTML = orig || '📍 Pros près de moi'; btn.disabled = false; }
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+
+      // Ouvrir la page Explorer en vue Carte
+      navTo('explore');
+      setTimeout(() => {
+        app.switchView('map');
+        setTimeout(() => {
+          if (mapInstance) {
+            mapInstance.setView([lat, lng], 14);
+            const meIcon = L.divIcon({
+              className: '',
+              html: '<div style="background:#0052A5;color:white;border-radius:50%;width:18px;height:18px;border:3px solid white;box-shadow:0 0 0 4px rgba(0,82,165,0.3);"></div>',
+              iconSize: [18,18], iconAnchor: [9,9]
+            });
+            L.marker([lat, lng], { icon: meIcon }).addTo(mapInstance).bindPopup('📍 Vous êtes ici').openPopup();
+          }
+        }, 200);
+        toast('📍 Carte centrée sur votre position !');
+      }, 150);
+
+      if (btn) { btn.innerHTML = orig; btn.disabled = false; }
     },
     (err) => {
       toast('❌ Position refusée ou indisponible');
-      if (btn) { btn.innerHTML = orig || '📍 Pros près de moi'; btn.disabled = false; }
+      if (btn) { btn.innerHTML = orig; btn.disabled = false; }
     },
     { timeout: 8000, enableHighAccuracy: false }
   );
@@ -5387,10 +5475,143 @@ app.copyProfileLink = function() {
 };
 
 // ── MULTILINGUE ──────────────────────────────────────────
-const LANGS = {
-  fr: { flag:'FR', dir:'ltr', searchPH:'Plombier, Médecin, Coiffeur...', nearMe:'📍 Pros près de moi', noResult:'Aucun professionnel trouvé' },
-  ar: { flag:'عر', dir:'rtl', searchPH:'سباك، طبيب، حلاق...', nearMe:'📍 المحترفون بالقرب مني', noResult:'لم يتم العثور على محترف' },
-  kab:{ flag:'KAB', dir:'ltr', searchPH:'Awalay, Tabib...', nearMe:'📍 Imeslkinen dani', noResult:'Ulac imeslki yettwaf' }
+// ── DICTIONNAIRE DE TRADUCTION COMPLET ───────────────────────
+const I18N = {
+  fr: {
+    flag: 'FR', dir: 'ltr',
+    hero_title: 'Trouvez un Pro à Oran 🔍',
+    hero_sub: 'Plombier, Médecin, Électricien... à portée de main',
+    search_ph: 'Plombier, Médecin, Coiffeur...',
+    all_wilaya: '📍 Toute Wilaya',
+    commune: 'Commune',
+    categories: 'Catégories',
+    see_all: 'Voir tout',
+    nearby: 'À proximité',
+    explore: '🔎 Explorer',
+    all_daira: '📍 Toute Daïra',
+    all_m: 'Tous',
+    best_rated: '⭐ Mieux notés',
+    most_recent: '🆕 Plus récents',
+    most_reviews: "💬 Plus d'avis",
+    my_favorites: '❤️ Mes Favoris',
+    my_activities: 'Mes activités',
+    nav_home: 'Accueil',
+    nav_explore: 'Explorer',
+    nav_favorites: 'Favoris',
+    nav_profile: 'Profil',
+    welcome_matloub: 'Bienvenue sur MATLOUB',
+    login_or_register: 'Connectez-vous ou inscrivez-vous',
+    login_btn: 'Se connecter',
+    register_pro: 'Inscription Professionnel',
+    free_trial: 'Essai Gratuit',
+    pro_lifetime_label: 'Pro à Vie',
+    member_oran: 'Membre Oran',
+    logout: 'Déconnexion',
+    clear_all: 'Tout effacer',
+    no_notifications: 'Aucune notification',
+    tab_profile: 'Mon Profil',
+    tab_stats: 'Statistiques',
+    tab_reviews: 'Avis',
+    tab_rdv: 'RDV',
+    tab_subscription: 'Abonnement',
+    tab_referral: 'Parrainage',
+    near_me_btn: '📍 Pros près de moi',
+    no_result: 'Aucun professionnel trouvé',
+    verified_pros: 'professionnels vérifiés',
+    bio_label: 'Bio / Description',
+    bio_ph: 'Décrivez vos services...',
+    availability: 'Disponibilité',
+  },
+  ar: {
+    flag: 'عر', dir: 'rtl',
+    hero_title: '🔍 ابحث عن محترف في وهران',
+    hero_sub: 'سباك، طبيب، كهربائي... في متناول يدك',
+    search_ph: 'سباك، طبيب، حلاق...',
+    all_wilaya: '📍 كل الولاية',
+    commune: 'البلدية',
+    categories: 'الفئات',
+    see_all: 'عرض الكل',
+    nearby: 'بالقرب منك',
+    explore: '🔎 استكشف',
+    all_daira: '📍 كل الدائرة',
+    all_m: 'الكل',
+    best_rated: '⭐ الأعلى تقييماً',
+    most_recent: '🆕 الأحدث',
+    most_reviews: '💬 الأكثر تقييماً',
+    my_favorites: '❤️ المفضلة',
+    my_activities: 'أنشطتي',
+    nav_home: 'الرئيسية',
+    nav_explore: 'استكشف',
+    nav_favorites: 'المفضلة',
+    nav_profile: 'حسابي',
+    welcome_matloub: 'مرحباً بك في مطلوب',
+    login_or_register: 'سجّل الدخول أو أنشئ حساباً',
+    login_btn: 'تسجيل الدخول',
+    register_pro: 'تسجيل محترف',
+    free_trial: 'تجربة مجانية',
+    pro_lifetime_label: 'محترف مدى الحياة',
+    member_oran: 'عضو وهران',
+    logout: 'تسجيل الخروج',
+    clear_all: 'حذف الكل',
+    no_notifications: 'لا توجد إشعارات',
+    tab_profile: 'حسابي',
+    tab_stats: 'الإحصائيات',
+    tab_reviews: 'التقييمات',
+    tab_rdv: 'المواعيد',
+    tab_subscription: 'الاشتراك',
+    tab_referral: 'الإحالة',
+    near_me_btn: '📍 المحترفون بالقرب مني',
+    no_result: 'لم يتم العثور على محترف',
+    verified_pros: 'محترف موثّق',
+    bio_label: 'نبذة / وصف',
+    bio_ph: 'صف خدماتك...',
+    availability: 'التوفر',
+  },
+  kab: {
+    flag: 'KAB', dir: 'ltr',
+    hero_title: '🔍 Af-d yiwen umusnaw deg Wahran',
+    hero_sub: 'Anaẓur n waman, Ǔdwa, Aselkim... ɣur-k',
+    search_ph: 'Anaẓur, Ǔdwa, Iqecciḍ...',
+    all_wilaya: '📍 Akk Tawilaya',
+    commune: 'Tagmamt',
+    categories: 'Taggayin',
+    see_all: 'Wali akk',
+    nearby: 'Dani',
+    explore: '🔎 Snirem',
+    all_daira: '📍 Akk Tadaira',
+    all_m: 'Akk',
+    best_rated: '⭐ Wid yelhan akteṛ',
+    most_recent: '🆕 Imaynuten',
+    most_reviews: '💬 Aṭas n tikta',
+    my_favorites: '❤️ Wid i ḥemmleɣ',
+    my_activities: 'Tigawin-iw',
+    nav_home: 'Asebter agejdan',
+    nav_explore: 'Snirem',
+    nav_favorites: 'Wid i ḥemmleɣ',
+    nav_profile: 'Amaɣnu-w',
+    welcome_matloub: 'Ansuf yes-k ɣer MATLOUB',
+    login_or_register: 'Kcem neɣ jerred amaɣnu',
+    login_btn: 'Kcem',
+    register_pro: 'Jerred d umusnaw',
+    free_trial: 'Aɛraḍ ilelli',
+    pro_lifetime_label: 'Amusnaw i lebda',
+    member_oran: 'Amezdaɣ n Wahran',
+    logout: 'Ffeɣ',
+    clear_all: 'Sfeḍ akk',
+    no_notifications: 'Ulac alɣu',
+    tab_profile: 'Amaɣnu-w',
+    tab_stats: 'Tisteɣrar',
+    tab_reviews: 'Tikta',
+    tab_rdv: 'Ineggura',
+    tab_subscription: 'Asbeddi',
+    tab_referral: 'Aslaw',
+    near_me_btn: '📍 Imeslkinen dani',
+    no_result: 'Ulac imeslki yettwaf',
+    verified_pros: 'n yimusnawen yettwasentmen',
+    bio_label: 'Awennit',
+    bio_ph: 'Glem ameslay-ik...',
+    availability: 'Tella',
+  }
 };
 let _lang = localStorage.getItem('matloub_lang') || 'fr';
 
@@ -5399,19 +5620,47 @@ function setLang(l) {
   localStorage.setItem('matloub_lang', l);
   applyLang();
 }
+
 function applyLang() {
-  const t = LANGS[_lang] || LANGS.fr;
-  // Flag button
+  const t = I18N[_lang] || I18N.fr;
+
+  // Direction du document (RTL pour l'arabe)
+  document.documentElement.setAttribute('dir', t.dir);
+  document.documentElement.setAttribute('lang', _lang === 'ar' ? 'ar' : (_lang === 'kab' ? 'kab' : 'fr'));
+
+  // Drapeau du bouton langue
   const fl = document.getElementById('lang-flag-btn');
   if (fl) fl.textContent = t.flag;
-  // Direction
-  document.documentElement.setAttribute('dir', t.dir);
-  // Search placeholder
-  const sp = document.getElementById('home-search');
-  if (sp) sp.placeholder = t.searchPH;
-  // Near me button
+
+  // Tous les éléments avec data-i18n → remplacer le texte
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+
+  // Tous les placeholders avec data-i18n-ph
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (t[key] !== undefined) el.setAttribute('placeholder', t[key]);
+  });
+
+  // Mettre à jour les libellés de catégories générés dynamiquement
+  document.querySelectorAll('[data-cat-id]').forEach(el => {
+    const cid = el.getAttribute('data-cat-id');
+    const cat = categories.find(c => c.id === cid);
+    if (cat) el.textContent = catName(cat);
+  });
+  // Régénérer les chips Explorer si présents (texte traduit + icônes)
+  if (document.getElementById('explore-cat-chips')) buildExploreChips();
+  // Mettre à jour le compteur héro
+  if (document.getElementById('hero-count-text')) updateHeroCount();
+  // Libellé "Tous" sur la carte
+  const mapAllLabel = document.getElementById('map-all-label');
+  if (mapAllLabel && t.all_m) mapAllLabel.textContent = t.all_m;
+
+  // Bouton géolocalisation (texte dynamique géré séparément)
   const nb = document.getElementById('btn-near-me');
-  if (nb && !nb.disabled) nb.childNodes[nb.childNodes.length-1].textContent = ' ' + t.nearMe;
+  if (nb && !nb.disabled) nb.textContent = t.near_me_btn;
 }
 
 // ── STATS PRO AMÉLIORÉES ─────────────────────────────────
@@ -5450,11 +5699,32 @@ app.trackClick = async function(proId) {
   } catch(e) {}
 };
 
+// ── OUVRIR PROFIL PARTAGÉ VIA QR CODE (?pro=ID) ──────────────
+function openSharedProfile() {
+  const params = new URLSearchParams(window.location.search);
+  const proId = params.get('pro');
+  if (proId) {
+    // Attendre que les pros soient chargés (Firebase peut prendre un instant)
+    let tries = 0;
+    const tryOpen = () => {
+      tries++;
+      const u = db.users.find(us => String(us.id) === String(proId) || us.fbId === proId);
+      if (u) {
+        app.showDetail(u.id);
+      } else if (tries < 10) {
+        setTimeout(tryOpen, 500);
+      }
+    };
+    tryOpen();
+  }
+}
+
 // ── INIT AU CHARGEMENT ────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     applyLang();
     renderSrchHist();
+    openSharedProfile();
   }, 400);
   // Fermer menu lang au clic extérieur
   document.addEventListener('click', (e) => {
@@ -5462,59 +5732,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const dd = document.getElementById('lang-dd');
     if (wrap && dd && !wrap.contains(e.target)) dd.style.display = 'none';
   });
+  // Auto-charger stats pro quand on clique sur onglet Stats
+  const tabStats = document.getElementById('tab-btn-stats');
+  if (tabStats) tabStats.addEventListener('click', () => setTimeout(() => app.loadProStats(), 100));
 });
-
-
-  // 6. Pre-fill explore dairas
-  const expSel = document.getElementById('exp-daira');
-  if (expSel) {
-    expSel.innerHTML = '<option value="">📍 Toute Daïra</option>';
-    oranData.dairas.filter(d => d.id !== 'all').forEach(d => {
-      expSel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-    });
-  }
-
-  // 7. RGPD
-  checkRGPD();
-
-  // 8. Password strength listener
-  document.getElementById('reg-pass')?.addEventListener('input', function() {
-    updatePasswordUI('reg-pass', 'reg-pass-bar', 'reg-pass-label');
-  });
-
-  // 9. Explore search suggestions
-  const expSearch = document.getElementById('explore-search');
-  if (expSearch) {
-    expSearch.addEventListener('input', () => showSuggestions(expSearch.value, 'exp-suggestions'));
-    expSearch.addEventListener('focus', () => showSuggestions(expSearch.value, 'exp-suggestions'));
-    expSearch.addEventListener('blur', () => setTimeout(() => hideSuggestions('exp-suggestions'), 200));
-  }
-
-  // 10. Session integrity check
-  if (db.currentUser) {
-    const stored = db.users.find(u => u.id === db.currentUser.id);
-    if (stored && stored.status !== 'active' && stored.role !== 'admin') {
-      db.currentUser = null;
-      sessionStorage.removeItem('matloub_session');
-    }
-  }
-
-  // 11. 🔥 Initialiser Firebase et synchroniser les données réelles
-  const fbOk = await initFirebase();
-  if (fbOk) {
-    await syncFromFirebase();
-    // ✅ Rétablir automatiquement les suspensions expirées
-    checkAndRestoreSuspensions();
-  } else {
-    // Mode local — vérifier quand même
-    checkAndRestoreSuspensions();
-  }
-
-  console.log(`%c🔐 MATLOUB v6 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256 + Rate Limiting`, 'color:#0052A5;font-weight:bold;font-size:13px;');
 </script>
 
 <!-- 📱 PWA Install Banner -->
-<div id="pwa-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--primary);color:white;padding:12px 20px;border-radius:16px;box-shadow:0 4px 20px rgba(0,82,165,0.4);display:none;align-items:center;gap:12px;font-weight:700;font-size:0.9rem;max-width:340px;width:90%;">
+<div id="pwa-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--primary);color:white;padding:12px 20px;border-radius:16px;box-shadow:0 4px 20px rgba(0,82,165,0.4);align-items:center;gap:12px;font-weight:700;font-size:0.9rem;max-width:340px;width:90%;">
   <span class="material-icons-round">install_mobile</span>
   <span>Installer MATLOUB sur votre téléphone</span>
   <button id="pwa-install-btn" style="background:white;color:var(--primary);border:none;padding:6px 14px;border-radius:10px;font-weight:800;cursor:pointer;">Installer</button>
