@@ -415,6 +415,23 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 .hero-sub{font-size:0.82rem;opacity:0.85;font-weight:600;}
 .hero-count{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:50px;padding:5px 12px;font-size:0.8rem;font-weight:700;margin-top:12px;}
 
+/* ── BOUTON GÉOLOCALISATION ── */
+.btn-near-me-style{
+  display:block !important;
+  width:100% !important;
+  padding:11px !important;
+  background:linear-gradient(135deg,#059669,#10B981) !important;
+  color:white !important;
+  border:none !important;
+  border-radius:12px !important;
+  font-weight:800 !important;
+  font-size:0.88rem !important;
+  cursor:pointer !important;
+  margin-bottom:10px !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+}
+
 /* ── DAIRA DROPDOWN ── */
 .location-dropdowns{display:flex;gap:8px;margin-bottom:16px;}
 .location-dropdowns select{flex:1;min-width:0;font-size:0.82rem;padding:11px 8px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;}
@@ -556,9 +573,9 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div class="suggestions-box" id="home-suggestions" style="display:none;"></div>
   </div>
 
-  <button onclick="app.prosPrezDeMoi(this)" id="btn-near-me"
-    style="width:100%;padding:10px;background:linear-gradient(135deg,#059669,#10B981);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.88rem;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-    📍 Pros près de moi
+  <!-- Géolocalisation -->
+  <button onclick="app.prosPrezDeMoi(this)" id="btn-near-me" class="btn-near-me-style">
+    📍 <span data-i18n-text="near_me_btn">Pros près de moi</span>
   </button>
 
   <!-- Filtres Daïra / Commune -->
@@ -581,7 +598,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   <!-- Professionnels -->
   <div class="section-header">
     <div class="section-title" data-i18n="nearby">À proximité</div>
-    <div class="section-link" onclick="navTo('explore')" data-i18n="nav_explore">Explorer</div>
+    <div class="section-link" onclick="navTo('explore')">Explorer</div>
   </div>
   <div id="home-pros-list"></div>
 
@@ -648,7 +665,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <!-- Filtre catégories sur la carte -->
     <div id="map-cat-filter" style="overflow-x:auto;white-space:nowrap;padding-bottom:8px;margin-bottom:10px;scrollbar-width:none;">
       <button onclick="app.filterMap('')" class="map-cat-btn active" data-cat="" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;font-size:0.78rem;cursor:pointer;margin-right:6px;white-space:nowrap;">
-        🗺️ Tous
+        🗺️ <span data-i18n="all_m">Tous</span>
       </button>
     </div>
     <div id="map-oran" style="height:440px;border-radius:16px;overflow:hidden;border:2px solid var(--border);"></div>
@@ -733,11 +750,11 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div class="card-sm text-center" onclick="navTo('favorites')">
         <span class="material-icons-round" style="font-size:28px;color:var(--accent2);">favorite</span>
-        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;" data-i18n="nav_favorites">Favoris</div>
+        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;">Favoris</div>
       </div>
       <div class="card-sm text-center" onclick="navTo('explore')">
         <span class="material-icons-round" style="font-size:28px;color:var(--primary);">manage_search</span>
-        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;" data-i18n="nav_explore">Explorer</div>
+        <div style="font-weight:700;margin-top:6px;font-size:0.85rem;">Explorer</div>
       </div>
     </div>
   </div>
@@ -847,7 +864,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
           <div style="font-size:0.72rem;color:var(--text3);text-align:center;margin-top:6px;">📱 Appuyez sur une photo pour la supprimer</div>
         </div>
         <button class="btn btn-primary" onclick="app.saveProChanges()" style="margin-top:4px;">💾 Enregistrer</button>
-        <button class="btn btn-ghost" style="margin-top:8px;" onclick="app.logout()">Déconnexion</button>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="app.logout()" data-i18n="logout">Déconnexion</button>
       </div>
     </div>
 
@@ -1719,6 +1736,7 @@ function catName(c) {
   }
   return c.name;
 }
+
 
 
 // ────────────────────────────────────────────
@@ -2714,9 +2732,8 @@ function initUI() {
 
 function updateHeroCount() {
   const actives = db.users.filter(u => u.role === 'pro' && u.status === 'active').length;
-  const t = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
-  const suffix = t.verified_pros || 'professionnels vérifiés';
-  document.getElementById('hero-count-text').textContent = actives + ' ' + suffix;
+  const tHero = (typeof I18N !== 'undefined' && I18N[_lang]) ? I18N[_lang] : {};
+  document.getElementById('hero-count-text').textContent = actives + ' ' + (tHero.verified_pros || 'professionnels vérifiés');
 }
 
 function buildExploreChips() {
@@ -2997,10 +3014,9 @@ const app = {
       const lng = coords[1] + (Math.random() - 0.5) * 0.006;
       const cat = categories.find(c => c.id === u.category) || categories[0];
       const avg = getAvgRating(u);
-      const markerSvg = cat.svg ? cat.svg.replace('<svg ', '<svg style="width:20px;height:20px;filter:brightness(0) invert(1);" ') : '👷';
       const icon = L.divIcon({
         className: '',
-        html: `<div style="background:${cat.color||'#0052A5'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${markerSvg}</div>`,
+        html: `<div style="background:${cat.color||'#0052A5'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.svg ? cat.svg.replace('<svg ', '<svg style="width:20px;height:20px;filter:brightness(0) invert(1);" ') : '👷'}</div>`,
         iconSize: [38, 38], iconAnchor: [19, 19]
       });
       const marker = L.marker([lat, lng], { icon }).addTo(mapInstance)
@@ -5388,35 +5404,32 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 
 app.prosPrezDeMoi = function(btn) {
   if (!navigator.geolocation) { toast('Géolocalisation non supportée'); return; }
-  const orig = btn ? btn.innerHTML : '📍 Pros près de moi';
+  const orig = btn ? btn.innerHTML : '';
   if (btn) { btn.innerHTML = '⏳ Localisation...'; btn.disabled = true; }
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      const lat = pos.coords.latitude, lng = pos.coords.longitude;
-
-      // Ouvrir la page Explorer en vue Carte
-      navTo('explore');
-      setTimeout(() => {
-        app.switchView('map');
-        setTimeout(() => {
-          if (mapInstance) {
-            mapInstance.setView([lat, lng], 14);
-            const meIcon = L.divIcon({
-              className: '',
-              html: '<div style="background:#0052A5;color:white;border-radius:50%;width:18px;height:18px;border:3px solid white;box-shadow:0 0 0 4px rgba(0,82,165,0.3);"></div>',
-              iconSize: [18,18], iconAnchor: [9,9]
-            });
-            L.marker([lat, lng], { icon: meIcon }).addTo(mapInstance).bindPopup('📍 Vous êtes ici').openPopup();
-          }
-        }, 200);
-        toast('📍 Carte centrée sur votre position !');
-      }, 150);
-
-      if (btn) { btn.innerHTML = orig; btn.disabled = false; }
+      const { latitude: lat, longitude: lng } = pos.coords;
+      const prosAvecCoords = db.users.filter(u => u.role==='pro' && u.status==='active' && !isTrialExpired(u) && u.lat && u.lng);
+      if (prosAvecCoords.length > 0) {
+        const sorted = prosAvecCoords
+          .map(u => ({ ...u, _dist: haversineKm(lat, lng, parseFloat(u.lat), parseFloat(u.lng)) }))
+          .sort((a, b) => a._dist - b._dist);
+        const container = document.getElementById('home-pros-list');
+        if (container) {
+          container.innerHTML = sorted.map(u =>
+            createProCard(u) + '<div style="text-align:right;font-size:0.7rem;color:var(--text3);margin:-4px 0 8px;padding-right:8px;">📍 ' + u._dist.toFixed(1) + ' km</div>'
+          ).join('');
+        }
+        toast('📍 ' + sorted.length + ' pro(s) triés par distance !');
+      } else {
+        toast('📍 Position obtenue ! Pros affichés pour votre région.');
+        app.renderHomePros();
+      }
+      if (btn) { btn.innerHTML = orig || '📍 Pros près de moi'; btn.disabled = false; }
     },
     (err) => {
       toast('❌ Position refusée ou indisponible');
-      if (btn) { btn.innerHTML = orig; btn.disabled = false; }
+      if (btn) { btn.innerHTML = orig || '📍 Pros près de moi'; btn.disabled = false; }
     },
     { timeout: 8000, enableHighAccuracy: false }
   );
@@ -5530,12 +5543,14 @@ const I18N = {
     tab_rdv: 'RDV',
     tab_subscription: 'Abonnement',
     tab_referral: 'Parrainage',
-    near_me_btn: '📍 Pros près de moi',
+    near_me_btn: 'Pros près de moi',
     no_result: 'Aucun professionnel trouvé',
     verified_pros: 'professionnels vérifiés',
     bio_label: 'Bio / Description',
     bio_ph: 'Décrivez vos services...',
     availability: 'Disponibilité',
+    view_list: 'Liste',
+    view_map: 'Carte',
     all_communes: 'Toutes communes',
     no_pro_found: 'Aucun professionnel trouvé',
     modify_filters: 'Modifiez vos filtres',
@@ -5579,12 +5594,14 @@ const I18N = {
     tab_rdv: 'المواعيد',
     tab_subscription: 'الاشتراك',
     tab_referral: 'الإحالة',
-    near_me_btn: '📍 المحترفون بالقرب مني',
+    near_me_btn: 'المحترفون بالقرب مني',
     no_result: 'لم يتم العثور على محترف',
     verified_pros: 'محترف موثّق',
     bio_label: 'نبذة / وصف',
     bio_ph: 'صف خدماتك...',
     availability: 'التوفر',
+    view_list: 'قائمة',
+    view_map: 'خريطة',
     all_communes: 'كل البلديات',
     no_pro_found: 'لم يتم العثور على محترف',
     modify_filters: 'عدّل عوامل التصفية',
@@ -5628,12 +5645,14 @@ const I18N = {
     tab_rdv: 'Ineggura',
     tab_subscription: 'Asbeddi',
     tab_referral: 'Aslaw',
-    near_me_btn: '📍 Imeslkinen dani',
+    near_me_btn: 'Imeslkinen dani',
     no_result: 'Ulac imeslki yettwaf',
     verified_pros: 'n yimusnawen yettwasentmen',
     bio_label: 'Awennit',
     bio_ph: 'Glem ameslay-ik...',
     availability: 'Tella',
+    view_list: 'Tabdart',
+    view_map: 'Tikarta',
     all_communes: 'Akk tagmamin',
     no_pro_found: 'Ulac imeslki yettwaf',
     modify_filters: 'Senfel ismitiwen-ik',
@@ -5687,7 +5706,10 @@ function applyLang() {
 
   // Bouton géolocalisation (texte dynamique géré séparément)
   const nb = document.getElementById('btn-near-me');
-  if (nb && !nb.disabled) nb.textContent = t.near_me_btn;
+  if (nb && !nb.disabled) {
+    const span = nb.querySelector('[data-i18n-text]');
+    if (span) span.textContent = t.near_me_btn;
+  }
 }
 
 // ── STATS PRO AMÉLIORÉES ─────────────────────────────────
@@ -5726,32 +5748,11 @@ app.trackClick = async function(proId) {
   } catch(e) {}
 };
 
-// ── OUVRIR PROFIL PARTAGÉ VIA QR CODE (?pro=ID) ──────────────
-function openSharedProfile() {
-  const params = new URLSearchParams(window.location.search);
-  const proId = params.get('pro');
-  if (proId) {
-    // Attendre que les pros soient chargés (Firebase peut prendre un instant)
-    let tries = 0;
-    const tryOpen = () => {
-      tries++;
-      const u = db.users.find(us => String(us.id) === String(proId) || us.fbId === proId);
-      if (u) {
-        app.showDetail(u.id);
-      } else if (tries < 10) {
-        setTimeout(tryOpen, 500);
-      }
-    };
-    tryOpen();
-  }
-}
-
 // ── INIT AU CHARGEMENT ────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     applyLang();
     renderSrchHist();
-    openSharedProfile();
   }, 400);
   // Fermer menu lang au clic extérieur
   document.addEventListener('click', (e) => {
