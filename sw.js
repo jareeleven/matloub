@@ -1,21 +1,21 @@
-// MATLOUB Service Worker — v2 (force refresh des icônes/logo)
-const CACHE_NAME = 'matloub-cache-v2026-06-22-logo';
+// MATLOUB Service Worker — v3 (chemins relatifs + correction 404 PWA)
+const CACHE_NAME = 'matloub-cache-v2026-06-26-fix404';
 
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.ico',
-  '/icon-16.png',
-  '/icon-32.png',
-  '/icon-72.png',
-  '/icon-96.png',
-  '/icon-128.png',
-  '/icon-144.png',
-  '/icon-152.png',
-  '/icon-180.png',
-  '/icon-192.png',
-  '/icon-512.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './favicon.ico',
+  './icon-16.png',
+  './icon-32.png',
+  './icon-72.png',
+  './icon-96.png',
+  './icon-128.png',
+  './icon-144.png',
+  './icon-152.png',
+  './icon-180.png',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
