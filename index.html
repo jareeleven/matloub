@@ -1555,6 +1555,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <div style="font-size:0.82rem;color:var(--text2);line-height:1.8;">
         1️⃣ Envoyez <strong>1000 DA</strong> sur :<br>
         📱 Edahabia : <strong id="payment-edahabia">6280703146616583</strong><br>
+        🏦 CCP : <strong id="payment-ccp"></strong><br>
         👤 Nom : <strong>Gafsi Abdeljalil</strong><br><br>
         2️⃣ Envoyez la capture d'écran sur WhatsApp :<br>
         📱 <strong id="payment-whatsapp">213771062122</strong>
@@ -2102,9 +2103,10 @@ async function uploadToImgBB(base64Data) {
 }
 
 const PAYMENT_INFO = {
-  edahabia: '007999990029487990 42', // ← Remplacez par votre numéro Edahabia
-  whatsapp:  '213771062122',       // ← Remplacez par votre numéro WhatsApp
-  nom:       'Gafsi Abdeljalil'              // ← Remplacez par votre nom
+  ccp: '00799999002948799042',
+  edahabia: '6280703146616583',
+  whatsapp: '213771062122',
+  nom: 'Gafsi Abdeljalil'
 };
 const EMAILJS_PUBLIC_KEY  = 'ThRYBRsTCHCEdseQm';
 const EMAILJS_SERVICE_ID  = 'service_q5s7pxh';
@@ -3401,6 +3403,7 @@ const app = {
   showPaymentModal() {
     // Remplir les infos de paiement
     document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
+    document.getElementById('payment-ccp').textContent = PAYMENT_INFO.ccp;
     document.getElementById('payment-whatsapp').textContent = PAYMENT_INFO.whatsapp;
     showModal('payment-modal');
   },
@@ -3858,6 +3861,7 @@ const app = {
   showPaymentModalWithDiscount(discountDA) {
     const finalPrice = Math.max(700, 1000 - discountDA);
     document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
+    document.getElementById('payment-ccp').textContent = PAYMENT_INFO.ccp;
     document.getElementById('payment-whatsapp').textContent = PAYMENT_INFO.whatsapp;
     // Mettre à jour le prix affiché
     const priceEl = document.querySelector('#payment-modal [style*="2rem;font-weight:900"]');
