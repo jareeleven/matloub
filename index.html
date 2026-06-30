@@ -515,6 +515,62 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   border-radius: 50px;
   margin-top: 6px;
 }
+.payment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.payment-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text2);
+  white-space: nowrap;
+}
+.payment-value {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--text);
+  flex: 1;
+  margin: 0 8px;
+  word-break: break-all;
+}
+.copy-btn {
+  flex-shrink: 0;
+  border: none;
+  background: #10B981;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.copy-btn:active { transform: scale(0.95); }
+.copy-btn:hover { background: #0EA371; }
+.wa-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #25D366;
+  color: white;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 4px;
+  transition: background 0.2s;
+}
+.wa-btn:hover { background: #1EBE5A; }
 </style>
 </head>
 <body>
@@ -1552,14 +1608,29 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <!-- Méthode 1: Edahabia/CIB -->
     <div class="card" style="margin-bottom:12px;border:2px solid #10B981;">
       <div style="font-weight:800;color:#065F46;margin-bottom:8px;">💳 Méthode 1 — Edahabia / CIB</div>
-      <div style="font-size:0.82rem;color:var(--text2);line-height:1.8;">
-        1️⃣ Envoyez <strong>1000 DA</strong> sur :<br>
-        📱 Edahabia : <strong id="payment-edahabia">6280703146616583</strong><br>
-        🏦 CCP : <strong id="payment-ccp"></strong><br>
-        👤 Nom : <strong>Gafsi Abdeljalil</strong><br><br>
-        2️⃣ Envoyez la capture d'écran sur WhatsApp :<br>
-        📱 <strong id="payment-whatsapp">213771062122</strong>
+      <div style="font-size:0.82rem;color:var(--text2);margin-bottom:8px;">
+        1️⃣ Envoyez <strong>1000 DA</strong> sur :
       </div>
+      <div class="payment-item">
+        <span class="payment-label">📱 Edahabia</span>
+        <span class="payment-value" id="payment-edahabia">6280703146616583</span>
+        <button class="copy-btn" onclick="copyText('payment-edahabia', this)">📋 Copier</button>
+      </div>
+      <div class="payment-item">
+        <span class="payment-label">🏦 CCP</span>
+        <span class="payment-value" id="payment-ccp"></span>
+        <button class="copy-btn" onclick="copyText('payment-ccp', this)">📋 Copier</button>
+      </div>
+      <div class="payment-item">
+        <span class="payment-label">👤 Nom</span>
+        <span class="payment-value" id="payment-name">Gafsi Abdeljalil</span>
+      </div>
+      <div style="font-size:0.82rem;color:var(--text2);margin:12px 0 8px;">
+        2️⃣ Envoyez la capture d'écran sur WhatsApp :
+      </div>
+      <a class="wa-btn" id="payment-whatsapp-link" href="https://wa.me/213771062122" target="_blank" rel="noopener">
+        💬 WhatsApp — <span id="payment-whatsapp">213771062122</span>
+      </a>
     </div>
 
     <!-- Méthode 2: Code -->
@@ -2002,6 +2073,14 @@ async function sharePro(id) {
 }
 function copyToClipboard(text) {
   navigator.clipboard?.writeText(text).then(() => toast('📋 Profil copié !'));
+}
+
+function copyText(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard?.writeText(text);
+  const old = btn.innerHTML;
+  btn.innerHTML = '✅ Copié';
+  setTimeout(() => { btn.innerHTML = old; }, 1800);
 }
 
 // ════════════════════════════════════════════════════════
@@ -3405,6 +3484,7 @@ const app = {
     document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
     document.getElementById('payment-ccp').textContent = PAYMENT_INFO.ccp;
     document.getElementById('payment-whatsapp').textContent = PAYMENT_INFO.whatsapp;
+    document.getElementById('payment-name').textContent = PAYMENT_INFO.nom;
     showModal('payment-modal');
   },
 
@@ -3863,6 +3943,7 @@ const app = {
     document.getElementById('payment-edahabia').textContent = PAYMENT_INFO.edahabia;
     document.getElementById('payment-ccp').textContent = PAYMENT_INFO.ccp;
     document.getElementById('payment-whatsapp').textContent = PAYMENT_INFO.whatsapp;
+    document.getElementById('payment-name').textContent = PAYMENT_INFO.nom;
     // Mettre à jour le prix affiché
     const priceEl = document.querySelector('#payment-modal [style*="2rem;font-weight:900"]');
     if (priceEl) priceEl.textContent = finalPrice + ' DA';
