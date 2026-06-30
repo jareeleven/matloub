@@ -1,5 +1,5 @@
 // MATLOUB Service Worker — v3 (chemins relatifs + correction 404 PWA)
-const CACHE_NAME = 'matloub-cache-v2026-06-26-fix404';
+const CACHE_NAME = 'matloub-cache-v2026-06-30-paiement-v2';
 
 const urlsToCache = [
   './',
