@@ -633,20 +633,60 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 [data-theme="dark"] .btn-primary{box-shadow:0 0 0 1px rgba(44,142,255,0.4), 0 10px 28px rgba(44,142,255,0.28);}
 [data-theme="dark"] .btn-accent{box-shadow:0 0 0 1px rgba(56,189,248,0.35), 0 10px 26px rgba(56,189,248,0.22);}
 
-/* ── Séquence de démarrage ── */
+/* ── Séquence de démarrage — premium ── */
 .boot-overlay{
-  position:fixed;inset:0;z-index:9999;background:#05070D;
+  position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 50% 40%, #0A1224 0%, #05070D 70%);
   display:none;align-items:center;justify-content:center;
-  transition:opacity .6s ease, visibility .6s ease;
+  transition:opacity .7s cubic-bezier(.4,0,.2,1), filter .7s ease, transform .7s cubic-bezier(.4,0,.2,1);
 }
 [data-theme="dark"] .boot-overlay.show{display:flex;opacity:1;visibility:visible;}
-.boot-overlay.hide{opacity:0 !important;visibility:hidden !important;pointer-events:none;}
-.boot-content{text-align:center;font-family:'JetBrains Mono',monospace;padding:0 24px;}
-.boot-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.04em;margin-bottom:16px;color:#F4F7FC;}
-.boot-line{font-size:.72rem;color:#93A3C2;letter-spacing:.05em;margin-bottom:16px;min-height:1.2em;}
-.boot-bar{width:200px;height:2px;background:rgba(255,255,255,.1);margin:0 auto;border-radius:2px;overflow:hidden;}
-.boot-bar-fill{width:0%;height:100%;background:linear-gradient(90deg,#FFB454,#2C8EFF);box-shadow:0 0 10px 2px rgba(44,142,255,.6);transition:width .12s linear;}
-.boot-pct{font-size:.62rem;color:#5E6E8C;margin-top:8px;letter-spacing:.1em;}
+.boot-overlay.hide{opacity:0 !important;filter:blur(14px);transform:scale(1.06);pointer-events:none;}
+.boot-flash{position:absolute;inset:0;background:radial-gradient(circle, rgba(255,255,255,0.9), rgba(44,142,255,0.4) 40%, transparent 70%);opacity:0;pointer-events:none;}
+.boot-flash.pulse{animation:bootFlash .6s ease-out forwards;}
+@keyframes bootFlash{0%{opacity:0;}35%{opacity:0.85;}100%{opacity:0;}}
+
+.boot-content{text-align:center;padding:0 24px;position:relative;z-index:1;}
+
+.boot-badge{position:relative;width:96px;height:96px;margin:0 auto 26px;}
+.boot-core{
+  position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(135deg,#2C8EFF,#0B3E8C);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  box-shadow:0 0 0 1px rgba(44,142,255,.4), 0 0 40px 6px rgba(44,142,255,.45);
+  opacity:0;transform:scale(.4);
+  animation:bootCoreIn .7s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay:.15s;
+}
+.boot-core .material-icons-round{font-size:34px;}
+@keyframes bootCoreIn{to{opacity:1;transform:scale(1);}}
+.boot-ring{
+  position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(255,255,255,.14);
+  opacity:0;animation:bootRingIn .8s ease forwards;animation-delay:.4s;
+}
+@keyframes bootRingIn{to{opacity:1;}}
+.boot-orbit{position:absolute;inset:-24px;border-radius:50%;opacity:0;animation:bootOrbitFade .5s ease forwards, bootSpin linear infinite;animation-delay:.5s, 0s;}
+.boot-orbit-1{animation-duration:.5s, 3.2s;}
+.boot-orbit-2{inset:-38px;animation-duration:.5s, 4.6s;animation-direction:normal, reverse;}
+@keyframes bootOrbitFade{to{opacity:1;}}
+@keyframes bootSpin{to{transform:rotate(360deg);}}
+.boot-dot{position:absolute;top:0;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#2C8EFF;box-shadow:0 0 10px 3px rgba(44,142,255,.7);}
+.boot-dot.amber{background:#FFB454;box-shadow:0 0 10px 3px rgba(255,180,84,.7);}
+
+.boot-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.6rem;letter-spacing:.06em;color:#F4F7FC;margin-bottom:18px;}
+.boot-logo span{display:inline-block;opacity:0;transform:translateY(10px) scale(.9);filter:blur(3px);animation:bootLetterIn .5s cubic-bezier(.16,1,.3,1) forwards;}
+.boot-logo span:nth-child(1){animation-delay:.55s;}
+.boot-logo span:nth-child(2){animation-delay:.60s;}
+.boot-logo span:nth-child(3){animation-delay:.65s;}
+.boot-logo span:nth-child(4){animation-delay:.70s;}
+.boot-logo span:nth-child(5){animation-delay:.75s;}
+.boot-logo span:nth-child(6){animation-delay:.80s;}
+.boot-logo span:nth-child(7){animation-delay:.85s;}
+@keyframes bootLetterIn{to{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}}
+
+.boot-line{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#93A3C2;letter-spacing:.06em;margin-bottom:18px;min-height:1.2em;opacity:0;animation:bootFade .5s ease forwards;animation-delay:1s;}
+@keyframes bootFade{to{opacity:1;}}
+.boot-bar{width:180px;height:2px;background:rgba(255,255,255,.08);margin:0 auto;border-radius:2px;overflow:hidden;opacity:0;animation:bootFade .5s ease forwards;animation-delay:1s;}
+.boot-bar-fill{width:0%;height:100%;background:linear-gradient(90deg,#FFB454,#2C8EFF);box-shadow:0 0 10px 2px rgba(44,142,255,.6);transition:width .15s ease-out;}
 
 @media (prefers-reduced-motion: reduce){
   .boot-overlay{display:none !important;}
@@ -684,11 +724,19 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
 <!-- ══ SÉQUENCE DE DÉMARRAGE ══ -->
 <div class="boot-overlay" id="bootOverlay">
+  <div class="boot-flash" id="bootFlash"></div>
   <div class="boot-content">
-    <div class="boot-logo">MATLOUB</div>
-    <div class="boot-line" id="bootLine">INITIALISATION DU RÉSEAU…</div>
+    <div class="boot-badge">
+      <div class="boot-orbit boot-orbit-1"><span class="boot-dot"></span></div>
+      <div class="boot-orbit boot-orbit-2"><span class="boot-dot amber"></span></div>
+      <div class="boot-ring"></div>
+      <div class="boot-core"><span class="material-icons-round">handshake</span></div>
+    </div>
+    <div class="boot-logo" id="bootLogo">
+      <span>M</span><span>A</span><span>T</span><span>L</span><span>O</span><span>U</span><span>B</span>
+    </div>
+    <div class="boot-line" id="bootLine">Initialisation du réseau…</div>
     <div class="boot-bar"><div class="boot-bar-fill" id="bootFill"></div></div>
-    <div class="boot-pct" id="bootPct">0%</div>
   </div>
 </div>
 
@@ -6020,7 +6068,7 @@ if ('serviceWorker' in navigator) {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function isDark(){ return document.documentElement.getAttribute('data-theme') === 'dark'; }
 
-  /* ── Séquence de démarrage (uniquement en thème sombre, une fois par session) ── */
+  /* ── Séquence de démarrage premium (thème sombre, une fois par session) ── */
   (function boot(){
     const overlay = document.getElementById('bootOverlay');
     if (!overlay || reduceMotion || !isDark()) return;
@@ -6029,28 +6077,30 @@ if ('serviceWorker' in navigator) {
     overlay.classList.add('show');
     const lineEl = document.getElementById('bootLine');
     const fillEl = document.getElementById('bootFill');
-    const pctEl = document.getElementById('bootPct');
+    const flashEl = document.getElementById('bootFlash');
     const lines = [
-      "INITIALISATION DU RÉSEAU…",
-      "CONNEXION AUX PROFESSIONNELS D'ORAN…",
-      "VÉRIFICATION DES PROFILS…",
-      "RÉSEAU PRÊT."
+      "Initialisation du réseau…",
+      "Connexion aux professionnels d'Oran…",
+      "Vérification des profils…",
+      "Réseau prêt."
     ];
     let li = 0, pct = 0;
-    const lineTimer = setInterval(() => { li = (li + 1) % (lines.length - 1); if(lineEl) lineEl.textContent = lines[li]; }, 380);
-    const fillTimer = setInterval(() => {
-      pct = Math.min(100, pct + 6 + Math.random() * 8);
-      if (fillEl) fillEl.style.width = pct + '%';
-      if (pctEl) pctEl.textContent = Math.floor(pct) + '%';
-      if (pct >= 100) {
-        clearInterval(fillTimer); clearInterval(lineTimer);
-        if (lineEl) lineEl.textContent = lines[lines.length - 1];
-        setTimeout(() => {
-          overlay.classList.add('hide');
-          setTimeout(() => overlay.style.display = 'none', 650);
-        }, 220);
-      }
-    }, 80);
+    const lineTimer = setInterval(() => { li = (li + 1) % (lines.length - 1); if(lineEl) lineEl.textContent = lines[li]; }, 420);
+    setTimeout(() => {
+      const fillTimer = setInterval(() => {
+        pct = Math.min(100, pct + 7 + Math.random() * 8);
+        if (fillEl) fillEl.style.width = pct + '%';
+        if (pct >= 100) {
+          clearInterval(fillTimer); clearInterval(lineTimer);
+          if (lineEl) lineEl.textContent = lines[lines.length - 1];
+          setTimeout(() => {
+            if (flashEl) flashEl.classList.add('pulse');
+            overlay.classList.add('hide');
+            setTimeout(() => overlay.style.display = 'none', 750);
+          }, 320);
+        }
+      }, 90);
+    }, 1000);
   })();
 
   /* ── Réseau de particules en arrière-plan (léger, adapté mobile) ── */
