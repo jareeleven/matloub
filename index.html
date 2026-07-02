@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,7 +7,7 @@
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="description" content="MATLOUB — Trouvez les meilleurs professionnels à Oran, Algérie">
-<meta name="theme-color" content="#0052A5">
+<meta name="theme-color" content="#2C8EFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MATLOUB">
@@ -47,13 +47,14 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary: #0052A5;
-  --primary-light: #0080D6;
-  --accent: #00C2FF;
+  --primary: #2C8EFF;
+  --primary-light: #5AACFF;
+  --accent: #38BDF8;
   --accent2: #FF6B6B;
   --accent3: #FFB547;
   --bg: #EFF6FF;
@@ -62,64 +63,88 @@
   --text: #0A1F44;
   --text2: #2D5282;
   --text3: #7EA8CC;
-  --border: rgba(0,82,165,0.12);
-  --shadow: 0 8px 32px rgba(0,82,165,0.14);
-  --shadow-sm: 0 2px 12px rgba(0,82,165,0.08);
+  --border: rgba(44,142,255,0.12);
+  --shadow: 0 8px 32px rgba(44,142,255,0.14);
+  --shadow-sm: 0 2px 12px rgba(44,142,255,0.08);
   --r: 20px;
   --r-sm: 14px;
   --nav-h: 72px;
   --header-h: 60px;
 }
 
-/* ── DARK MODE ── */
+/* ── DARK MODE — FUTURISTE (par défaut) ── */
 [data-theme="dark"] {
-  --bg: #0F0F0F;
-  --bg2: #181818;
-  --surface: #212121;
-  --text: #FFFFFF;
-  --text2: #AAAAAA;
-  --text3: #717171;
-  --border: rgba(255,255,255,0.1);
-  --shadow: 0 8px 32px rgba(0,0,0,0.6);
-  --shadow-sm: 0 2px 12px rgba(0,0,0,0.4);
+  --bg: #05070D;
+  --bg2: #0D1320;
+  --surface: #121A2B;
+  --surface-glass: rgba(18,26,43,0.72);
+  --text: #F4F7FC;
+  --text2: #93A3C2;
+  --text3: #5E6E8C;
+  --border: rgba(255,255,255,0.09);
+  --border-strong: rgba(255,255,255,0.16);
+  --amber: #FFB454;
+  --shadow: 0 10px 38px rgba(0,0,0,0.55);
+  --shadow-sm: 0 3px 16px rgba(0,0,0,0.4);
+  --glow-primary: 0 0 0 1px rgba(44,142,255,0.35), 0 10px 30px rgba(44,142,255,0.22);
 }
-[data-theme="dark"] body { background: #0F0F0F; }
-[data-theme="dark"] header { background: rgba(15,15,15,0.97); border-bottom: 1px solid rgba(255,255,255,0.08); }
-[data-theme="dark"] .bottom-nav { background: #212121; border-top: 1px solid rgba(255,255,255,0.08); }
-[data-theme="dark"] .search-input { background: #272727; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
-[data-theme="dark"] .input-field { background: #272727; border-color: rgba(255,255,255,0.12); color: #fff; }
-[data-theme="dark"] .input-field::placeholder { color: #717171; }
-[data-theme="dark"] #activation-code-input { background: #1a1a2e !important; color: #fff !important; -webkit-text-fill-color: #fff !important; border-color: var(--primary) !important; }
-#activation-code-input::placeholder { color: var(--text3) !important; opacity: 1; }
-#activation-code-input:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(0,194,255,0.15) !important; }
-[data-theme="dark"] .modal-sheet { background: #212121; }
-[data-theme="dark"] .modal-handle { background: #444; }
-[data-theme="dark"] .card, [data-theme="dark"] .card-sm { background: #212121; border-color: rgba(255,255,255,0.08); }
-[data-theme="dark"] .pro-card { background: #212121; border-color: rgba(255,255,255,0.08); }
-[data-theme="dark"] .chip { background: #272727; color: #AAAAAA; border: 1px solid rgba(255,255,255,0.1); }
-[data-theme="dark"] .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
-[data-theme="dark"] .btn-ghost { background: #272727; color: #AAAAAA; }
-[data-theme="dark"] select.input-field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23AAAAAA' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-color: #272727; }
-[data-theme="dark"] select.input-field option { background: #272727; color: #fff; }
-[data-theme="dark"] .hero-banner { background: linear-gradient(135deg,#0a1a2e,#0d2744,#003580); }
-[data-theme="dark"] .review-item { background: #272727; }
-[data-theme="dark"] .suggestions-box { background: #212121; border-color: rgba(255,255,255,0.1); }
-[data-theme="dark"] .suggestion-item:hover { background: #272727; }
-[data-theme="dark"] .filter-select { background: #272727; color: #fff; border-color: rgba(255,255,255,0.12); }
-[data-theme="dark"] .nav-item { color: #AAAAAA; }
-[data-theme="dark"] .nav-item.active { color: var(--primary); }
-[data-theme="dark"] .location-dropdowns select { background: #272727; color: #fff; border-color: rgba(255,255,255,0.12); }
+[data-theme="dark"] body { background: var(--bg); position:relative; }
+[data-theme="dark"] body::before,
+[data-theme="dark"] body::after{
+  content:'';position:fixed;border-radius:50%;filter:blur(120px);z-index:0;pointer-events:none;
+}
+[data-theme="dark"] body::before{width:480px;height:480px;background:radial-gradient(circle,rgba(44,142,255,0.22),transparent 70%);top:-160px;left:-140px;}
+[data-theme="dark"] body::after{width:440px;height:440px;background:radial-gradient(circle,rgba(255,180,84,0.12),transparent 70%);bottom:60px;right:-140px;}
+[data-theme="dark"] header{background:rgba(5,7,13,0.75);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);box-shadow:none;}
+[data-theme="dark"] .bottom-nav{background:rgba(13,19,32,0.82);backdrop-filter:blur(20px);border:1px solid var(--border);box-shadow:0 12px 40px rgba(0,0,0,0.5);}
+[data-theme="dark"] .search-input{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+[data-theme="dark"] .search-input:focus{box-shadow:var(--glow-primary);}
+[data-theme="dark"] .input-field{background:var(--surface);border-color:var(--border);color:var(--text);}
+[data-theme="dark"] .input-field::placeholder{color:var(--text3);}
+[data-theme="dark"] #activation-code-input{background:#0B1120 !important;color:#fff !important;-webkit-text-fill-color:#fff !important;border-color:var(--primary) !important;}
+#activation-code-input::placeholder{color:var(--text3) !important;opacity:1;}
+#activation-code-input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px rgba(56,189,248,0.15) !important;}
+[data-theme="dark"] .modal-sheet{background:var(--bg2);border-top:1px solid var(--border-strong);}
+[data-theme="dark"] .modal-inner{background:var(--bg2);border:1px solid var(--border);}
+[data-theme="dark"] .modal-handle{background:var(--border-strong);}
+[data-theme="dark"] .card, [data-theme="dark"] .card-sm{background:linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.01)),var(--surface);border-color:var(--border);}
+[data-theme="dark"] .pro-card{background:linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.01)),var(--surface);border-color:var(--border);}
+[data-theme="dark"] .chip{background:var(--surface);color:var(--text2);border:1px solid var(--border);}
+[data-theme="dark"] .chip.active{background:var(--primary);color:white;border-color:var(--primary);box-shadow:var(--glow-primary);}
+[data-theme="dark"] .btn-ghost{background:var(--surface);color:var(--text2);border:1px solid var(--border);}
+[data-theme="dark"] select.input-field{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2393A3C2' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-color:var(--surface);}
+[data-theme="dark"] select.input-field option{background:var(--surface);color:var(--text);}
+[data-theme="dark"] .hero-banner{background:linear-gradient(135deg,#060B18,#0D1F3D,#0B3E8C);border:1px solid var(--border);position:relative;overflow:hidden;}
+[data-theme="dark"] .hero-banner::before{content:'';position:absolute;top:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(56,189,248,0.35),transparent 70%);filter:blur(6px);}
+[data-theme="dark"] .review-item{background:var(--surface);}
+[data-theme="dark"] .suggestions-box{background:var(--bg2);border-color:var(--border);}
+[data-theme="dark"] .suggestion-item:hover{background:var(--surface);}
+[data-theme="dark"] .filter-select{background:var(--surface);color:var(--text);border-color:var(--border);}
+[data-theme="dark"] .nav-item{color:var(--text3);}
+[data-theme="dark"] .nav-item.active{color:var(--primary);text-shadow:0 0 14px rgba(44,142,255,0.5);}
+[data-theme="dark"] .location-dropdowns select{background:var(--surface);color:var(--text);border-color:var(--border);}
 /* Fix select options blanc dans les deux bars */
 [data-theme="dark"] #exp-daira option,
 [data-theme="dark"] #exp-commune option,
 [data-theme="dark"] #home-daira option,
-[data-theme="dark"] #home-commune option { background: #272727 !important; color: #fff !important; }
+[data-theme="dark"] #home-commune option { background: var(--surface) !important; color: var(--text) !important; }
+/* Halo conique au survol/tap — cartes et pro-cards */
+[data-theme="dark"] .card, [data-theme="dark"] .card-sm, [data-theme="dark"] .pro-card { position:relative; }
+[data-theme="dark"] .card::before, [data-theme="dark"] .card-sm::before, [data-theme="dark"] .pro-card::before{
+  content:'';position:absolute;inset:-1px;border-radius:inherit;z-index:-1;pointer-events:none;
+  background:conic-gradient(from 0deg, transparent, rgba(44,142,255,0.5), rgba(255,180,84,0.4), transparent 60%);
+  opacity:0;transition:opacity .3s ease;
+}
+[data-theme="dark"] .pro-card:active::before, [data-theme="dark"] .card:active::before{opacity:.7;}
+@media (hover:hover){
+  [data-theme="dark"] .card:hover::before, [data-theme="dark"] .card-sm:hover::before, [data-theme="dark"] .pro-card:hover::before{opacity:1;}
+}
 
 /* ── XSS SAFE OUTPUT ── */
 .safe-text { /* text rendered via textContent only */ }
 
 /* ── PULSE ANIMATION (new pro / top) ── */
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,82,165,0.3)} 50%{box-shadow:0 0 0 8px rgba(0,82,165,0)} }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(44,142,255,0.3)} 50%{box-shadow:0 0 0 8px rgba(44,142,255,0)} }
 .pulse-ring { animation: pulse 2s infinite; }
 
 /* ── SEARCH SUGGESTIONS ── */
@@ -196,7 +221,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);padd
 .ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 /* ── HEADER ── */
-header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);height:var(--header-h);padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:0 2px 20px rgba(0,82,165,0.06);}
+header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);height:var(--header-h);padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:0 2px 20px rgba(44,142,255,0.06);}
 .logo-wrap{display:flex;align-items:center;gap:8px;}
 .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:10px;display:flex;align-items:center;justify-content:center;}
 .logo-icon span{color:white;font-size:18px;}
@@ -213,10 +238,10 @@ header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);backd
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:12px;left:12px;right:12px;height:var(--nav-h);background:white;border-radius:28px;display:flex;justify-content:space-around;align-items:center;box-shadow:0 8px 40px rgba(0,82,165,0.18);z-index:300;border:1px solid rgba(255,255,255,0.8);}
+.bottom-nav{position:fixed;bottom:12px;left:12px;right:12px;height:var(--nav-h);background:white;border-radius:28px;display:flex;justify-content:space-around;align-items:center;box-shadow:0 8px 40px rgba(44,142,255,0.18);z-index:300;border:1px solid rgba(255,255,255,0.8);}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);text-decoration:none;font-size:0.62rem;font-weight:700;padding:8px 14px;border-radius:18px;transition:all 0.25s;letter-spacing:0.3px;cursor:pointer;border:none;background:none;}
 .nav-item span.material-icons-round{font-size:22px;transition:0.25s;}
-.nav-item.active{color:var(--primary);background:rgba(0,82,165,0.08);}
+.nav-item.active{color:var(--primary);background:rgba(44,142,255,0.08);}
 .nav-item.active span.material-icons-round{transform:scale(1.1);}
 
 /* ── CARDS ── */
@@ -236,9 +261,9 @@ header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.95);backd
 .chips-scroll::-webkit-scrollbar{display:none;}
 .chip{padding:8px 14px;background:var(--surface);border-radius:50px;font-size:0.8rem;font-weight:700;white-space:nowrap;border:2px solid transparent;cursor:pointer;color:var(--text2);transition:0.2s;box-shadow:var(--shadow-sm);display:inline-flex;align-items:center;gap:5px;flex-shrink:0;}
 .chip:active{transform:scale(0.97);}
-.chip.active{background:var(--primary);color:white;border-color:var(--primary);box-shadow:0 4px 14px rgba(0,82,165,0.3);}
+.chip.active{background:var(--primary);color:white;border-color:var(--primary);box-shadow:0 4px 14px rgba(44,142,255,0.3);}
 .chip-icon{font-size:14px;}
-.chip-sm{padding:5px 12px;font-size:0.75rem;background:rgba(0,82,165,0.07);border-radius:50px;color:var(--primary);font-weight:700;display:inline-flex;align-items:center;gap:4px;}
+.chip-sm{padding:5px 12px;font-size:0.75rem;background:rgba(44,142,255,0.07);border-radius:50px;color:var(--primary);font-weight:700;display:inline-flex;align-items:center;gap:4px;}
 
 /* ── CATEGORY GRID ── */
 .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
@@ -279,8 +304,8 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 /* ── BUTTONS ── */
 .btn{padding:14px 20px;border-radius:14px;border:none;font-weight:800;cursor:pointer;width:100%;font-size:0.95rem;font-family:'Nunito',sans-serif;transition:0.2s;letter-spacing:0.2px;}
 .btn:active{transform:scale(0.98);}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 6px 20px rgba(0,82,165,0.3);}
-.btn-accent{background:linear-gradient(135deg,var(--accent),#0099CC);color:white;box-shadow:0 6px 20px rgba(0,194,255,0.3);}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;box-shadow:0 6px 20px rgba(44,142,255,0.3);}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#0099CC);color:white;box-shadow:0 6px 20px rgba(56,189,248,0.3);}
 .btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary);}
 .btn-danger{background:linear-gradient(135deg,#EF4444,#DC2626);color:white;box-shadow:0 4px 14px rgba(239,68,68,0.3);}
 .btn-ghost{background:var(--bg);color:var(--text2);border:none;}
@@ -360,7 +385,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 /* ── SECTION TITRE ── */
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .section-title{font-weight:800;font-size:1rem;color:var(--text);}
-.section-link{font-size:0.8rem;font-weight:700;color:var(--primary);cursor:pointer;padding:4px 10px;background:rgba(0,82,165,0.07);border-radius:50px;}
+.section-link{font-size:0.8rem;font-weight:700;color:var(--primary);cursor:pointer;padding:4px 10px;background:rgba(44,142,255,0.07);border-radius:50px;}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:calc(var(--nav-h) + 20px);left:50%;transform:translateX(-50%);background:rgba(26,16,64,0.9);color:white;padding:10px 22px;border-radius:50px;z-index:9999;font-size:0.85rem;font-weight:700;white-space:nowrap;animation:fadeUp 0.3s;}
@@ -408,7 +433,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
 /* ── HOME HERO BANNER ── */
-.hero-banner{background:linear-gradient(135deg,#0052A5 0%,#0080D6 50%,#00C2FF 100%);border-radius:var(--r);padding:20px;color:white;margin-bottom:18px;position:relative;overflow:hidden;}
+.hero-banner{background:linear-gradient(135deg,#2C8EFF 0%,#5AACFF 50%,#38BDF8 100%);border-radius:var(--r);padding:20px;color:white;margin-bottom:18px;position:relative;overflow:hidden;}
 .hero-banner::before{content:'';position:absolute;top:-30px;right:-20px;width:140px;height:140px;background:rgba(255,255,255,0.07);border-radius:50%;}
 .hero-banner::after{content:'';position:absolute;bottom:-40px;right:40px;width:100px;height:100px;background:rgba(255,255,255,0.05);border-radius:50%;}
 .hero-title{font-size:1.2rem;font-weight:900;margin-bottom:6px;}
@@ -440,7 +465,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 }
 
 /* ── SUPER ADMIN ── */
-.sa-header{background:linear-gradient(135deg,#0A1F44,#0052A5);color:white;border-radius:var(--r);padding:20px;margin-bottom:20px;}
+.sa-header{background:linear-gradient(135deg,#0A1F44,#2C8EFF);color:white;border-radius:var(--r);padding:20px;margin-bottom:20px;}
 .traffic-bar{height:32px;background:var(--bg);border-radius:8px;overflow:hidden;margin-bottom:4px;}
 .traffic-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--primary),var(--primary-light));display:flex;align-items:center;padding-left:10px;color:white;font-size:0.75rem;font-weight:700;}
 
@@ -459,7 +484,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 .tab-btn.active{background:white;color:var(--primary);box-shadow:var(--shadow-sm);}
 
 /* ── LOADING SPINNER ── */
-.spinner{width:24px;height:24px;border:3px solid rgba(0,82,165,0.15);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+.spinner{width:24px;height:24px;border:3px solid rgba(44,142,255,0.15);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* ── Compte à rebours essai ── */
@@ -571,15 +596,112 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
   transition: background 0.2s;
 }
 .wa-btn:hover { background: #1EBE5A; }
+
+/* ═══════════════ HABILLAGE FUTURISTE ═══════════════ */
+
+/* ── Grain + trame fine (texture premium) ── */
+[data-theme="dark"] body::after{
+  /* déjà utilisé pour le glow ambient ; le grain est géré via une couche séparée ci-dessous */
+}
+.grain-layer{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .4s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+}
+[data-theme="dark"] .grain-layer{opacity:0.04;}
+
+/* ── Réseau de particules en arrière-plan ── */
+.bg-net{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .5s;}
+[data-theme="dark"] .bg-net{opacity:0.55;}
+
+/* ── Vignettage cinématique ── */
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .5s;background:radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0,0,0,0.45) 135%);}
+[data-theme="dark"] .vignette{opacity:1;}
+
+/* ── Point pulsant du réseau, à côté du logo ── */
+.logo-pulse{width:0;height:0;border-radius:50%;background:var(--primary);opacity:0;margin-left:2px;transition:opacity .3s;}
+[data-theme="dark"] .logo-pulse{width:7px;height:7px;opacity:1;box-shadow:0 0 10px 2px rgba(44,142,255,0.75);animation:logoPulse 2.4s ease-in-out infinite;}
+@keyframes logoPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.45;transform:scale(0.7);}}
+.logo-text.glitch{text-shadow:-1px 0 var(--primary), 1px 0 var(--amber, #FFB454);}
+
+/* ── Halo au fil bleu/ambre sur le badge Pro, le statut disponible ── */
+[data-theme="dark"] .pro-status-dot.available{box-shadow:0 0 8px 2px rgba(44,142,255,0.6);}
+[data-theme="dark"] .badge-top{background:linear-gradient(135deg,#7C4A0A,#FFB454);color:#1a1000;box-shadow:0 0 10px 1px rgba(255,180,84,0.35);}
+[data-theme="dark"] .badge-new{background:linear-gradient(135deg,#0B5C3A,#22C55E);color:#eafff2;}
+
+/* ── Boutons primaires : lueur douce ── */
+[data-theme="dark"] .btn-primary{box-shadow:0 0 0 1px rgba(44,142,255,0.4), 0 10px 28px rgba(44,142,255,0.28);}
+[data-theme="dark"] .btn-accent{box-shadow:0 0 0 1px rgba(56,189,248,0.35), 0 10px 26px rgba(56,189,248,0.22);}
+
+/* ── Séquence de démarrage ── */
+.boot-overlay{
+  position:fixed;inset:0;z-index:9999;background:#05070D;
+  display:none;align-items:center;justify-content:center;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+[data-theme="dark"] .boot-overlay.show{display:flex;opacity:1;visibility:visible;}
+.boot-overlay.hide{opacity:0 !important;visibility:hidden !important;pointer-events:none;}
+.boot-content{text-align:center;font-family:'JetBrains Mono',monospace;padding:0 24px;}
+.boot-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.04em;margin-bottom:16px;color:#F4F7FC;}
+.boot-line{font-size:.72rem;color:#93A3C2;letter-spacing:.05em;margin-bottom:16px;min-height:1.2em;}
+.boot-bar{width:200px;height:2px;background:rgba(255,255,255,.1);margin:0 auto;border-radius:2px;overflow:hidden;}
+.boot-bar-fill{width:0%;height:100%;background:linear-gradient(90deg,#FFB454,#2C8EFF);box-shadow:0 0 10px 2px rgba(44,142,255,.6);transition:width .12s linear;}
+.boot-pct{font-size:.62rem;color:#5E6E8C;margin-top:8px;letter-spacing:.1em;}
+
+@media (prefers-reduced-motion: reduce){
+  .boot-overlay{display:none !important;}
+  .logo-pulse{animation:none !important;}
+  .bg-net{display:none !important;}
+  .hero-sphere{display:none !important;}
+}
+
+/* ── Sphère 3D décorative dans le hero (masquée en mode clair) ── */
+.hero-sphere{position:absolute;top:-10px;right:-10px;width:130px;height:130px;opacity:0;pointer-events:none;transition:opacity .6s;}
+[data-theme="dark"] .hero-sphere{opacity:0.9;}
+
+/* ── Curseur à double couche (desktop uniquement, n'affecte pas le tactile) ── */
+@media (hover:hover) and (pointer:fine){
+  [data-theme="dark"] .cursor-glow{
+    position:fixed;width:240px;height:240px;border-radius:50%;
+    background:radial-gradient(circle, rgba(44,142,255,0.14), transparent 70%);
+    transform:translate(-50%,-50%);pointer-events:none;z-index:9998;
+    opacity:0;mix-blend-mode:screen;
+    transition:opacity .35s ease, left .5s cubic-bezier(.16,1,.3,1), top .5s cubic-bezier(.16,1,.3,1);
+  }
+  [data-theme="dark"] .cursor-ring{
+    position:fixed;width:26px;height:26px;border:1px solid rgba(255,180,84,.55);border-radius:50%;
+    transform:translate(-50%,-50%);pointer-events:none;z-index:9998;opacity:0;
+    transition:opacity .3s ease, left .14s ease-out, top .14s ease-out;
+  }
+  /* Boutons magnétiques */
+  [data-theme="dark"] .btn-primary, [data-theme="dark"] .btn-accent, [data-theme="dark"] .btn-outline{
+    will-change:transform;transition:transform .15s ease, box-shadow .2s ease;
+  }
+}
 </style>
 </head>
 <body>
+
+<!-- ══ SÉQUENCE DE DÉMARRAGE ══ -->
+<div class="boot-overlay" id="bootOverlay">
+  <div class="boot-content">
+    <div class="boot-logo">MATLOUB</div>
+    <div class="boot-line" id="bootLine">INITIALISATION DU RÉSEAU…</div>
+    <div class="boot-bar"><div class="boot-bar-fill" id="bootFill"></div></div>
+    <div class="boot-pct" id="bootPct">0%</div>
+  </div>
+</div>
+
+<canvas class="bg-net" id="bgNet"></canvas>
+<div class="grain-layer"></div>
+<div class="vignette"></div>
 
 <!-- ══ HEADER ══ -->
 <header>
   <div class="logo-wrap">
     <div class="logo-icon"><span class="material-icons-round" style="font-size:18px;color:white;">handshake</span></div>
-    <div class="logo-text">MATLOUB</div>
+    <div class="logo-text" id="logo-text">MATLOUB</div>
+    <span class="logo-pulse" id="logo-pulse"></span>
   </div>
   <div class="header-right">
     <div style="position:relative;" id="lang-wrap">
@@ -594,7 +716,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       </div>
     </div>
     <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Mode sombre/clair">
-      <span class="material-icons-round" id="theme-icon" style="font-size:20px;">dark_mode</span>
+      <span class="material-icons-round" id="theme-icon" style="font-size:20px;">light_mode</span>
     </button>
     <button class="hdr-btn notif" id="hdr-notif-btn" onclick="showModal('notif-modal')" title="Notifications">
       <span class="material-icons-round" style="font-size:20px;">notifications_none</span>
@@ -610,6 +732,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
   <!-- Hero -->
   <div class="hero-banner">
+    <canvas id="heroSphere" class="hero-sphere"></canvas>
     <div class="hero-title" data-i18n="hero_title">Trouvez un Pro à Oran 🔍</div>
     <div class="hero-sub" data-i18n="hero_sub">Plombier, Médecin, Électricien... à portée de main</div>
     <div class="hero-count"><span class="material-icons-round" style="font-size:16px;">verified</span><span id="hero-count-text">0 professionnels vérifiés</span></div>
@@ -692,10 +815,10 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
   <!-- Chips catégories avec scroll horizontal amélioré -->
   <div style="position:relative;margin-bottom:16px;">
-    <button id="chips-arrow-left" onclick="scrollChips(-1)" style="position:absolute;left:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(0,82,165,0.2);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--primary);">
+    <button id="chips-arrow-left" onclick="scrollChips(-1)" style="position:absolute;left:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(44,142,255,0.2);cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--primary);">
       <span class="material-icons-round" style="font-size:16px;">chevron_left</span>
     </button>
-    <button id="chips-arrow-right" onclick="scrollChips(1)" style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(0,82,165,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--primary);">
+    <button id="chips-arrow-right" onclick="scrollChips(1)" style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);z-index:10;width:30px;height:30px;border-radius:50%;background:white;border:none;box-shadow:0 2px 8px rgba(44,142,255,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--primary);">
       <span class="material-icons-round" style="font-size:16px;">chevron_right</span>
     </button>
     <div id="chips-fade-left" style="position:absolute;left:0;top:0;bottom:8px;width:28px;background:linear-gradient(to right,var(--bg),transparent);z-index:5;pointer-events:none;display:none;border-radius:50px 0 0 50px;"></div>
@@ -753,7 +876,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <button class="btn btn-outline" onclick="showModal('register-type-modal')" data-i18n="register_pro">Inscription Professionnel</button>
 
     <!-- Conditions d'abonnement -->
-    <div class="card" style="margin-top:20px;background:linear-gradient(135deg,rgba(0,82,165,0.08),rgba(168,85,247,0.05));border:1px solid rgba(0,82,165,0.2);">
+    <div class="card" style="margin-top:20px;background:linear-gradient(135deg,rgba(44,142,255,0.08),rgba(168,85,247,0.05));border:1px solid rgba(44,142,255,0.2);">
       <div style="font-weight:900;font-size:1rem;margin-bottom:12px;text-align:center;">💎 Conditions d'abonnement Pro</div>
       <div style="display:flex;gap:12px;margin-bottom:12px;">
         <!-- Plan Essai -->
@@ -957,7 +1080,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
           <div class="admin-stat-value" id="pro-stat-favs">0</div>
           <div class="admin-stat-label">En favoris</div>
         </div>
-        <div class="admin-stat-card" style="background:linear-gradient(135deg,#EC4899,#0080D6);">
+        <div class="admin-stat-card" style="background:linear-gradient(135deg,#EC4899,#5AACFF);">
           <div class="admin-stat-value" id="pro-stat-reviews">0</div>
           <div class="admin-stat-label">Avis reçus</div>
         </div>
@@ -1229,7 +1352,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     <p style="color:var(--text2);font-size:0.78rem;margin-bottom:16px;">Inscription 100% gratuite · Vérification identité requise</p>
 
     <!-- ETAPE 1: Identité -->
-    <div style="background:rgba(0,82,165,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
+    <div style="background:rgba(44,142,255,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
       <div style="font-size:0.8rem;font-weight:800;color:var(--primary);margin-bottom:10px;">① IDENTITÉ</div>
       <div class="input-group"><label>Nom & Prénom *</label><input type="text" id="reg-name" class="input-field" placeholder="Votre nom complet" oninput="app.checkBlacklist()"></div>
       <div class="input-group">
@@ -1295,7 +1418,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
 
     <!-- ETAPE 5: Selfie -->
     <div style="background:rgba(168,85,247,0.06);border-radius:14px;padding:12px;margin-bottom:14px;">
-      <div style="font-size:0.8rem;font-weight:800;color:#0080D6;margin-bottom:6px;">⑤ SELFIE D'IDENTITÉ *</div>
+      <div style="font-size:0.8rem;font-weight:800;color:#5AACFF;margin-bottom:6px;">⑤ SELFIE D'IDENTITÉ *</div>
       <p style="font-size:0.75rem;color:var(--text3);margin-bottom:10px;">Une photo de votre visage est requise pour protéger les clients. Elle sera visible uniquement par l'administrateur.</p>
       <div id="selfie-preview" style="width:90px;height:90px;border-radius:16px;background:var(--bg);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;position:relative;overflow:hidden;">
         <span class="material-icons-round" style="font-size:32px;color:var(--text3);">add_a_photo</span>
@@ -1327,7 +1450,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     </div>
 
     <!-- Acceptation Charte -->
-    <div style="background:rgba(0,82,165,0.06);border:1px solid rgba(0,82,165,0.2);border-radius:12px;padding:12px;margin-bottom:12px;">
+    <div style="background:rgba(44,142,255,0.06);border:1px solid rgba(44,142,255,0.2);border-radius:12px;padding:12px;margin-bottom:12px;">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
         <input type="checkbox" id="terms-accept" style="margin-top:3px;width:18px;height:18px;accent-color:var(--primary);flex-shrink:0;">
         <span style="font-size:0.8rem;color:var(--text2);line-height:1.5;">
@@ -1529,7 +1652,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
       <p style="margin-bottom:12px;">Chaque professionnel a la responsabilité de maintenir son statut à jour. Si vous n'êtes pas disponible temporairement, utilisez le bouton <strong>"Indisponible"</strong> dans votre profil pour éviter toute confusion avec les clients.</p>
 
       <div style="font-weight:800;color:var(--text);margin-bottom:6px;">⚖️ 6. Responsabilité</div>
-      <div style="background:rgba(0,82,165,0.08);border:1px solid rgba(0,82,165,0.2);border-radius:10px;padding:10px;margin-bottom:12px;">
+      <div style="background:rgba(44,142,255,0.08);border:1px solid rgba(44,142,255,0.2);border-radius:10px;padding:10px;margin-bottom:12px;">
         <p><strong>MATLOUB est une plateforme de mise en relation uniquement.</strong></p>
         <p style="margin-top:6px;">MATLOUB n'est en aucun cas responsable des agissements inappropriés des professionnels ou des clients, des litiges commerciaux, de la qualité des services rendus, ou des dommages résultant d'une mise en relation.</p>
         <p style="margin-top:6px;">Toute transaction, accord ou contrat se fait directement entre le client et le professionnel, sous leur entière responsabilité.</p>
@@ -1663,7 +1786,7 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
             font-family:'Space Grotesk',sans-serif;
             -webkit-text-fill-color:var(--text);
             opacity:1;
-            box-shadow:0 2px 12px rgba(0,82,165,0.10);
+            box-shadow:0 2px 12px rgba(44,142,255,0.10);
           "
           oninput="this.value=this.value.toUpperCase()"
         >
@@ -1786,8 +1909,8 @@ const categories = [
    svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 36C10 26 18 18 32 18C46 18 54 26 54 36V44H10V36Z" fill="#F472B6"/><rect x="6" y="44" width="52" height="8" rx="3" fill="#DB2777"/><circle cx="20" cy="30" r="3" fill="white"/><circle cx="32" cy="26" r="3" fill="white"/><circle cx="44" cy="30" r="3" fill="white"/></svg>'},
   {id:"jardin",     name:"Jardinage",      nameAr:"بستنة",          nameKab:"Tafellaḥt",       color:"#22C55E",
    svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 58V30" stroke="#16A34A" stroke-width="4" stroke-linecap="round"/><path d="M32 34C32 34 14 30 14 16C28 16 32 34 32 34Z" fill="#22C55E"/><path d="M32 30C32 30 50 26 50 12C36 12 32 30 32 30Z" fill="#4ADE80"/></svg>'},
-  {id:"photo",      name:"Photographe",    nameAr:"مصور",          nameKab:"Amalan",          color:"#0080D6",
-   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="20" width="52" height="36" rx="6" fill="#0080D6"/><rect x="22" y="12" width="20" height="10" rx="3" fill="#0080D6"/><circle cx="32" cy="38" r="12" fill="#BAE6FD"/><circle cx="32" cy="38" r="7" fill="#0080D6"/></svg>'},
+  {id:"photo",      name:"Photographe",    nameAr:"مصور",          nameKab:"Amalan",          color:"#5AACFF",
+   svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="20" width="52" height="36" rx="6" fill="#5AACFF"/><rect x="22" y="12" width="20" height="10" rx="3" fill="#5AACFF"/><circle cx="32" cy="38" r="12" fill="#BAE6FD"/><circle cx="32" cy="38" r="7" fill="#5AACFF"/></svg>'},
   {id:"avocat",     name:"Avocat",         nameAr:"محامي",          nameKab:"Asaɣaḍ",          color:"#DC2626",
    svg:'<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="29" y="6" width="6" height="50" fill="#DC2626"/><path d="M8 16L20 16L14 30C14 30 8 30 8 24C8 21 8 16 8 16Z" fill="#FCA5A5"/><path d="M44 16L56 16L50 30C50 30 44 30 44 24C44 21 44 16 44 16Z" fill="#FCA5A5"/><rect x="16" y="54" width="32" height="6" rx="2" fill="#991B1B"/></svg>'},
   {id:"transport",  name:"Transport",      nameAr:"نقل",            nameKab:"Anaqal",          color:"#EA580C",
@@ -2685,7 +2808,7 @@ function showLoadingOverlay(msg = 'Chargement...') {
     ov.id = 'loading-overlay';
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,10,30,0.7);z-index:9990;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
     ov.innerHTML = `<div style="background:var(--surface);border-radius:20px;padding:28px 36px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
-      <div style="width:44px;height:44px;border:4px solid rgba(0,82,165,0.2);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;"></div>
+      <div style="width:44px;height:44px;border:4px solid rgba(44,142,255,0.2);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;"></div>
       <div style="font-weight:800;color:var(--text);" id="loading-msg">${msg}</div>
     </div>`;
     document.body.appendChild(ov);
@@ -2914,7 +3037,7 @@ function isProSubscribed(u) {
 }
 function getProBadge(u) {
   if (isProSubscribed(u)) {
-    return '<span style="display:inline-flex;align-items:center;gap:2px;background:linear-gradient(135deg,#0052A5,#0080D6);color:white;font-size:0.6rem;font-weight:900;padding:2px 7px;border-radius:50px;">💎 PRO</span>';
+    return '<span style="display:inline-flex;align-items:center;gap:2px;background:linear-gradient(135deg,#2C8EFF,#5AACFF);color:white;font-size:0.6rem;font-weight:900;padding:2px 7px;border-radius:50px;">💎 PRO</span>';
   }
   return '';
 }
@@ -3026,7 +3149,7 @@ const app = {
       <button onclick="app.filterMap('')" class="map-cat-btn active" data-cat=""
         style="display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:20px;
         border:2px solid var(--primary);background:var(--primary);color:white;font-weight:700;
-        font-size:0.82rem;cursor:pointer;margin-right:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,82,165,0.3);">
+        font-size:0.82rem;cursor:pointer;margin-right:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(44,142,255,0.3);">
         🗺️ <span id="map-all-label">Tous</span> (${activePros.length})
       </button>
       ${usedCats.map(c => {
@@ -3049,7 +3172,7 @@ const app = {
         btn.style.background = cat ? cat.color : 'var(--primary)';
         btn.style.color = 'white';
         btn.style.borderColor = cat ? cat.color : 'var(--primary)';
-        btn.style.boxShadow = `0 2px 8px ${cat ? cat.color+'55' : 'rgba(0,82,165,0.3)'}`;
+        btn.style.boxShadow = `0 2px 8px ${cat ? cat.color+'55' : 'rgba(44,142,255,0.3)'}`;
       } else {
         const c = categories.find(c => c.id === btn.dataset.cat);
         btn.style.background = c ? c.color+'11' : 'var(--surface)';
@@ -3097,16 +3220,16 @@ const app = {
       const avg = getAvgRating(u);
       const icon = L.divIcon({
         className: '',
-        html: `<div style="background:${cat.color||'#0052A5'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.svg ? cat.svg.replace('<svg ', '<svg style="width:20px;height:20px;filter:brightness(0) invert(1);" ') : '👷'}</div>`,
+        html: `<div style="background:${cat.color||'#2C8EFF'};color:white;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.3);border:2px solid white;">${cat.svg ? cat.svg.replace('<svg ', '<svg style="width:20px;height:20px;filter:brightness(0) invert(1);" ') : '👷'}</div>`,
         iconSize: [38, 38], iconAnchor: [19, 19]
       });
       const marker = L.marker([lat, lng], { icon }).addTo(mapInstance)
         .bindPopup(`<div style="min-width:190px;font-family:system-ui,sans-serif;">
           <div style="font-weight:800;font-size:0.95rem;margin-bottom:4px;">${sanitize(u.name)}</div>
-          <div style="color:${cat.color||'#0052A5'};font-weight:700;font-size:0.82rem;">${sanitize(u.job)}</div>
+          <div style="color:${cat.color||'#2C8EFF'};font-weight:700;font-size:0.82rem;">${sanitize(u.job)}</div>
           <div style="font-size:0.78rem;color:#888;margin:3px 0;">📍 ${sanitize(loc)}</div>
           <div style="font-size:0.78rem;color:#F59E0B;margin-bottom:8px;">★ ${avg} · ${(u.reviews||[]).length} avis</div>
-          <button onclick="app.showDetail('${u.id}')" style="background:#0052A5;color:white;border:none;padding:7px 0;border-radius:8px;cursor:pointer;font-weight:700;width:100%;font-size:0.85rem;">👤 Voir le profil</button>
+          <button onclick="app.showDetail('${u.id}')" style="background:#2C8EFF;color:white;border:none;padding:7px 0;border-radius:8px;cursor:pointer;font-weight:700;width:100%;font-size:0.85rem;">👤 Voir le profil</button>
         </div>`);
       mapMarkers.push(marker);
     });
@@ -3298,7 +3421,7 @@ const app = {
         <h2 style="font-size:1.15rem;margin-bottom:4px;">${sanitize(u.name)}${u.emailVerified ? ' <span style="font-size:0.8rem;color:#059669;">✅</span>' : ''}</h2>
         <div style="color:${cat.color};font-weight:700;font-size:0.9rem;">${sanitize(u.job)}</div>
         ${(u.badges||[]).includes('founder') ? '<div style="margin-top:6px;"><span style="background:linear-gradient(135deg,#D97706,#F59E0B);color:white;font-size:0.72rem;font-weight:900;padding:3px 12px;border-radius:20px;">✨ MEMBRE FONDATEUR MATLOUB</span></div>' : ''}
-        ${isProSubscribed(u) ? '<div style="margin-top:6px;"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#0052A5,#0080D6);color:white;font-size:0.72rem;font-weight:900;padding:3px 12px;border-radius:20px;">💎 Professionnel Vérifié Pro MATLOUB</span></div>' : ''}
+        ${isProSubscribed(u) ? '<div style="margin-top:6px;"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#2C8EFF,#5AACFF);color:white;font-size:0.72rem;font-weight:900;padding:3px 12px;border-radius:20px;">💎 Professionnel Vérifié Pro MATLOUB</span></div>' : ''}
         <div style="color:var(--text3);font-size:0.8rem;margin-top:4px;">${sanitize(u.commune||'')}, ${sanitize(oranData.dairas.find(d=>d.id===u.daira)?.name||u.location||'Oran')}</div>
         <div style="margin-top:8px;">
           ${u.available===false
@@ -3319,7 +3442,7 @@ const app = {
         <a href="https://wa.me/213${(u.phone||'').replace(/^0/,'')}" class="action-btn btn-wa" target="_blank" rel="noopener noreferrer" onclick="app.trackContact('${u.id}','whatsapp')"><span class="material-icons-round">chat</span>WhatsApp</a>
       </div>
       <div class="action-row" style="margin-top:8px;">
-        <button class="action-btn btn-primary" style="flex:2;background:linear-gradient(135deg,#0052A5,#0080D6);" onclick="app.openRdv('${u.id}')">
+        <button class="action-btn btn-primary" style="flex:2;background:linear-gradient(135deg,#2C8EFF,#5AACFF);" onclick="app.openRdv('${u.id}')">
           <span class="material-icons-round">event</span>Prendre RDV
         </button>
         <button class="action-btn ${isFav?'btn-danger':'btn-ghost'}" style="${isFav?'':'border:2px solid var(--border);'}" onclick="app.toggleFav('${u.id}')">
@@ -3868,7 +3991,7 @@ const app = {
 
     el.innerHTML = `
       <!-- Ton code parrain -->
-      <div class="card" style="background:linear-gradient(135deg,#0052A5,#0080D6);color:white;margin-bottom:14px;text-align:center;">
+      <div class="card" style="background:linear-gradient(135deg,#2C8EFF,#5AACFF);color:white;margin-bottom:14px;text-align:center;">
         <div style="font-size:0.8rem;opacity:0.85;margin-bottom:4px;">🎁 Ton code de parrainage unique</div>
         <div style="font-size:1.8rem;font-weight:900;letter-spacing:4px;font-family:'Space Grotesk',sans-serif;">${myCode}</div>
         <div style="font-size:0.75rem;opacity:0.8;margin:6px 0 12px;">Partage ce code → ton filleul paie <strong>800 DA</strong> au lieu de 1000 DA<br>Toi tu paies <strong>700 DA</strong> au lieu de 1000 DA !</div>
@@ -3902,7 +4025,7 @@ const app = {
               💎 S'abonner à ${prixFinal} DA
             </button>
           </div>` : `
-          <div style="background:linear-gradient(135deg,rgba(0,82,165,0.1),rgba(0,82,165,0.05));border-radius:12px;padding:12px;text-align:center;color:var(--primary);font-weight:800;">
+          <div style="background:linear-gradient(135deg,rgba(44,142,255,0.1),rgba(44,142,255,0.05));border-radius:12px;padding:12px;text-align:center;color:var(--primary);font-weight:800;">
             ✅ Abonnement Pro actif — continue à parrainer pour aider la communauté !
           </div>`}
         ${isFounder ? `
@@ -3967,7 +4090,7 @@ const app = {
     if (sub?.plan === 'pro_lifetime' && sub?.active) {
       const activatedDate = sub.activatedAt ? new Date(sub.activatedAt).toLocaleDateString('fr-FR') : 'Récemment';
       banner.innerHTML = `
-        <div style="background:linear-gradient(135deg,#0052A5,#0080D6);color:white;border-radius:14px;padding:16px;text-align:center;">
+        <div style="background:linear-gradient(135deg,#2C8EFF,#5AACFF);color:white;border-radius:14px;padding:16px;text-align:center;">
           <div style="font-size:1.8rem;margin-bottom:4px;">💎</div>
           <div style="font-weight:900;font-size:1.05rem;">Abonnement Pro à Vie Actif</div>
           <div style="font-size:0.8rem;opacity:0.85;margin-top:4px;">Activé le ${activatedDate}</div>
@@ -4104,7 +4227,7 @@ const app = {
     if (!list) return;
     if (!notifs.length) { list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">Aucune notification</div>'; return; }
     list.innerHTML = [...notifs].reverse().slice(0, 20).map(n => `
-      <div style="padding:10px;border-bottom:1px solid var(--border);${!n.read ? 'background:rgba(0,82,165,0.08);border-radius:10px;margin-bottom:6px;' : ''}">
+      <div style="padding:10px;border-bottom:1px solid var(--border);${!n.read ? 'background:rgba(44,142,255,0.08);border-radius:10px;margin-bottom:6px;' : ''}">
         <div style="font-weight:700;">${n.title}</div>
         <div style="color:var(--text3);font-size:0.78rem;">${n.body}</div>
         <div style="color:var(--text3);font-size:0.72rem;margin-top:4px;">${new Date(n.createdAt).toLocaleString('fr-FR')}</div>
@@ -4371,9 +4494,9 @@ const app = {
     document.getElementById('auth-phone-fields').style.display = mode==='phone' ? '' : 'none';
     document.getElementById('auth-email-fields').style.display = mode==='email' ? '' : 'none';
     // Style labels
-    document.getElementById('auth-phone-label').style.background = mode==='phone' ? 'rgba(0,82,165,0.1)' : 'var(--bg)';
+    document.getElementById('auth-phone-label').style.background = mode==='phone' ? 'rgba(44,142,255,0.1)' : 'var(--bg)';
     document.getElementById('auth-phone-label').style.borderColor = mode==='phone' ? 'var(--primary)' : 'transparent';
-    document.getElementById('auth-email-label').style.background = mode==='email' ? 'rgba(0,82,165,0.1)' : 'var(--bg)';
+    document.getElementById('auth-email-label').style.background = mode==='email' ? 'rgba(44,142,255,0.1)' : 'var(--bg)';
     document.getElementById('auth-email-label').style.borderColor = mode==='email' ? 'var(--primary)' : 'transparent';
   },
 
@@ -5077,7 +5200,7 @@ const app = {
       listEl.innerHTML = '<div style="margin-bottom:10px;padding:8px 12px;background:rgba(239,68,68,0.08);border-radius:10px;font-size:0.75rem;color:#991B1B;font-weight:700;">🔐 Zone confidentielle — Données des comptes</div>' +
         pros.map(u => {
           const sub = isProSubscribed(u) ? '💎 Pro Vie' : (isTrialExpired(u) ? '⛔ Expiré' : '⏳ Essai');
-          const subColor = isProSubscribed(u) ? '#0052A5' : (isTrialExpired(u) ? '#DC2626' : '#D97706');
+          const subColor = isProSubscribed(u) ? '#2C8EFF' : (isTrialExpired(u) ? '#DC2626' : '#D97706');
           return '<div style="background:var(--surface);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--border);">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
             '<strong>' + sanitize(u.name || '') + '</strong>' +
@@ -5346,7 +5469,7 @@ function showTrialExpiredModal() {
           Abonnez-vous pour seulement <strong>1000 DA à vie</strong> et retrouvez toutes vos fonctionnalités immédiatement !
         </div>
         <button onclick="document.getElementById('trial-expired-modal').remove();showProTab('abonnement',null);app.renderSubscriptionStatus();"
-          style="background:linear-gradient(135deg,#0052A5,#0080D6);color:white;border:none;padding:14px 24px;border-radius:12px;font-weight:900;font-size:1rem;cursor:pointer;width:100%;margin-bottom:10px;">
+          style="background:linear-gradient(135deg,#2C8EFF,#5AACFF);color:white;border:none;padding:14px 24px;border-radius:12px;font-weight:900;font-size:1rem;cursor:pointer;width:100%;margin-bottom:10px;">
           💎 S'abonner maintenant — 1000 DA à vie
         </button>
         <button onclick="document.getElementById('trial-expired-modal').remove();"
@@ -5472,7 +5595,7 @@ function addNotif(msg) {
     checkAndRestoreSuspensions();
   }
 
-  console.log(`%c🔐 MATLOUB v7 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256`, 'color:#0052A5;font-weight:bold;font-size:13px;');
+  console.log(`%c🔐 MATLOUB v7 — ${fbOk ? '🔥 Firebase connecté' : '📱 Mode local'} | AES-256 + SHA-256`, 'color:#2C8EFF;font-weight:bold;font-size:13px;');
 })();
 
 
@@ -5852,7 +5975,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- 📱 PWA Install Banner -->
-<div id="pwa-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--primary);color:white;padding:12px 20px;border-radius:16px;box-shadow:0 4px 20px rgba(0,82,165,0.4);align-items:center;gap:12px;font-weight:700;font-size:0.9rem;max-width:340px;width:90%;">
+<div id="pwa-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--primary);color:white;padding:12px 20px;border-radius:16px;box-shadow:0 4px 20px rgba(44,142,255,0.4);align-items:center;gap:12px;font-weight:700;font-size:0.9rem;max-width:340px;width:90%;">
   <span class="material-icons-round">install_mobile</span>
   <span>Installer MATLOUB sur votre téléphone</span>
   <button id="pwa-install-btn" style="background:white;color:var(--primary);border:none;padding:6px 14px;border-radius:10px;font-weight:800;cursor:pointer;">Installer</button>
@@ -5890,6 +6013,224 @@ if ('serviceWorker' in navigator) {
       .catch(e => console.warn('SW non enregistré:', e));
   });
 }
+</script>
+<!-- ═══════════════ HABILLAGE FUTURISTE — script additif, n'interfère pas avec app.* ═══════════════ -->
+<script>
+(function(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function isDark(){ return document.documentElement.getAttribute('data-theme') === 'dark'; }
+
+  /* ── Séquence de démarrage (uniquement en thème sombre, une fois par session) ── */
+  (function boot(){
+    const overlay = document.getElementById('bootOverlay');
+    if (!overlay || reduceMotion || !isDark()) return;
+    if (sessionStorage.getItem('matloub_booted')) return;
+    sessionStorage.setItem('matloub_booted', '1');
+    overlay.classList.add('show');
+    const lineEl = document.getElementById('bootLine');
+    const fillEl = document.getElementById('bootFill');
+    const pctEl = document.getElementById('bootPct');
+    const lines = [
+      "INITIALISATION DU RÉSEAU…",
+      "CONNEXION AUX PROFESSIONNELS D'ORAN…",
+      "VÉRIFICATION DES PROFILS…",
+      "RÉSEAU PRÊT."
+    ];
+    let li = 0, pct = 0;
+    const lineTimer = setInterval(() => { li = (li + 1) % (lines.length - 1); if(lineEl) lineEl.textContent = lines[li]; }, 380);
+    const fillTimer = setInterval(() => {
+      pct = Math.min(100, pct + 6 + Math.random() * 8);
+      if (fillEl) fillEl.style.width = pct + '%';
+      if (pctEl) pctEl.textContent = Math.floor(pct) + '%';
+      if (pct >= 100) {
+        clearInterval(fillTimer); clearInterval(lineTimer);
+        if (lineEl) lineEl.textContent = lines[lines.length - 1];
+        setTimeout(() => {
+          overlay.classList.add('hide');
+          setTimeout(() => overlay.style.display = 'none', 650);
+        }, 220);
+      }
+    }, 80);
+  })();
+
+  /* ── Réseau de particules en arrière-plan (léger, adapté mobile) ── */
+  (function initBgNetwork(){
+    const canvas = document.getElementById('bgNet');
+    if (!canvas || reduceMotion) return;
+    const ctx = canvas.getContext('2d');
+    let w, h, particles = [];
+    const COUNT = window.innerWidth < 700 ? 22 : 45;
+    function resize(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    function seed(){
+      particles = [];
+      for (let i = 0; i < COUNT; i++) {
+        particles.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.12, vy: (Math.random() - 0.5) * 0.12, r: 1 + Math.random() * 1.2 });
+      }
+    }
+    window.addEventListener('resize', () => { resize(); seed(); });
+    resize(); seed();
+    let running = true;
+    document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) step(); });
+    function step(){
+      if (!running || !isDark()) { requestAnimationFrame(step); return; }
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+        if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+      });
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i], b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.strokeStyle = `rgba(93,150,255,${0.1 * (1 - dist / 120)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        }
+      }
+      particles.forEach(p => {
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(160,200,255,0.5)'; ctx.fill();
+      });
+      requestAnimationFrame(step);
+    }
+    step();
+  })();
+
+  /* ── Glitch de signal périodique sur le logo (discret) ── */
+  if (!reduceMotion) {
+    setInterval(() => {
+      if (!isDark()) return;
+      const el = document.getElementById('logo-text');
+      if (!el) return;
+      el.classList.add('glitch');
+      setTimeout(() => el.classList.remove('glitch'), 120);
+    }, 6000);
+  }
+
+  /* ── Sphère 3D du hero (réseau de nœuds, façon vitrine) ── */
+  function initHeroSphere(){
+    const canvas = document.getElementById('heroSphere');
+    if (!canvas || reduceMotion || typeof THREE === 'undefined') return;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true }); }
+    catch(e) { return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
+    camera.position.set(0, 0, 6);
+
+    const core = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(1.15, 1),
+      new THREE.MeshBasicMaterial({ color: 0x9FC4FF, wireframe: true, transparent: true, opacity: 0.55 })
+    );
+    scene.add(core);
+
+    const nodesGroup = new THREE.Group();
+    const N = 8, radius = 1.9, positions = [];
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(Math.max(0, 1 - y * y));
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+      const pos = new THREE.Vector3(Math.cos(theta) * r * radius, y * radius, Math.sin(theta) * r * radius);
+      positions.push(pos);
+      const node = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 10), new THREE.MeshBasicMaterial({ color: 0xFFB454 }));
+      node.position.copy(pos);
+      nodesGroup.add(node);
+    }
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x5DA9FF, transparent: true, opacity: 0.35 });
+    const edges = [];
+    for (let i = 0; i < positions.length; i++) {
+      const j = (i + 1) % positions.length;
+      edges.push([positions[i], positions[j]]);
+      const geo = new THREE.BufferGeometry().setFromPoints([positions[i], positions[j]]);
+      nodesGroup.add(new THREE.Line(geo, lineMat));
+    }
+    const comets = [];
+    for (let c = 0; c < 3; c++) {
+      const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), new THREE.MeshBasicMaterial({ color: 0x2C8EFF }));
+      const state = { edge: edges[Math.floor(Math.random() * edges.length)], t: Math.random(), speed: 0.006 + Math.random() * 0.006 };
+      mesh.userData = state;
+      nodesGroup.add(mesh);
+      comets.push(mesh);
+    }
+    scene.add(nodesGroup);
+
+    function resize(){
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function shouldRun(){
+      const homePage = document.getElementById('page-home');
+      return isDark() && !document.hidden && homePage && homePage.classList.contains('active');
+    }
+
+    function animate(){
+      if (shouldRun()) {
+        core.rotation.y += 0.006;
+        core.rotation.x += 0.002;
+        nodesGroup.rotation.y += 0.004;
+        comets.forEach(c => {
+          c.userData.t += c.userData.speed;
+          if (c.userData.t > 1) { c.userData.t = 0; c.userData.edge = edges[Math.floor(Math.random() * edges.length)]; }
+          c.position.lerpVectors(c.userData.edge[0], c.userData.edge[1], c.userData.t);
+        });
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initHeroSphere, 50);
+  } else {
+    window.addEventListener('DOMContentLoaded', () => setTimeout(initHeroSphere, 50));
+  }
+
+  /* ── Curseur double-couche + boutons magnétiques (desktop uniquement) ── */
+  const hoverCapable = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if (!reduceMotion && hoverCapable) {
+    const glow = document.createElement('div');
+    glow.className = 'cursor-glow';
+    const ring = document.createElement('div');
+    ring.className = 'cursor-ring';
+    document.body.appendChild(glow);
+    document.body.appendChild(ring);
+    window.addEventListener('pointermove', e => {
+      if (!isDark()) { glow.style.opacity = '0'; ring.style.opacity = '0'; return; }
+      glow.style.opacity = '1'; ring.style.opacity = '1';
+      glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px';
+      ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+    });
+    document.addEventListener('pointerleave', () => { glow.style.opacity = '0'; ring.style.opacity = '0'; });
+
+    document.addEventListener('pointermove', e => {
+      const btn = e.target.closest('.btn-primary, .btn-accent, .btn-outline');
+      if (!btn || !isDark()) return;
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.18;
+      const y = (e.clientY - r.top - r.height / 2) * 0.28;
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    document.addEventListener('pointerout', e => {
+      const btn = e.target.closest('.btn-primary, .btn-accent, .btn-outline');
+      if (btn) btn.style.transform = '';
+    });
+  }
+})();
 </script>
 </body>
 </html>
