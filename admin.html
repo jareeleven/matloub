@@ -222,6 +222,7 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
       <div class="nav-link" onclick="gotoSection('add-pro',this)"><span class="material-icons-round">person_add</span> Ajouter un Pro</div>
       <div class="nav-link" onclick="gotoSection('reports',this)"><span class="material-icons-round">flag</span> Signalements<span class="nav-badge" id="nb-reports" style="background:var(--accent2);">0</span></div>
       <div class="nav-link" onclick="gotoSection('blacklist',this)"><span class="material-icons-round">block</span> Blacklist</div>
+      <div class="nav-link" onclick="gotoSection('codes',this)"><span class="material-icons-round">vpn_key</span> Codes d'activation</div>
       <div class="nav-link" onclick="gotoSection('traffic',this)"><span class="material-icons-round">bar_chart</span> Trafic & Stats</div>
       <div class="nav-link" onclick="gotoSection('export',this)"><span class="material-icons-round">download</span> Export Données</div>
       <div class="nav-link" onclick="gotoSection('settings',this)"><span class="material-icons-round">settings</span> Paramètres</div>
@@ -429,6 +430,56 @@ select.form-input{-webkit-appearance:none;cursor:pointer;}
         </div>
         <div style="background:#FEF3C7;border-radius:var(--r);padding:14px;font-size:0.82rem;color:#92400E;border:1px solid #FDE68A;">
           <strong>⚡ Synchronisation temps réel :</strong> Tout ajout à la blacklist est immédiatement visible sur l'application principale. Les inscriptions avec des informations blacklistées sont bloquées automatiquement.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CODES D'ACTIVATION ══ -->
+    <div id="sec-codes" class="section">
+      <div style="max-width:620px;">
+        <div class="table-card" style="margin-bottom:14px;padding:18px;">
+          <div class="table-title" style="margin-bottom:14px;">🔑 Générer un ou plusieurs codes</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:800;color:var(--text3);margin-bottom:5px;">Téléphone client (optionnel)</label>
+              <input type="text" id="ac-tel" class="search-box" style="width:100%;" placeholder="ex: 213555123456">
+            </div>
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:800;color:var(--text3);margin-bottom:5px;">Montant (DA)</label>
+              <input type="number" id="ac-montant" class="search-box" style="width:100%;" value="1000">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:800;color:var(--text3);margin-bottom:5px;">Type de code</label>
+              <select id="ac-source" class="search-box" style="width:100%;">
+                <option value="offert">🎁 Offert (contact direct)</option>
+                <option value="payant">💳 Payant</option>
+                <option value="remplacement">🔁 Remplacement</option>
+                <option value="autre">📌 Autre</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:800;color:var(--text3);margin-bottom:5px;">Validité (jours, vide = illimité)</label>
+              <input type="number" id="ac-validite" class="search-box" style="width:100%;" placeholder="ex: 7" min="1">
+            </div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:0.72rem;font-weight:800;color:var(--text3);margin-bottom:5px;">Nombre de codes</label>
+            <input type="number" id="ac-qte" class="search-box" style="width:100%;" value="1" min="1" max="50">
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;" id="ac-btn" onclick="generateActivationCodes()">
+            <span class="material-icons-round" style="font-size:18px;">auto_awesome</span> Générer
+          </button>
+          <div id="ac-result" style="display:none;margin-top:14px;padding:14px;border-radius:12px;background:#F0FDF9;border:1px solid #BBF7D0;"></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">📋 Derniers codes générés</div>
+            <button class="btn btn-ghost btn-sm" onclick="loadActivationCodes()"><span class="material-icons-round" style="font-size:15px;">refresh</span> Actualiser</button>
+          </div>
+          <div style="padding:14px;" id="ac-list">Chargement...</div>
         </div>
       </div>
     </div>
@@ -1058,6 +1109,119 @@ async function renderTraffic(){
 }
 
 // ════════════════════════════════════════════
+// 🔑 CODES D'ACTIVATION
+// ════════════════════════════════════════════
+const AC_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const AC_SOURCE_LABELS={offert:'🎁 Offert',payant:'💳 Payant',remplacement:'🔁 Remplacement',autre:'📌 Autre'};
+const AC_CLOUD_URL='https://us-central1-matloub-7914f.cloudfunctions.net/genererCodeManuel';
+const AC_ADMIN_KEY='MATLOUB_ADMIN_SECRET_2026'; // Doit être identique à firebase-functions-v2-telegram.js
+
+async function acTryCloudGenerate(tel,montant,source,validiteJours){
+  try{
+    const resp=await fetch(AC_CLOUD_URL,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({telPro:tel||'',adminKey:AC_ADMIN_KEY,montant,source,validityDays:validiteJours||null})
+    });
+    if(!resp.ok)return null;
+    const data=await resp.json();
+    if(!data.ok)return null;
+    return {code:data.code,telegramSent:!!data.telegramSent};
+  }catch(e){return null;}
+}
+
+function acRandomCode(){let c='MATLOUB-';for(let i=0;i<4;i++)c+=AC_CHARS[Math.floor(Math.random()*AC_CHARS.length)];return c;}
+
+async function acGenerateUniqueCode(){
+  for(let i=0;i<10;i++){
+    const code=acRandomCode();
+    const snap=await db.collection('activation_codes').doc(code).get();
+    if(!snap.exists)return code;
+  }
+  throw new Error('Impossible de générer un code unique, réessayez');
+}
+
+async function generateActivationCodes(){
+  if(!fbReady)return showToast('❌ Firebase non connecté');
+  const tel=document.getElementById('ac-tel').value.trim().replace(/[^0-9]/g,'');
+  const montant=parseInt(document.getElementById('ac-montant').value)||1000;
+  const source=document.getElementById('ac-source').value;
+  const validiteJours=parseInt(document.getElementById('ac-validite').value)||null;
+  const expiresAt=validiteJours?(Date.now()+validiteJours*86400000):null;
+  const qte=Math.min(Math.max(parseInt(document.getElementById('ac-qte').value)||1,1),50);
+  const btn=document.getElementById('ac-btn');
+  btn.disabled=true;btn.innerHTML='⏳ Génération...';
+
+  const generated=[];
+  try{
+    for(let i=0;i<qte;i++){
+      const cloudResult=await acTryCloudGenerate(tel,montant,source,validiteJours);
+      if(cloudResult){
+        generated.push(cloudResult);
+      }else{
+        const code=await acGenerateUniqueCode();
+        await db.collection('activation_codes').doc(code).set({
+          code,telPro:tel||null,montant,source,expiresAt,
+          smsBrut:'ADMIN_PANEL_FALLBACK',used:false,
+          createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        generated.push({code,telegramSent:false});
+      }
+    }
+    const result=document.getElementById('ac-result');
+    result.style.display='block';
+    result.innerHTML=generated.map(({code,telegramSent})=>`
+      <div style="margin-bottom:10px;">
+        <span style="font-family:'Space Grotesk',monospace;font-weight:800;color:var(--primary);font-size:1.05rem;border:2px dashed var(--primary);border-radius:8px;padding:6px 12px;display:inline-block;">${code}</span>
+        <span class="badge" style="background:#EDE9FE;color:#5B21B6;margin-left:6px;">${AC_SOURCE_LABELS[source]}</span>
+        ${expiresAt?`<span class="badge" style="background:#FEF3C7;color:#92400E;">⏱ jusqu'au ${new Date(expiresAt).toLocaleDateString('fr-DZ')}</span>`:''}
+        ${telegramSent?`<span class="badge" style="background:#D1FAE5;color:#065F46;">🤖 Envoyé auto Telegram</span>`:''}
+        <div style="margin-top:6px;display:flex;gap:6px;">
+          <button class="act-btn act-gray" onclick="navigator.clipboard.writeText('${code}');showToast('📋 Copié')">📋 Copier</button>
+          ${tel?`<button class="act-btn act-green" onclick="window.open('https://wa.me/${tel}?text='+encodeURIComponent('💎 *MATLOUB* — Votre code d\\'activation :\\n\\n*${code}*\\n\\nEntrez ce code sur l\\'app MATLOUB → Abonnement → Code d\\'activation\\n\\n✅ Activation immédiate !'),'_blank')">💬 WhatsApp</button>`:''}
+        </div>
+      </div>`).join('');
+    showToast(`✅ ${generated.length} code(s) généré(s)`);
+    loadActivationCodes();
+  }catch(e){showToast('❌ Erreur: '+e.message);}
+  btn.disabled=false;btn.innerHTML='<span class="material-icons-round" style="font-size:18px;">auto_awesome</span> Générer';
+}
+
+async function loadActivationCodes(){
+  const el=document.getElementById('ac-list');
+  if(!el)return;
+  if(!fbReady){el.innerHTML='<div style="color:var(--text3);">Connectez Firebase</div>';return;}
+  el.innerHTML='Chargement...';
+  try{
+    const snap=await db.collection('activation_codes').orderBy('createdAt','desc').limit(20).get();
+    if(snap.empty){el.innerHTML='<div style="color:var(--text3);text-align:center;padding:8px;">Aucun code généré</div>';return;}
+    el.innerHTML=snap.docs.map(d=>{
+      const c=d.data();
+      const date=c.createdAt?.toDate?c.createdAt.toDate().toLocaleString('fr-DZ'):'—';
+      const isExpired=c.expiresAt&&Date.now()>c.expiresAt&&!c.used;
+      const statusBadge=c.used?'<span class="badge badge-suspended">Utilisé</span>':isExpired?'<span class="badge" style="background:#F3F4F6;color:#6B7280;">Expiré</span>':'<span class="badge badge-active">Actif</span>';
+      const sourceBadge=c.source?`<span class="badge" style="background:#EDE9FE;color:#5B21B6;">${AC_SOURCE_LABELS[c.source]||c.source}</span>`:'';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+        <div style="min-width:0;">
+          <div style="font-family:'Space Grotesk',monospace;font-weight:800;color:var(--primary);font-size:0.9rem;">${c.code}</div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:2px;">${c.telPro?'+'+c.telPro+' · ':''}${c.montant||0} DA · ${date}</div>
+          <div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap;">${sourceBadge}${statusBadge}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="act-btn act-gray" onclick="navigator.clipboard.writeText('${c.code}');showToast('📋 Copié')">📋</button>
+          ${!c.used?`<button class="act-btn act-red" onclick="deleteActivationCode('${c.code}')">🗑</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="color:var(--text3);">Erreur de chargement</div>';}
+}
+
+async function deleteActivationCode(code){
+  if(!confirm(`Supprimer le code ${code} ?`))return;
+  try{await db.collection('activation_codes').doc(code).delete();showToast('🗑️ Code supprimé');loadActivationCodes();}
+  catch(e){showToast('❌ Erreur: '+e.message);}
+}
+
+// ════════════════════════════════════════════
 // 📤 EXPORT
 // ════════════════════════════════════════════
 function exportJSON(){
@@ -1086,9 +1250,9 @@ function gotoSection(id,el){
   document.getElementById('sec-'+id)?.classList.add('active');
   document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
   if(el)el.classList.add('active');else document.querySelectorAll('.nav-link').forEach(l=>{if(l.getAttribute('onclick')?.includes(`'${id}'`))l.classList.add('active');});
-  const titles={dashboard:'Dashboard','pros':'Professionnels',reports:'Signalements',blacklist:'Blacklist',traffic:'Trafic & Stats',export:'Export Données',settings:'Paramètres','add-pro':'Ajouter un Pro'};
+  const titles={dashboard:'Dashboard','pros':'Professionnels',reports:'Signalements',blacklist:'Blacklist',codes:"Codes d'activation",traffic:'Trafic & Stats',export:'Export Données',settings:'Paramètres','add-pro':'Ajouter un Pro'};
   document.getElementById('topbar-title').textContent=titles[id]||id;
-  if(id==='pros')renderProsTable();if(id==='reports')renderReports();if(id==='blacklist')renderBlacklist();if(id==='traffic')renderTraffic();
+  if(id==='pros')renderProsTable();if(id==='reports')renderReports();if(id==='blacklist')renderBlacklist();if(id==='traffic')renderTraffic();if(id==='codes')loadActivationCodes();
   if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open');
 }
 function refreshAll(){loadAllPros().then(()=>{updateDashboard();renderProsTable();renderReports();showToast('✅ Actualisé depuis Firebase');});}

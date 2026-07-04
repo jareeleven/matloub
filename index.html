@@ -3879,6 +3879,7 @@ const app = {
         if (!docSnap.exists()) return toast("❌ Code invalide ou déjà utilisé");
         const data = docSnap.data();
         if (data.used === true) return toast("❌ Code déjà utilisé");
+        if (data.expiresAt && Date.now() > data.expiresAt) return toast("❌ Ce code a expiré");
 
         await updateDoc(docRef, { used: true, usedAt: Date.now(), usedBy: db.currentUser?.id || "unknown" });
         await this.activateSubscription('code');

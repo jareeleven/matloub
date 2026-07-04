@@ -33,6 +33,9 @@ const CONFIG = {
 
   // 4. Préfixe codes
   PREFIX: "MATLOUB",
+
+  // 5. Clé secrète admin — DOIT être identique à ADMIN_KEY dans index.html/admin.html
+  ADMIN_KEY: "MATLOUB_ADMIN_SECRET_2026",
 };
 // ─────────────────────────────────────────────────────────────
 
@@ -162,6 +165,8 @@ exports.smsBaridimob = functions.https.onRequest(async (req, res) => {
     code,
     telPro: telPro || "inconnu",
     montant,
+    source: "payant",
+    expiresAt: null,
     smsBrut: smsBrut.slice(0, 300),
     used: false,
     telegramChatId: null, // sera mis à jour quand le pro démarre le bot
@@ -327,34 +332,50 @@ exports.genererCodeManuel = functions.https.onRequest(async (req, res) => {
   if (req.method === "OPTIONS") return res.status(204).send("");
   if (req.method !== "POST")   return res.status(405).send("Method Not Allowed");
 
-  const { telPro, adminKey } = req.body;
-  if (adminKey !== "MATLOUB_ADMIN_2026") return res.status(403).json({ error: "Non autorisé" });
-  if (!telPro) return res.status(400).json({ error: "telPro requis" });
+  const { telPro, adminKey, montant, source, validityDays } = req.body;
+  if (adminKey !== CONFIG.ADMIN_KEY) return res.status(403).json({ error: "Non autorisé" });
 
-  let tel = telPro.replace(/\D/g, "");
-  if (tel.startsWith("0")) tel = "213" + tel.slice(1);
+  let tel = (telPro || "").replace(/\D/g, "");
+  if (tel) {
+    if (tel.startsWith("0")) tel = "213" + tel.slice(1);
+    if (!tel.startsWith("213") && tel.length >= 9) tel = "213" + tel;
+  }
 
-  const code = genCode();
+  const montantFinal = parseInt(montant) || CONFIG.MONTANT;
+  const sourceFinal = source || "offert";
+  const expiresAt = validityDays ? (Date.now() + parseInt(validityDays) * 86400000) : null;
+
+  let code;
+  for (let i = 0; i < 10; i++) {
+    code = genCode();
+    const snap = await db.collection("activation_codes").doc(code).get();
+    if (!snap.exists) break;
+  }
+
   await db.collection("activation_codes").doc(code).set({
-    code, telPro: tel, montant: CONFIG.MONTANT,
-    smsBrut: "MANUEL_ADMIN", used: false,
+    code, telPro: tel || null, montant: montantFinal,
+    source: sourceFinal, expiresAt,
+    smsBrut: "MANUEL_ADMIN", used: false, telegramChatId: null,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
 
-  // Chercher si le pro est sur Telegram
-  const proSnap = await db.collection("telegram_users").where("tel", "==", tel).limit(1).get();
+  // Chercher si le pro est sur Telegram → envoi automatique
   let sent = false;
-  if (!proSnap.empty) {
-    const chatId = proSnap.docs[0].data().chatId;
-    await telegram(chatId,
-      `💎 *MATLOUB* — Votre code d'activation :\n\n🔑 \`${code}\`\n\nEntrez ce code sur *matloub.com* → Abonnement`
-    );
-    sent = true;
+  if (tel) {
+    const proSnap = await db.collection("telegram_users").where("tel", "==", tel).limit(1).get();
+    if (!proSnap.empty) {
+      const chatId = proSnap.docs[0].data().chatId;
+      await telegram(chatId,
+        `💎 *MATLOUB* — Votre code d'activation :\n\n🔑 \`${code}\`\n\nEntrez ce code sur *matloub.com* → Abonnement → Code d'activation`
+      );
+      await db.collection("activation_codes").doc(code).update({ telegramChatId: chatId });
+      sent = true;
+    }
   }
 
   // Notifier l'admin
   await telegram(CONFIG.ADMIN_CHAT_ID,
-    `🔧 *Code manuel généré*\n📱 Tel: +${tel}\n🔑 Code: \`${code}\`\n📤 Telegram: ${sent ? "✅ Envoyé" : "❌ Pro pas sur Telegram"}`
+    `🔧 *Code manuel généré (${sourceFinal})*\n📱 Tel: ${tel ? "+" + tel : "Non fourni"}\n🔑 Code: \`${code}\`\n📤 Telegram: ${sent ? "✅ Envoyé" : "❌ Pro pas sur Telegram"}`
   );
 
   return res.status(200).json({ ok: true, code, telegramSent: sent });
