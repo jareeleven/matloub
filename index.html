@@ -718,6 +718,89 @@ select.input-field{cursor:pointer;-webkit-appearance:none;background-image:url("
     will-change:transform;transition:transform .15s ease, box-shadow .2s ease;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MODERN POLISH v2 — transitions, micro-interactions, accessibilité
+   ═══════════════════════════════════════════════════════════ */
+html{scroll-behavior:smooth;}
+body{transition:background .4s ease, color .4s ease;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;}
+
+/* Focus visible accessible (conserve le tap highlight transparent) */
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px;}
+
+/* ── Boutons : reflet lumineux au survol ── */
+.btn{position:relative;overflow:hidden;}
+.btn::after{content:'';position:absolute;top:0;left:-80%;width:55%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .55s ease;pointer-events:none;}
+@media(hover:hover){.btn:hover::after{left:135%;}}
+.btn{transition:transform .18s cubic-bezier(.16,1,.3,1), box-shadow .25s ease, background .2s ease;}
+
+/* ── Cartes : micro-lift au survol (desktop uniquement) ── */
+@media(hover:hover){
+  .card,.card-sm,.pro-card,.pro-row,.payment-item{transition:transform .25s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, border-color .3s ease;}
+  .pro-card:hover,.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+  .pro-row:hover{transform:translateY(-1px);}
+}
+
+/* ── Navigation basse : retours visuels ── */
+.nav-item{transition:color .2s ease, background .25s ease, transform .2s ease;}
+.nav-item:active{transform:scale(.93);}
+.bottom-nav{transition:box-shadow .3s ease, border-color .3s ease;}
+
+/* ── Chips ── */
+.chip{transition:transform .2s ease, box-shadow .25s ease, background .2s ease, color .2s ease, border-color .2s ease;}
+@media(hover:hover){.chip:hover{transform:translateY(-1px);}}
+
+/* ── Inputs : halo au focus ── */
+.input-field{transition:border-color .2s ease, box-shadow .25s ease, background .25s ease;}
+.input-field:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(44,142,255,.13);background:var(--surface);}
+
+/* ── Bouton thème : rotation douce ── */
+.theme-toggle span{transition:transform .45s cubic-bezier(.34,1.56,.64,1);}
+.theme-toggle:active span{transform:rotate(180deg);}
+
+/* ── Toggle thème : fondu global fluide ── */
+[data-theme="dark"] body{transition:background .4s ease, color .4s ease;}
+[data-theme="dark"] .card,[data-theme="dark"] .card-sm,[data-theme="dark"] .pro-card,
+[data-theme="dark"] .bottom-nav,[data-theme="dark"] header,
+[data-theme="dark"] .search-input,[data-theme="dark"] .input-field,
+[data-theme="dark"] .modal-sheet,[data-theme="dark"] .modal-inner{transition:background .35s ease, border-color .35s ease, color .35s ease;}
+
+/* ── Scrollbar affinée ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong,var(--border));border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+/* ── Toast premium ── */
+.toast{border:1px solid var(--border-strong,var(--border));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,.35);letter-spacing:.2px;}
+
+/* ── Hero : dégradé animé subtil ── */
+.hero-banner{background-size:200% 200%;animation:heroGradient 10s ease infinite;}
+@keyframes heroGradient{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+/* ── Titres : hiérarchie affinée ── */
+.section-title{letter-spacing:-.01em;}
+.section-header{margin-bottom:14px;}
+.section-link{transition:background .2s ease, transform .2s ease;}
+.section-link:active{transform:scale(.95);}
+
+/* ── Chips catégories : légère élévation ── */
+.cat-item{transition:transform .2s cubic-bezier(.16,1,.3,1);}
+.cat-icon{transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;}
+.cat-item:active .cat-icon{transform:scale(.92);}
+
+/* ── Cartes de stats admin : léger effet de profondeur ── */
+.admin-stat-card{box-shadow:0 6px 20px rgba(0,0,0,.12);}
+[data-theme="dark"] .admin-stat-card{box-shadow:0 8px 26px rgba(0,0,0,.45);}
+
+/* ── Avatars : micro-lift ── */
+.avatar-hdr{transition:transform .2s ease, box-shadow .25s ease;}
+.avatar-hdr:active{transform:scale(.94);}
+
+/* ── Réduction de mouvement : désactive le hero animé ── */
+@media (prefers-reduced-motion: reduce){
+  .hero-banner{animation:none;}
+  .btn::after{display:none;}
+}
 </style>
 </head>
 <body>
